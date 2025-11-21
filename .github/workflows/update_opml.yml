@@ -1,0 +1,55 @@
+name: Update OPML Files and Supplementary YAML
+
+on:
+  schedule:
+    # Run every Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+    # Allows manual triggering
+
+jobs:
+  update-news-sources:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          cd code
+          pip install -r requirements.txt
+
+      - name: Create data directories
+        run: |
+          mkdir -p code/data/opml
+          mkdir -p code/data
+
+      - name: Update OPML Files and Generate Supplementary YAML
+        env:
+          GITHUB_TOKENS: ${{ secrets.GITHUB_TOKENS }}
+        run: |
+          cd code
+          python -c "from utils.opml_manager import OPMLManager; manager = OPMLManager(); manager.fetch_opml_files(); manager.update_all_sources()"
+          # Also run the dedicated converter script for flexibility
+          python utils/opml_to_yaml_converter.py --opml-dir data/opml --output data/news_sources.yaml
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Commit and Push Changes
+        run: |
+          git add code/data/opml/ code/data/news_sources.yaml
+          git commit -m 'Update OPML files and supplementary YAML configuration' || echo "No changes to commit"
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}

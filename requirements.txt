@@ -1,0 +1,12 @@
+requests
+sqlalchemy
+openai
+google-generativeai
+schedule
+beautifulsoup4
+python-dotenv
+tenacity
+httpx
+PyYAML
+feedparser
+listparser

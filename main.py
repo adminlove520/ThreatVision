@@ -1,0 +1,225 @@
+import time
+import schedule
+import threading
+import signal
+import sys
+import os
+from concurrent.futures import ThreadPoolExecutor
+
+from config import Config
+from database.models import init_db, get_session, CVERecord, Repository
+from monitors.cve_monitor import CVEMonitor
+from monitors.github_monitor import GithubMonitor
+from ai.analyzer import AIAnalyzer
+from utils.logger import setup_logger
+from utils.article_manager import ArticleManager
+from utils.article_fetcher import ArticleFetcher
+
+logger = setup_logger("Main")
+
+class ThreatVision:
+    def __init__(self):
+        self.running = True
+        self.cve_monitor = CVEMonitor()
+        self.github_monitor = GithubMonitor()
+        self.analyzer = AIAnalyzer()
+        self.article_manager = ArticleManager()
+        self.article_fetcher = ArticleFetcher()
+        
+        # Thread pool for analysis tasks
+        self.executor = ThreadPoolExecutor(max_workers=3)
+
+    def init_system(self):
+        logger.info("Initializing ThreatVision...")
+        init_db()
+        logger.info("Database initialized.")
+
+    def run_monitors(self):
+        """Run monitors in a loop"""
+        while self.running:
+            try:
+                logger.info("--- Starting Monitor Cycle ---")
+                
+                # 1. CVE Monitor
+                self.cve_monitor.monitor()
+                
+                # 2. GitHub Monitor
+                self.github_monitor.monitor()
+                
+                # 3. Trigger Analysis (Async)
+                self.trigger_analysis()
+                
+                logger.info(f"Cycle complete. Sleeping for {Config.MONITOR_INTERVAL}s")
+                for _ in range(Config.MONITOR_INTERVAL):
+                    if not self.running: break
+                    time.sleep(1)
+            except Exception as e:
+                logger.error(f"Error in monitor loop: {e}")
+                time.sleep(60)
+
+    def trigger_analysis(self):
+        """Check DB for unanalyzed items and submit to AI"""
+        # CVEs
+        session = get_session(self.cve_monitor.engine)
+        try:
+            unprocessed_cves = session.query(CVERecord).filter(CVERecord.ai_analysis == None).limit(5).all()
+            for cve in unprocessed_cves:
+                self.executor.submit(self.analyze_cve, cve.cve_id, cve.description)
+        finally:
+            session.close()
+
+        # Repos
+        session = get_session(self.github_monitor.engine)
+        try:
+            unprocessed_repos = session.query(Repository).filter(Repository.ai_analysis == None).limit(5).all()
+            for repo in unprocessed_repos:
+                self.executor.submit(self.analyze_repo, repo.name, repo.description)
+        finally:
+            session.close()
+
+    def analyze_cve(self, cve_id, description):
+        logger.info(f"Analyzing CVE: {cve_id}")
+        result = self.analyzer.analyze_content(description, 'cve')
+        if result:
+            # Update DB
+            import json
+            session = get_session(self.cve_monitor.engine)
+            try:
+                record = session.query(CVERecord).filter_by(cve_id=cve_id).first()
+                if record:
+                    record.ai_analysis = json.dumps(result)
+                    if result.get('risk_level') == 'High':
+                        record.is_high_value = True
+                    session.commit()
+                    logger.info(f"Analysis complete for {cve_id}")
+            except Exception as e:
+                logger.error(f"Error saving analysis for {cve_id}: {e}")
+            finally:
+                session.close()
+
+    def analyze_repo(self, repo_name, description):
+        logger.info(f"Analyzing Repo: {repo_name}")
+        result = self.analyzer.analyze_content(description, 'repo')
+        if result:
+            import json
+            session = get_session(self.github_monitor.engine)
+            try:
+                record = session.query(Repository).filter_by(name=repo_name).first()
+                if record:
+                    record.ai_analysis = json.dumps(result)
+                    session.commit()
+                    logger.info(f"Analysis complete for {repo_name}")
+                logger.error(f"Error saving analysis for {repo_name}: {e}")
+            finally:
+                session.close()
+
+    def daily_job(self):
+        logger.info("Running daily reporting job...")
+        
+        # 1. Fetch Articles (RSS + Configured Sources)
+        articles = []
+        
+        # RSS Feeds from OPML
+        try:
+            from utils.opml_manager import OPMLManager
+            opml_manager = OPMLManager()
+            # 使用新的方法获取更详细的feed信息
+            feeds_with_info = opml_manager.get_merged_feeds(return_objects=True)
+            self.logger.info(f"Processing {len(feeds_with_info)} RSS feeds for daily report")
+            rss_feeds = [feed['url'] for feed in feeds_with_info]
+            if rss_feeds:
+                rss_articles = self.article_fetcher.fetch_rss_articles(rss_feeds)
+                logger.info(f"Fetched {len(rss_articles)} articles from RSS feeds.")
+                articles.extend(rss_articles)
+        except Exception as e:
+            logger.error(f"Error fetching RSS articles: {e}")
+
+        # Filter new articles
+        new_articles = []
+        for art in articles:
+            if self.article_manager.is_new_url(art['url']):
+                new_articles.append(art)
+                self.article_manager.mark_as_processed(art['url'])
+        
+        logger.info(f"Total new articles to report: {len(new_articles)}")
+
+        # 2. Collect data for report
+        session_cve = get_session(self.cve_monitor.engine)
+        cves = session_cve.query(CVERecord).filter(CVERecord.is_high_value == True).limit(10).all()
+
+        session_repo = get_session(self.github_monitor.engine)
+        repos = session_repo.query(Repository).filter(Repository.is_high_value == True).limit(10).all()
+
+        # 3. Generate Report (pass analyzer for article classification)
+        report_path = self.article_manager.generate_daily_report(cves, repos, new_articles, self.analyzer)
+        logger.info(f"Daily job finished. Report: {report_path}")
+
+        session_cve.close()
+        session_repo.close()
+
+    def run_once(self):
+        """Run a single cycle of monitoring, analysis, and reporting (for CI/CD)"""
+        self.init_system()
+        logger.info("Running single execution cycle...")
+        
+        # 1. Monitors
+        self.cve_monitor.monitor()
+        self.github_monitor.monitor()
+        
+        # 2. Analysis
+        # Submit tasks
+        self.trigger_analysis()
+        # Wait for completion
+        logger.info("Waiting for analysis to complete...")
+        self.executor.shutdown(wait=True)
+        
+        # Re-init executor for potential future use (though we are exiting)
+        self.executor = ThreadPoolExecutor(max_workers=3)
+        
+        # 3. Report
+        self.daily_job()
+        logger.info("Single execution cycle complete.")
+
+    def start(self):
+        self.init_system()
+        
+        # Schedule daily report (e.g., at 09:00 AM)
+        schedule.every().day.at("09:00").do(self.daily_job)
+        
+        # Start monitor thread
+        monitor_thread = threading.Thread(target=self.run_monitors, daemon=True)
+        monitor_thread.start()
+        
+        # Start scheduler loop
+        logger.info("System started. Press Ctrl+C to stop.")
+        try:
+            while self.running:
+                schedule.run_pending()
+                time.sleep(1)
+        except KeyboardInterrupt:
+            self.stop()
+
+    def stop(self):
+        logger.info("Stopping system...")
+        self.running = False
+        self.executor.shutdown(wait=False)
+        sys.exit(0)
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--once', action='store_true', help='Run one cycle and exit (for Cron/CI)')
+    args = parser.parse_args()
+
+    app = ThreatVision()
+    
+    if args.once:
+        app.run_once()
+    else:
+        # Handle signals
+        def signal_handler(sig, frame):
+            app.stop()
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
+        
+        app.start()

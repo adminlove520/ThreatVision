@@ -1,0 +1,2707 @@
+version: 1.0
+settings:
+  default_refresh_interval: 60
+  max_retries: 3
+  timeout: 10
+sources:
+- category:
+    name: AI安全
+    description: 人工智能安全相关新闻源
+    feeds:
+    - name: AI Security News
+      url: https://aisecuritynews.com/feed/
+      description: 专注于AI安全的新闻网站
+      enabled: true
+      language: en
+    - name: AI安全研究社区
+      url: https://ai-security-research.org/rss.xml
+      description: AI安全研究论文和最新进展
+      enabled: true
+      language: en
+- category:
+    name: 网络安全
+    description: 网络安全相关新闻源
+    feeds:
+    - name: SecurityWeek
+      url: https://www.securityweek.com/feed/
+      description: 网络安全新闻和分析
+      enabled: true
+      language: en
+    - name: Dark Reading
+      url: https://www.darkreading.com/rss.xml
+      description: 深入的网络安全分析和评论
+      enabled: true
+      language: en
+- category:
+    name: 技术新闻
+    description: 一般技术新闻和更新
+    feeds:
+    - name: TechCrunch
+      url: https://techcrunch.com/feed/
+      description: 科技创业和创新新闻
+      enabled: true
+      language: en
+    - name: MIT Technology Review
+      url: https://www.technologyreview.com/feed/
+      description: 前沿技术分析和评论
+      enabled: true
+      language: en
+- category:
+    name: 中文安全
+    description: 中文安全相关新闻源
+    feeds:
+    - name: 安全客
+      url: https://www.anquanke.com/feed
+      description: 中文安全技术社区
+      enabled: true
+      language: zh
+    - name: FreeBuf
+      url: https://www.freebuf.com/feed
+      description: 网络安全行业门户
+      enabled: true
+      language: zh
+- category:
+    name: 安全媒体
+    description: 综合性安全媒体平台
+    feeds:
+    - name: 安全客
+      url: https://api.anquanke.com/data/v1/rss
+      description: https://www.anquanke.com
+      enabled: true
+      language: zh
+    - name: 嘶吼
+      url: https://www.4hou.com/feed
+      description: https://www.4hou.com
+      enabled: true
+      language: zh
+    - name: 安全牛
+      url: https://www.aqniu.com/feed
+      description: https://www.aqniu.com
+      enabled: true
+      language: zh
+    - name: 安全脉搏
+      url: https://www.secpulse.com/feed
+      description: https://www.secpulse.com
+      enabled: true
+      language: zh
+    - name: SecPulse安全脉搏
+      url: https://wechat2rss.xlab.app/feed/3bd096819fedf4e94ef23d95c24dd7b2644f3d10.xml
+      description: https://wechat2rss.xlab.app/feed/3bd096819fedf4e94ef23d95c24dd7b2644f3d10.xml
+      enabled: true
+      language: zh
+    - name: 安全客
+      url: https://wechat2rss.xlab.app/feed/7fc9f5344f14228ba49208282d844349f8afdee7.xml
+      description: https://wechat2rss.xlab.app/feed/7fc9f5344f14228ba49208282d844349f8afdee7.xml
+      enabled: true
+      language: zh
+    - name: 安全牛
+      url: https://wechat2rss.xlab.app/feed/10f1ba549b70cdb4216f7ade606d30a813305aa1.xml
+      description: https://wechat2rss.xlab.app/feed/10f1ba549b70cdb4216f7ade606d30a813305aa1.xml
+      enabled: true
+      language: zh
+    - name: 嘶吼专业版
+      url: https://wechat2rss.xlab.app/feed/d351be711510e0b7ccbcb275cdfab5c4c7e3e839.xml
+      description: https://wechat2rss.xlab.app/feed/d351be711510e0b7ccbcb275cdfab5c4c7e3e839.xml
+      enabled: true
+      language: zh
+- category:
+    name: 企业安全团队
+    description: 各企业的安全研究团队博客
+    feeds:
+    - name: 腾讯玄武实验室
+      url: https://xlab.tencent.com/cn/atom.xml
+      description: https://xlab.tencent.com
+      enabled: true
+      language: zh
+    - name: 知道创宇
+      url: http://blog.knownsec.com/feed
+      description: http://blog.knownsec.com
+      enabled: true
+      language: zh
+    - name: 华为安全通告
+      url: https://www.huawei.com/cn/rss-feeds/psirt/rss
+      description: https://www.huawei.com/cn/rss-feeds/psirt
+      enabled: true
+      language: zh
+    - name: 腾讯科恩实验室官方博客
+      url: https://keenlab.tencent.com/zh/atom.xml
+      description: http://keenlab.tencent.com
+      enabled: true
+      language: zh
+    - name: 360 Netlab Blog - 360
+      url: https://blog.netlab.360.com/rss
+      description: https://blog.netlab.360.com
+      enabled: true
+      language: zh
+    - name: 腾讯玄武实验室
+      url: https://wechat2rss.xlab.app/feed/923c0e2f33b6d39c8a826a90f185725f0edb10e8.xml
+      description: https://wechat2rss.xlab.app/feed/923c0e2f33b6d39c8a826a90f185725f0edb10e8.xml
+      enabled: true
+      language: zh
+    - name: 腾讯科恩实验室
+      url: https://wechat2rss.xlab.app/feed/13584cb01e8bf3297943a0dad49e53c6faf20611.xml
+      description: https://wechat2rss.xlab.app/feed/13584cb01e8bf3297943a0dad49e53c6faf20611.xml
+      enabled: true
+      language: zh
+- category:
+    name: 技术社区
+    description: 安全技术社区和论坛
+    feeds:
+    - name: Seebug Paper
+      url: https://paper.seebug.org/rss
+      description: https://paper.seebug.org
+      enabled: true
+      language: zh
+    - name: SecWiki News(国内外安全资讯)
+      url: https://www.sec-wiki.com/news/rss
+      description: https://www.sec-wiki.com/news
+      enabled: true
+      language: zh
+    - name: Seebug漏洞社区
+      url: https://www.seebug.org/rss/new
+      description: https://www.seebug.org/rss/new
+      enabled: true
+      language: zh
+    - name: NOSEC 安全讯息平台 - 漏洞预警
+      url: https://rsshub.zhengjim.com/nosec/hole
+      description: https://nosec.org/home/index/hole.html
+      enabled: true
+      language: zh
+    - name: 跳跳糖 - 安全与分享社区
+      url: https://tttang.com/rss.xml
+      description: https://tttang.com
+      enabled: true
+      language: zh
+    - name: 先知技术社区
+      url: https://xz.aliyun.com/feed
+      description: https://xz.aliyun.com
+      enabled: true
+      language: zh
+    - name: Seebug漏洞平台
+      url: https://wechat2rss.xlab.app/feed/be2795d741304af2370cbf8d31d1e5d3675f8e85.xml
+      description: https://wechat2rss.xlab.app/feed/be2795d741304af2370cbf8d31d1e5d3675f8e85.xml
+      enabled: true
+      language: zh
+- category:
+    name: 学术研究
+    description: 学术机构安全研究
+    feeds:
+    - name: 清华大学·网络与信息安全实验室 (NISL)
+      url: https://netsec.ccert.edu.cn/feed.xml
+      description: https://netsec.ccert.edu.cn/chs
+      enabled: true
+      language: zh
+    - name: JISEC
+      url: https://www.jisec.com/feed
+      description: https://www.jisec.com
+      enabled: true
+      language: zh
+- category:
+    name: 个人博客
+    description: 安全专家个人博客
+    feeds:
+    - name: 信息安全知识库
+      url: https://vipread.com/feed
+      description: https://vipread.com
+      enabled: true
+      language: zh
+    - name: 美团技术团队
+      url: https://tech.meituan.com/feed
+      description: https://tech.meituan.com
+      enabled: true
+      language: zh
+    - name: 斗象能力中心 - 网藤风险感知
+      url: https://blog.riskivy.com/feed
+      description: https://blog.riskivy.com
+      enabled: true
+      language: zh
+    - name: 腾讯安全响应中心
+      url: https://security.tencent.com/index.php/feed/blog/0
+      description: http://security.tencent.com
+      enabled: true
+      language: zh
+    - name: 体验盒子
+      url: https://www.uedbox.com/feed
+      description: https://www.uedbox.com
+      enabled: true
+      language: zh
+    - name: Keen Security Lab Blog
+      url: https://keenlab.tencent.com/zh/atom.xml
+      description: https://keenlab.tencent.com
+      enabled: true
+      language: zh
+    - name: chybeta博客
+      url: https://chybeta.github.io/atom.xml
+      description: https://chybeta.github.io
+      enabled: true
+      language: zh
+    - name: EVILCOS-余弦博客
+      url: https://evilcos.me/?feed=rss2
+      description: https://evilcos.me
+      enabled: true
+      language: zh
+    - name: Nearg1e博客
+      url: http://blog.neargle.com/atom.xml
+      description: https://blog.neargle.com
+      enabled: true
+      language: zh
+    - name: Vulnspy博客
+      url: https://blog.vulnspy.com/atom.xml
+      description: http://blog.vulnspy.com
+      enabled: true
+      language: zh
+    - name: whynot博客
+      url: https://notwhy.github.io/feed.xml
+      description: https://notwhy.github.io/#blog
+      enabled: true
+      language: zh
+    - name: 离别歌  (Phithon的博客)
+      url: https://www.leavesongs.com/rss.php
+      description: https://www.leavesongs.com
+      enabled: true
+      language: zh
+    - name: zhchbin博客
+      url: http://zhchbin.github.io/atom.xml
+      description: http://zhchbin.github.io
+      enabled: true
+      language: zh
+    - name: Klaus
+      url: http://klaus.link/atom.xml
+      description: http://klaus.link/articles
+      enabled: true
+      language: zh
+    - name: quininer
+      url: https://quininer.github.io/rss.xml
+      description: https://quininer.github.io
+      enabled: true
+      language: zh
+    - name: l3m0n
+      url: https://www.cnblogs.com/iamstudy/rss
+      description: https://www.cnblogs.com/iamstudy
+      enabled: true
+      language: zh
+    - name: Magic_Zero
+      url: http://feed.cnblogs.com/blog/u/266362/rss
+      description: https://www.cnblogs.com/magic-zero
+      enabled: true
+      language: zh
+    - name: Gorgias
+      url: https://gorgias.me/atom.xml
+      description: https://gorgias.me
+      enabled: true
+      language: zh
+    - name: 薇拉vera(左左薇拉)
+      url: https://www.zuozuovera.com/index.xml
+      description: https://www.zuozuovera.com
+      enabled: true
+      language: zh
+    - name: Wins0n
+      url: https://programlife.net/atom.xml
+      description: https://programlife.net
+      enabled: true
+      language: zh
+    - name: Yaseng
+      url: https://yaseng.org/rss.xml
+      description: https://yaseng.org
+      enabled: true
+      language: zh
+    - name: backlion
+      url: https://www.cnblogs.com/backlion/rss
+      description: http://www.backlion.org
+      enabled: true
+      language: zh
+    - name: 杀死比特
+      url: https://www.cnblogs.com/killbit/rss
+      description: https://www.cnblogs.com/killbit
+      enabled: true
+      language: zh
+    - name: KINGX
+      url: https://kingx.me/feed.xml
+      description: https://kingx.me
+      enabled: true
+      language: zh
+    - name: rebeyond
+      url: https://www.cnblogs.com/rebeyond/rss
+      description: https://www.cnblogs.com/rebeyond
+      enabled: true
+      language: zh
+    - name: anhkgg
+      url: https://anhkgg.com/atom.xml
+      description: https://anhkgg.com
+      enabled: true
+      language: zh
+    - name: 3gstudent(三好学生)
+      url: https://3gstudent.github.io/atom.xml
+      description: https://3gstudent.github.io
+      enabled: true
+      language: zh
+    - name: c0ny1(回忆飘如雪)
+      url: http://gv7.me/atom.xml
+      description: http://gv7.me
+      enabled: true
+      language: zh
+    - name: 0xmuhe
+      url: https://o0xmuhe.github.io/atom.xml
+      description: https://o0xmuhe.github.io
+      enabled: true
+      language: zh
+    - name: Nuclear Atk(lcx.cc)
+      url: https://lcx.cc/index.xml
+      description: https://lcx.cc
+      enabled: true
+      language: zh
+    - name: Sky
+      url: https://www.03sec.com/feed
+      description: https://www.03sec.com
+      enabled: true
+      language: zh
+    - name: K0shl
+      url: http://whereisk0shl.top/feed
+      description: http://whereisk0shl.top
+      enabled: true
+      language: zh
+    - name: Syclover Security Team
+      url: http://blog.sycsec.com/atom.xml
+      description: http://blog.sycsec.com
+      enabled: true
+      language: zh
+    - name: K0rz3n
+      url: https://www.k0rz3n.com/atom.xml
+      description: https://www.k0rz3n.com
+      enabled: true
+      language: zh
+    - name: Balis0ng
+      url: https://balis0ng.com/feed
+      description: https://balis0ng.com
+      enabled: true
+      language: zh
+    - name: Misaki
+      url: https://misakikata.github.io/atom.xml
+      description: https://misakikata.github.io
+      enabled: true
+      language: zh
+    - name: Hcamael
+      url: https://nobb.site/rss.xml
+      description: https://nobb.site
+      enabled: true
+      language: zh
+    - name: Coco413
+      url: https://www.coco413.com/feed
+      description: https://www.coco413.com
+      enabled: true
+      language: zh
+    - name: Hurricane618(风之栖息地)
+      url: http://hurricane618.me/atom.xml
+      description: http://hurricane618.me
+      enabled: true
+      language: zh
+    - name: LittleHann
+      url: https://www.cnblogs.com/LittleHann/rss
+      description: https://www.cnblogs.com/LittleHann
+      enabled: true
+      language: zh
+    - name: Evi1cg
+      url: https://evi1cg.me/atom.xml
+      description: https://evi1cg.me
+      enabled: true
+      language: zh
+    - name: 浮萍
+      url: https://fuping.site/atom.xml
+      description: https://fuping.site
+      enabled: true
+      language: zh
+    - name: Sakura
+      url: http://eternalsakura13.com/atom.xml
+      description: http://eternalsakura13.com
+      enabled: true
+      language: zh
+    - name: 羊小弟
+      url: https://www.cnblogs.com/yangxiaodi/rss
+      description: https://www.cnblogs.com/yangxiaodi
+      enabled: true
+      language: zh
+    - name: 国光
+      url: https://www.sqlsec.com/atom.xml
+      description: https://www.sqlsec.com
+      enabled: true
+      language: zh
+    - name: 我是小三
+      url: https://www.cnblogs.com/2014asm/rss
+      description: https://www.cnblogs.com/2014asm
+      enabled: true
+      language: zh
+    - name: Cytosine
+      url: https://cyto.top/atom.xml
+      description: https://cyto.top
+      enabled: true
+      language: zh
+    - name: xmsec(陌小生)
+      url: https://www.xmsec.cc/rss
+      description: https://www.xmsec.cc
+      enabled: true
+      language: zh
+    - name: kangel
+      url: https://j-kangel.github.io/atom.xml
+      description: https://j-kangel.github.io
+      enabled: true
+      language: zh
+    - name: Yunen
+      url: https://www.0x002.com/atom.xml
+      description: https://www.0x002.com
+      enabled: true
+      language: zh
+    - name: Pa55w0rd
+      url: https://www.pa55w0rd.online/atom.xml
+      description: https://www.pa55w0rd.online
+      enabled: true
+      language: zh
+    - name: 5am3
+      url: http://blog.5am3.com/atom.xml
+      description: http://blog.5am3.com
+      enabled: true
+      language: zh
+    - name: Sariel.D
+      url: https://blog.sari3l.com/atom.xml
+      description: https://blog.sari3l.com
+      enabled: true
+      language: zh
+    - name: Hone
+      url: http://hone.cool/atom.xml
+      description: http://hone.cool
+      enabled: true
+      language: zh
+    - name: tr1ple(Wfzsec)
+      url: https://feed.cnblogs.com/blog/u/316934/rss
+      description: https://www.cnblogs.com/tr1ple
+      enabled: true
+      language: zh
+    - name: iosmosis
+      url: https://iosmosis.github.io/atom.xml
+      description: https://iosmosis.github.io
+      enabled: true
+      language: zh
+    - name: Xishir
+      url: https://www.codemonster.cn/atom.xml
+      description: https://www.codemonster.cn
+      enabled: true
+      language: zh
+    - name: NightShadow(奈沙夜影)
+      url: https://blog.csdn.net/whklhhhh/rss/list
+      description: https://blog.csdn.net/whklhhhh
+      enabled: true
+      language: zh
+    - name: Brucetg
+      url: https://brucetg.github.io/atom.xml
+      description: https://brucetg.github.io
+      enabled: true
+      language: zh
+    - name: H4lo
+      url: https://www.cnblogs.com/H4lo/rss
+      description: https://www.cnblogs.com/H4lo
+      enabled: true
+      language: zh
+    - name: 独自等待-信息安全博客
+      url: https://www.waitalone.cn/feed
+      description: https://www.waitalone.cn
+      enabled: true
+      language: zh
+    - name: 小生很忙
+      url: https://chaoge123456.github.io/rss2.xml
+      description: https://chaoge123456.github.io
+      enabled: true
+      language: zh
+    - name: Jayl1n
+      url: https://jayl1n.github.io/atom.xml
+      description: https://jayl1n.github.io
+      enabled: true
+      language: zh
+    - name: Firmy
+      url: https://firmianay.github.io/feed.xml
+      description: https://firmianay.github.io
+      enabled: true
+      language: zh
+    - name: E99p1ant
+      url: https://github.red/feed
+      description: https://github.red
+      enabled: true
+      language: zh
+    - name: ThunderJie
+      url: https://thunderjie.github.io/atom.xml
+      description: https://thunderjie.github.io
+      enabled: true
+      language: zh
+    - name: Se7en
+      url: https://www.se7ensec.cn/atom.xml
+      description: https://www.se7ensec.cn
+      enabled: true
+      language: zh
+    - name: MagicBlue(蓝知)
+      url: https://magicbluech.github.io/atom.xml
+      description: https://magicbluech.github.io
+      enabled: true
+      language: zh
+    - name: 淚笑
+      url: https://www.cnblogs.com/leixiao-/rss
+      description: https://www.cnblogs.com/leixiao-
+      enabled: true
+      language: zh
+    - name: 童话
+      url: https://tonghuaroot.com/atom.xml
+      description: https://tonghuaroot.com
+      enabled: true
+      language: zh
+    - name: Vicen
+      url: https://www.cnblogs.com/P201521440001/rss
+      description: https://www.cnblogs.com/P201521440001
+      enabled: true
+      language: zh
+    - name: zifangsky的个人博客
+      url: https://www.zifangsky.cn/feed
+      description: https://www.zifangsky.cn
+      enabled: true
+      language: zh
+    - name: Sukka's Blog
+      url: https://blog.skk.moe/atom.xml
+      description: https://blog.skk.moe
+      enabled: true
+      language: zh
+    - name: Flanker Sky
+      url: http://blog.flanker017.me/feed/?lang=zh-cn
+      description: https://blog.flanker017.me
+      enabled: true
+      language: zh
+    - name: 记事本
+      url: http://rk700.github.io/feed.xml
+      description: http://rk700.github.io
+      enabled: true
+      language: zh
+    - name: 氷 菓
+      url: https://dangokyo.me/feed
+      description: https://dangokyo.me
+      enabled: true
+      language: zh
+    - name: Swing'Blog 有恨无人省
+      url: https://bestwing.me/atom.xml
+      description: https://bestwing.me
+      enabled: true
+      language: zh
+    - name: Mike Dos Zhang
+      url: https://mikedoszhang.blogspot.com/feeds/posts/default
+      description: https://mikedoszhang.blogspot.com
+      enabled: true
+      language: zh
+    - name: 2019's blog
+      url: https://mem2019.github.io/feed.xml
+      description: https://mem2019.github.io
+      enabled: true
+      language: zh
+    - name: 灯塔实验室
+      url: http://plcscan.org/blog/feed
+      description: http://plcscan.org/blog
+      enabled: true
+      language: zh
+    - name: IceSword Lab
+      url: https://www.iceswordlab.com/atom.xml
+      description: https://www.iceswordlab.com
+      enabled: true
+      language: zh
+    - name: 不忘初心 方得始终
+      url: https://terenceli.github.io/atom.xml
+      description: http://terenceli.github.io
+      enabled: true
+      language: zh
+    - name: Hackfun
+      url: https://hackfun.org/atom.xml
+      description: https://hackfun.org
+      enabled: true
+      language: zh
+    - name: Hack Inn
+      url: http://www.hackinn.com/index.php/feed
+      description: http://www.hackinn.com
+      enabled: true
+      language: zh
+    - name: Poacher's Blog
+      url: http://www.bugsafe.cn/feed
+      description: http://www.bugsafe.cn
+      enabled: true
+      language: zh
+    - name: NULL PWNED
+      url: http://www.nul.pw/feed
+      description: http://www.nul.pw
+      enabled: true
+      language: zh
+    - name: Trustlook
+      url: https://blog.trustlook.com/rss
+      description: https://blog.trustlook.com
+      enabled: true
+      language: zh
+    - name: 莿鸟栖草堂
+      url: https://www.cnxct.com/feed
+      description: https://www.cnxct.com
+      enabled: true
+      language: zh
+    - name: Green_m's blog
+      url: https://green-m.me/feed.xml
+      description: https://green-m.github.io
+      enabled: true
+      language: zh
+    - name: Li4n0's NoteBook
+      url: http://0n0.fun/index.xml
+      description: http://0n0.fun
+      enabled: true
+      language: zh
+    - name: VeroFess的代码站
+      url: http://blog.binklac.com/atom.xml
+      description: http://blog.binklac.com
+      enabled: true
+      language: zh
+    - name: Medici.Yan's Blog
+      url: http://blog.evalbug.com/atom.xml
+      description: http://blog.evalbug.com
+      enabled: true
+      language: zh
+    - name: Panda - 专注于网络空间安全研究
+      url: http://blog.cnpanda.net/feed/atom
+      description: https://www.cnpanda.net
+      enabled: true
+      language: zh
+    - name: BlackWolf
+      url: http://blackwolfsec.cc/atom.xml
+      description: http://blackwolfsec.cc
+      enabled: true
+      language: zh
+    - name: Ruilin
+      url: http://rui0.cn/feed
+      description: http://rui0.cn
+      enabled: true
+      language: zh
+    - name: 梧桐雨blog
+      url: http://wutongyu.info/feed
+      description: http://wutongyu.info
+      enabled: true
+      language: zh
+    - name: pirogue
+      url: http://pirogue.org/atom.xml
+      description: http://pirogue.org
+      enabled: true
+      language: zh
+    - name: bsmali4的小窝
+      url: http://www.codersec.net/feed.xml
+      description: http://www.codersec.net
+      enabled: true
+      language: zh
+    - name: 李劼杰的博客
+      url: http://www.lijiejie.com/feed
+      description: http://www.lijiejie.com
+      enabled: true
+      language: zh
+    - name: 岚光
+      url: https://0x0d.im/feed
+      description: https://0x0d.im
+      enabled: true
+      language: zh
+    - name: todaro's blog
+      url: https://b.cp0.win/feed.xml
+      description: http://b.cp0.win
+      enabled: true
+      language: zh
+    - name: Donot
+      url: https://feed.cnblogs.com/blog/u/643930/rss/
+      description: http://www.cnblogs.com/donot
+      enabled: true
+      language: zh
+    - name: zhengjim
+      url: https://www.cnblogs.com/zhengjim/rss
+      description: https://www.cnblogs.com/zhengjim
+      enabled: true
+      language: zh
+    - name: 码中春秋's Blog
+      url: https://blog.taielab.com/index.xml
+      description: https://blog.taielab.com
+      enabled: true
+      language: zh
+    - name: 黑海洋
+      url: https://blog.upx8.com/feed
+      description: https://blog.upx8.com
+      enabled: true
+      language: zh
+    - name: Whwlsfb's Tech Blog
+      url: https://blog.wanghw.cn/feed
+      description: https://blog.wanghw.cn
+      enabled: true
+      language: zh
+    - name: klkx
+      url: https://caijiji.github.io/atom.xml
+      description: https://caijiji.github.io
+      enabled: true
+      language: zh
+    - name: Posts on 青鸟的博客
+      url: https://blue-bird1.github.io/posts/index.xml
+      description: https://blue-bird1.github.io/posts
+      enabled: true
+      language: zh
+    - name: 90Sec - 专注于网络空间安全
+      url: https://forum.90sec.com/latest.rss
+      description: https://forum.90sec.com/latest
+      enabled: true
+      language: zh
+    - name: Chen's Blog
+      url: https://gh0st.cn/feed.xml
+      description: https://gh0st.cn
+      enabled: true
+      language: zh
+    - name: Holmesian Blog
+      url: https://holmesian.org/feed
+      description: https://holmesian.org
+      enabled: true
+      language: zh
+    - name: K4YT3X
+      url: https://k4yt3x.com/index.xml
+      description: https://k4yt3x.com
+      enabled: true
+      language: zh
+    - name: K8哥哥’s Blog
+      url: https://k8gege.org/atom.xml
+      description: http://k8gege.org
+      enabled: true
+      language: zh
+    - name: Somnus's blog
+      url: https://foxgrin.github.io/atom.xml
+      description: https://Foxgrin.github.io
+      enabled: true
+      language: zh
+    - name: Les1ie
+      url: https://les1ie.com/feed.xml
+      description: https://iansmith123.github.io
+      enabled: true
+      language: zh
+    - name: 专注APT攻击与防御
+      url: https://micropoor.blogspot.com/feeds/posts/default?alt=rss
+      description: https://micropoor.blogspot.com
+      enabled: true
+      language: zh
+    - name: AnonySec'Blog
+      url: https://payloads.cn/atom.xml
+      description: https://payloads.cn
+      enabled: true
+      language: zh
+    - name: Wh0ale's Blog
+      url: https://wh0ale.github.io/atom.xml
+      description: https://wh0ale.github.io
+      enabled: true
+      language: zh
+    - name: 安全志
+      url: https://t0data.github.io/feed.xml
+      description: https://t0data.github.io
+      enabled: true
+      language: zh
+    - name: 勿忘初心 - Ch1ng's Blog
+      url: https://www.ch1ng.com/blog/feed
+      description: https://www.ch1ng.com/blog
+      enabled: true
+      language: zh
+    - name: Black-Hole's Blog
+      url: https://www.bugs.cc/index.xml
+      description: https://www.bugs.cc
+      enabled: true
+      language: zh
+    - name: Uknow's blog
+      url: https://uknowsec.cn/atom.xml
+      description: https://uknowsec.cn
+      enabled: true
+      language: zh
+    - name: Sky's自留地
+      url: https://www.javaweb.org.cn/feed
+      description: https://www.javaweb.org.cn
+      enabled: true
+      language: zh
+    - name: 风雪之隅(鸟哥)
+      url: https://www.laruence.com/feed
+      description: https://www.laruence.com
+      enabled: true
+      language: zh
+    - name: giantbranch's blog
+      url: https://www.giantbranch.cn/atom.xml
+      description: https://www.giantbranch.cn
+      enabled: true
+      language: zh
+    - name: 杨龙
+      url: https://www.yanglong.pro/feed
+      description: https://www.yanglong.pro
+      enabled: true
+      language: zh
+    - name: dieyushi Blog
+      url: https://www.zzsec.org/atom.xml
+      description: https://www.zzsec.org
+      enabled: true
+      language: zh
+    - name: BaCde's Blog
+      url: https://bacde.me/atom.xml
+      description: https://bacde.me
+      enabled: true
+      language: zh
+    - name: ming
+      url: https://trex-tbag.github.io/feed.xml
+      description: https://trex-tbag.github.io
+      enabled: true
+      language: zh
+    - name: Proteas的专栏
+      url: http://blog.csdn.net/Proteas/rss/list
+      description: https://blog.csdn.net/Proteas
+      enabled: true
+      language: zh
+    - name: 傲慢的上校的专栏
+      url: http://blog.csdn.net/aomandeshangxiao/rss/list
+      description: https://blog.csdn.net/aomandeshangxiao
+      enabled: true
+      language: zh
+    - name: 博客园_人怜直节生来瘦，自许高材老更刚。
+      url: http://feed.cnblogs.com/blog/u/85404/rss
+      description: https://www.cnblogs.com/goodhacker
+      enabled: true
+      language: zh
+    - name: 能哥的专栏
+      url: http://blog.csdn.net/nengx/rss/list
+      description: https://blog.csdn.net/CWangChao
+      enabled: true
+      language: zh
+    - name: 小刀志
+      url: https://xiaodaozhi.com/feed
+      description: https://xiaodaozhi.com
+      enabled: true
+      language: zh
+    - name: 博客园_挖洞的土拨鼠
+      url: http://feed.cnblogs.com/blog/u/319092/rss
+      description: https://www.cnblogs.com/KevinGeorge
+      enabled: true
+      language: zh
+    - name: 博客园_luoyesiqiu
+      url: http://feed.cnblogs.com/blog/u/449248/rss
+      description: https://www.cnblogs.com/luoyesiqiu
+      enabled: true
+      language: zh
+    - name: Exploit的小站~
+      url: https://blog.csdn.net/u011721501/rss/list
+      description: https://blog.csdn.net/u011721501
+      enabled: true
+      language: zh
+    - name: 博客园_Afant1
+      url: http://feed.cnblogs.com/blog/u/401056/rss
+      description: https://www.cnblogs.com/afanti
+      enabled: true
+      language: zh
+    - name: 博客园_Sevck's Blog
+      url: http://feed.cnblogs.com/blog/u/227407/rss
+      description: https://www.cnblogs.com/sevck
+      enabled: true
+      language: zh
+    - name: 博客园_知彼知己，百战不殆
+      url: https://feed.cnblogs.com/blog/u/153647/rss
+      description: http://www.cnblogs.com/r00tgrok
+      enabled: true
+      language: zh
+    - name: 博客园_H4ck3R-XiX
+      url: http://feed.cnblogs.com/blog/u/569318/rss
+      description: https://www.cnblogs.com/H4ck3R-XiX
+      enabled: true
+      language: zh
+    - name: rutk1t0r's blog
+      url: https://www.rutk1t0r.org/atom.xml
+      description: https://www.rutk1t0r.org
+      enabled: true
+      language: zh
+    - name: pzhxbz的技术笔记本
+      url: http://pzhxbz.cn/?feed=rss2
+      description: http://pzhxbz.cn
+      enabled: true
+      language: zh
+    - name: ARTHURCHIAO'S BLOG
+      url: http://arthurchiao.art/feed.xml
+      description: http://arthurchiao.art
+      enabled: true
+      language: zh
+    - name: admin-神风
+      url: http://feed.cnblogs.com/blog/u/340041/rss
+      description: https://www.cnblogs.com/wh4am1
+      enabled: true
+      language: zh
+    - name: nice0e3
+      url: https://feed.cnblogs.com/blog/u/592290/rss
+      description: https://www.cnblogs.com/nice0e3
+      enabled: true
+      language: zh
+    - name: yanghaoi's blog
+      url: https://yanghaoi.github.io/atom.xml
+      description: https://yanghaoi.github.io
+      enabled: true
+      language: zh
+    - name: 博客园_飘渺红尘
+      url: http://feed.cnblogs.com/blog/u/326112/rss
+      description: https://www.cnblogs.com/piaomiaohongchen
+      enabled: true
+      language: zh
+    - name: glzjin 赵
+      url: https://www.zhaoj.in/feed
+      description: https://www.zhaoj.in
+      enabled: true
+      language: zh
+    - name: 博客园_PaperPen's Blog
+      url: http://feed.cnblogs.com/blog/u/486049/rss
+      description: https://www.cnblogs.com/paperpen
+      enabled: true
+      language: zh
+    - name: tom0li-涤声
+      url: https://tom0li.github.io/feed.xml
+      description: https://tom0li.github.io
+      enabled: true
+      language: zh
+    - name: Driver Tom's Blog
+      url: https://drivertom.blogspot.com/feeds/posts/default?alt=rss
+      description: https://drivertom.blogspot.com
+      enabled: true
+      language: zh
+    - name: 宋宝华
+      url: http://blog.csdn.net/21cnbao/rss/list
+      description: https://blog.csdn.net/21cnbao
+      enabled: true
+      language: zh
+    - name: povcfe
+      url: https://www.povcfe.site/index.xml
+      description: https://povcfe.github.io
+      enabled: true
+      language: zh
+    - name: toooold
+      url: https://toooold.com/feed.xml
+      description: https://toooold.com
+      enabled: true
+      language: zh
+    - name: print()
+      url: https://www.o2oxy.cn/feed
+      description: https://www.o2oxy.cn
+      enabled: true
+      language: zh
+    - name: EtherDream's Blog
+      url: https://feed.cnblogs.com/blog/u/83633/rss
+      description: https://www.cnblogs.com/index-html
+      enabled: true
+      language: zh
+    - name: LFYSEC
+      url: https://lfysec.top/atom.xml
+      description: https://lfysec.top
+      enabled: true
+      language: zh
+    - name: LoRexxar's Blog
+      url: https://lorexxar.cn/atom.xml
+      description: https://lorexxar.cn
+      enabled: true
+      language: zh
+    - name: 奇安信CERT
+      url: https://wechat2rss.xlab.app/feed/981c000a01bbdc1f128d260cc91c15d3a6afb530.xml
+      description: https://wechat2rss.xlab.app/feed/981c000a01bbdc1f128d260cc91c15d3a6afb530.xml
+      enabled: true
+      language: zh
+    - name: 绿盟科技CERT
+      url: https://wechat2rss.xlab.app/feed/aa2ff3b0167a3f449f3b116717b5350ab64df8c3.xml
+      description: https://wechat2rss.xlab.app/feed/aa2ff3b0167a3f449f3b116717b5350ab64df8c3.xml
+      enabled: true
+      language: zh
+    - name: 不安全
+      url: https://buaq.net/rss.xml
+      description: https://buaq.net
+      enabled: true
+      language: zh
+    - name: CatBro's Blog
+      url: https://catbro666.github.io/atom.xml
+      description: https://catbro666.github.io
+      enabled: true
+      language: zh
+    - name: TRY博客
+      url: https://www.nctry.com/feed
+      description: https://www.nctry.com
+      enabled: true
+      language: zh
+    - name: 0e0w
+      url: https://0e0w.com/feed.xml
+      description: https://0e0w.com
+      enabled: true
+      language: zh
+    - name: Tr0y's Blog
+      url: https://www.tr0y.wang/atom.xml
+      description: https://www.tr0y.wang/atom.xml
+      enabled: true
+      language: zh
+    - name: 明天的乌云
+      url: https://blog.xlab.app/atom.xml
+      description: https://blog.xlab.app/atom.xml
+      enabled: true
+      language: zh
+    - name: darkless
+      url: https://darkless.cn/atom.xml
+      description: https://darkless.cn/atom.xml
+      enabled: true
+      language: zh
+    - name: 代码审计星球
+      url: http://wiki.ioin.in/atom
+      description: https://govuln.com/news/feed
+      enabled: true
+      language: zh
+    - name: DoubleMice
+      url: https://doublemice.github.io/feed.xml
+      description: https://doublemice.github.io
+      enabled: true
+      language: zh
+    - name: 博客园 - hac425
+      url: https://www.cnblogs.com/hac425/rss
+      description: https://www.cnblogs.com/hac425
+      enabled: true
+      language: zh
+    - name: 素十八
+      url: https://su18.org/atom.xml
+      description: https://su18.org
+      enabled: true
+      language: zh
+    - name: Senber's Blog
+      url: https://senberhu.github.io/rss
+      description: https://senberhu.github.io
+      enabled: true
+      language: zh
+    - name: rebirthwyw
+      url: https://blog.rebirthwyw.top/atom.xml
+      description: https://blog.rebirthwyw.top
+      enabled: true
+      language: zh
+    - name: MiaoTony's小窝
+      url: https://miaotony.xyz/atom.xml
+      description: https://miaotony.xyz
+      enabled: true
+      language: zh
+    - name: rmb122's notebook
+      url: https://rmb122.com/index.xml
+      description: https://rmb122.com
+      enabled: true
+      language: zh
+    - name: 梅子酒の笔记本
+      url: https://meizjm3i.github.io/atom.xml
+      description: https://meizjm3i.github.io
+      enabled: true
+      language: zh
+    - name: QRZ's Blog
+      url: https://blog.qrzbing.cn/index.xml
+      description: http://blog.qrzbing.cn
+      enabled: true
+      language: zh
+    - name: AresX's Blog
+      url: https://ares-x.com/atom.xml
+      description: https://ares-x.com
+      enabled: true
+      language: zh
+    - name: Zgao's blog
+      url: https://zgao.top/feed
+      description: https://zgao.top
+      enabled: true
+      language: zh
+    - name: 白帽Wiki - 一个简单的wiki
+      url: https://key08.com/index.php/feed
+      description: https://key08.com
+      enabled: true
+      language: zh
+    - name: 半块西瓜皮
+      url: https://guage.cool/atom.xml
+      description: https://guage.cool
+      enabled: true
+      language: zh
+    - name: AabyssZG's Blog - 苛刻条件下:C2上传执行骚姿势 的评论
+      url: https://blog.zgsec.cn/index.php/feed
+      description: https://blog.zgsec.cn
+      enabled: true
+      language: zh
+    - name: 天下大木头
+      url: http://wjlshare.com/feed
+      description: http://wjlshare.com
+      enabled: true
+      language: zh
+    - name: 白帽酱の博客
+      url: https://rce.moe/atom.xml
+      description: https://rce.moe
+      enabled: true
+      language: zh
+    - name: fdvoid0's blog
+      url: https://fdlucifer.github.io/atom.xml
+      description: https://fdlucifer.github.io
+      enabled: true
+      language: zh
+    - name: Huli's blog
+      url: https://blog.huli.tw/atom-ch.xml
+      description: https://blog.huli.tw
+      enabled: true
+      language: zh
+    - name: 她和她的猫
+      url: https://her-cat.com/posts/index.xml
+      description: https://her-cat.com
+      enabled: true
+      language: zh
+    - name: 思想花火
+      url: https://wechat2rss.xlab.app/feed/5b925323244e9737c39285596c53e3a2f4a30774.xml
+      description: https://wechat2rss.xlab.app/feed/5b925323244e9737c39285596c53e3a2f4a30774.xml
+      enabled: true
+      language: zh
+    - name: 吾爱破解论坛
+      url: https://wechat2rss.xlab.app/feed/90c827b8290310a96ef80a13df9dbcc06ab69892.xml
+      description: https://wechat2rss.xlab.app/feed/90c827b8290310a96ef80a13df9dbcc06ab69892.xml
+      enabled: true
+      language: zh
+    - name: SecOps急行军
+      url: https://wechat2rss.xlab.app/feed/9463336201a9bf776b3820be83260ccc745de53a.xml
+      description: https://wechat2rss.xlab.app/feed/9463336201a9bf776b3820be83260ccc745de53a.xml
+      enabled: true
+      language: zh
+    - name: 赵武的自留地
+      url: https://wechat2rss.xlab.app/feed/1bbf7fc5fac024226f86a1851c682253a7eae63f.xml
+      description: https://wechat2rss.xlab.app/feed/1bbf7fc5fac024226f86a1851c682253a7eae63f.xml
+      enabled: true
+      language: zh
+    - name: 看雪学院
+      url: https://wechat2rss.xlab.app/feed/0e026637254d450ae84c59f87d4e4fb4616651ca.xml
+      description: https://wechat2rss.xlab.app/feed/0e026637254d450ae84c59f87d4e4fb4616651ca.xml
+      enabled: true
+      language: zh
+    - name: 道哥的黑板报
+      url: https://wechat2rss.xlab.app/feed/980128c3a0c9ff852a06dd4a2bc3391338e05760.xml
+      description: https://wechat2rss.xlab.app/feed/980128c3a0c9ff852a06dd4a2bc3391338e05760.xml
+      enabled: true
+      language: zh
+    - name: 腾讯安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/7898375f78fd1018302d54577cd0fd05d5ed324f.xml
+      description: https://wechat2rss.xlab.app/feed/7898375f78fd1018302d54577cd0fd05d5ed324f.xml
+      enabled: true
+      language: zh
+    - name: EnjoyHacking
+      url: https://wechat2rss.xlab.app/feed/257bba53d8f6b6485ac41c0f8cd6fdb0f52840b5.xml
+      description: https://wechat2rss.xlab.app/feed/257bba53d8f6b6485ac41c0f8cd6fdb0f52840b5.xml
+      enabled: true
+      language: zh
+    - name: 安全小飞侠
+      url: https://wechat2rss.xlab.app/feed/869b4e387a017fdd76a56b965ee0ab22c2a52dc2.xml
+      description: https://wechat2rss.xlab.app/feed/869b4e387a017fdd76a56b965ee0ab22c2a52dc2.xml
+      enabled: true
+      language: zh
+    - name: 酒仙桥六号部队
+      url: https://wechat2rss.xlab.app/feed/164eeaeb12a8d95384d8807f41d3572569296029.xml
+      description: https://wechat2rss.xlab.app/feed/164eeaeb12a8d95384d8807f41d3572569296029.xml
+      enabled: true
+      language: zh
+    - name: 威努特工控安全
+      url: https://wechat2rss.xlab.app/feed/ee4960f396fadae69f69e0711da85f1196e03651.xml
+      description: https://wechat2rss.xlab.app/feed/ee4960f396fadae69f69e0711da85f1196e03651.xml
+      enabled: true
+      language: zh
+    - name: DJ的札记
+      url: https://wechat2rss.xlab.app/feed/d34c4b291ce2c15655ac1e7d54aa316902ef8968.xml
+      description: https://wechat2rss.xlab.app/feed/d34c4b291ce2c15655ac1e7d54aa316902ef8968.xml
+      enabled: true
+      language: zh
+    - name: 小迪随笔
+      url: https://wechat2rss.xlab.app/feed/5086d647f212ae93f39db2da1973dc3f446b0d95.xml
+      description: https://wechat2rss.xlab.app/feed/5086d647f212ae93f39db2da1973dc3f446b0d95.xml
+      enabled: true
+      language: zh
+    - name: 信息时代的犯罪侦查
+      url: https://wechat2rss.xlab.app/feed/58217cc5c14a568f5b4141527344b58ba7449380.xml
+      description: https://wechat2rss.xlab.app/feed/58217cc5c14a568f5b4141527344b58ba7449380.xml
+      enabled: true
+      language: zh
+    - name: 安全引擎
+      url: https://wechat2rss.xlab.app/feed/002fe975bae4232ce63c51ef77519d0f1cb646c8.xml
+      description: https://wechat2rss.xlab.app/feed/002fe975bae4232ce63c51ef77519d0f1cb646c8.xml
+      enabled: true
+      language: zh
+    - name: 网安志异
+      url: https://wechat2rss.xlab.app/feed/e8caa9248c7b6a8d8d462a4ab3d7ab9181abeefb.xml
+      description: https://wechat2rss.xlab.app/feed/e8caa9248c7b6a8d8d462a4ab3d7ab9181abeefb.xml
+      enabled: true
+      language: zh
+    - name: 黑鸟
+      url: https://wechat2rss.xlab.app/feed/f22e132bbbc4e8070cd51c0a84802f940e131a20.xml
+      description: https://wechat2rss.xlab.app/feed/f22e132bbbc4e8070cd51c0a84802f940e131a20.xml
+      enabled: true
+      language: zh
+    - name: ZLabs
+      url: https://wechat2rss.xlab.app/feed/f27cecd33bae759b29d92450c2c851fba3bc5152.xml
+      description: https://wechat2rss.xlab.app/feed/f27cecd33bae759b29d92450c2c851fba3bc5152.xml
+      enabled: true
+      language: zh
+    - name: 张三丰的疯言疯语
+      url: https://wechat2rss.xlab.app/feed/4b0c13b203b74f4d5b366d98ee2d8420bda258ca.xml
+      description: https://wechat2rss.xlab.app/feed/4b0c13b203b74f4d5b366d98ee2d8420bda258ca.xml
+      enabled: true
+      language: zh
+    - name: 有价值炮灰
+      url: https://wechat2rss.xlab.app/feed/ca9e6f3e905e64301c6f00a21f2e3f135df1e691.xml
+      description: https://wechat2rss.xlab.app/feed/ca9e6f3e905e64301c6f00a21f2e3f135df1e691.xml
+      enabled: true
+      language: zh
+    - name: 懒人在思考
+      url: https://wechat2rss.xlab.app/feed/773908acbc527a9a8637862bc6fad7fc8a916090.xml
+      description: https://wechat2rss.xlab.app/feed/773908acbc527a9a8637862bc6fad7fc8a916090.xml
+      enabled: true
+      language: zh
+    - name: 闻道解惑
+      url: https://wechat2rss.xlab.app/feed/f2035369bae011cc72f020f8ba009ea2dfdf0355.xml
+      description: https://wechat2rss.xlab.app/feed/f2035369bae011cc72f020f8ba009ea2dfdf0355.xml
+      enabled: true
+      language: zh
+    - name: 关注安全技术
+      url: https://wechat2rss.xlab.app/feed/2f38aa5ec9e067b1d02196f5a50665f8ec23a4e4.xml
+      description: https://wechat2rss.xlab.app/feed/2f38aa5ec9e067b1d02196f5a50665f8ec23a4e4.xml
+      enabled: true
+      language: zh
+    - name: 记月
+      url: https://wechat2rss.xlab.app/feed/21f7777ea1da950d1a49edffa59ef75ddbed8684.xml
+      description: https://wechat2rss.xlab.app/feed/21f7777ea1da950d1a49edffa59ef75ddbed8684.xml
+      enabled: true
+      language: zh
+    - name: 漕河泾小黑屋
+      url: https://wechat2rss.xlab.app/feed/f38c9a9f230e19f49918faefc5d0d0fc71e52d29.xml
+      description: https://wechat2rss.xlab.app/feed/f38c9a9f230e19f49918faefc5d0d0fc71e52d29.xml
+      enabled: true
+      language: zh
+    - name: 安全分析与研究
+      url: https://wechat2rss.xlab.app/feed/62ba31603ffe26b5a8eca9ddaa434ea612445c10.xml
+      description: https://wechat2rss.xlab.app/feed/62ba31603ffe26b5a8eca9ddaa434ea612445c10.xml
+      enabled: true
+      language: zh
+    - name: 微步在线研究响应中心
+      url: https://wechat2rss.xlab.app/feed/ac64c385ebcdb17fee8df733eb620a22b979928c.xml
+      description: https://wechat2rss.xlab.app/feed/ac64c385ebcdb17fee8df733eb620a22b979928c.xml
+      enabled: true
+      language: zh
+    - name: 安全乐观主义
+      url: https://wechat2rss.xlab.app/feed/99e8a156f4f0a3b45bb206945e55cb193672da81.xml
+      description: https://wechat2rss.xlab.app/feed/99e8a156f4f0a3b45bb206945e55cb193672da81.xml
+      enabled: true
+      language: zh
+    - name: 长亭安全课堂
+      url: https://wechat2rss.xlab.app/feed/ae5cf9ab99ae03269527af0f7a6c05ff14d5863c.xml
+      description: https://wechat2rss.xlab.app/feed/ae5cf9ab99ae03269527af0f7a6c05ff14d5863c.xml
+      enabled: true
+      language: zh
+    - name: 虎符智库
+      url: https://wechat2rss.xlab.app/feed/792558edf818ce03d377d1d2677afb4d6537853d.xml
+      description: https://wechat2rss.xlab.app/feed/792558edf818ce03d377d1d2677afb4d6537853d.xml
+      enabled: true
+      language: zh
+    - name: 七夜安全博客
+      url: https://wechat2rss.xlab.app/feed/019145f03889dce72141b912d697750e7e00106a.xml
+      description: https://wechat2rss.xlab.app/feed/019145f03889dce72141b912d697750e7e00106a.xml
+      enabled: true
+      language: zh
+    - name: Web安全与前端
+      url: https://wechat2rss.xlab.app/feed/837190f74457627e0a5567700c573fe8afd7d3fe.xml
+      description: https://wechat2rss.xlab.app/feed/837190f74457627e0a5567700c573fe8afd7d3fe.xml
+      enabled: true
+      language: zh
+    - name: 我需要的是坚持
+      url: https://wechat2rss.xlab.app/feed/f71ad3ac4c5e75b79b162c720389aa4d8f72bdd3.xml
+      description: https://wechat2rss.xlab.app/feed/f71ad3ac4c5e75b79b162c720389aa4d8f72bdd3.xml
+      enabled: true
+      language: zh
+    - name: 白帽100安全攻防实验室
+      url: https://wechat2rss.xlab.app/feed/55990eaae05ad1430e2ba4955756b215a99896c9.xml
+      description: https://wechat2rss.xlab.app/feed/55990eaae05ad1430e2ba4955756b215a99896c9.xml
+      enabled: true
+      language: zh
+    - name: 锦行信息安全
+      url: https://wechat2rss.xlab.app/feed/d04e70055c2d31441deb3188d433a027fc8079cc.xml
+      description: https://wechat2rss.xlab.app/feed/d04e70055c2d31441deb3188d433a027fc8079cc.xml
+      enabled: true
+      language: zh
+    - name: 网络安全观
+      url: https://wechat2rss.xlab.app/feed/e687678d6fc1dacb25e9191fd361250f538e45a1.xml
+      description: https://wechat2rss.xlab.app/feed/e687678d6fc1dacb25e9191fd361250f538e45a1.xml
+      enabled: true
+      language: zh
+    - name: sosly菜鸟笔记
+      url: https://wechat2rss.xlab.app/feed/3b20077b01e05fe90c8d62aa2743c36ed8b5165a.xml
+      description: https://wechat2rss.xlab.app/feed/3b20077b01e05fe90c8d62aa2743c36ed8b5165a.xml
+      enabled: true
+      language: zh
+    - name: 绿盟科技研究通讯
+      url: https://wechat2rss.xlab.app/feed/21b46d78e363b85d6927970267ecea4904f06bc8.xml
+      description: https://wechat2rss.xlab.app/feed/21b46d78e363b85d6927970267ecea4904f06bc8.xml
+      enabled: true
+      language: zh
+    - name: ChaMd5安全团队
+      url: https://wechat2rss.xlab.app/feed/ffb536c22df3989d8077ce9babb475f41719d62d.xml
+      description: https://wechat2rss.xlab.app/feed/ffb536c22df3989d8077ce9babb475f41719d62d.xml
+      enabled: true
+      language: zh
+    - name: 全频带阻塞干扰
+      url: https://wechat2rss.xlab.app/feed/d2b0dc03acc579a8a9c7aa45bf1f531ed5563f59.xml
+      description: https://wechat2rss.xlab.app/feed/d2b0dc03acc579a8a9c7aa45bf1f531ed5563f59.xml
+      enabled: true
+      language: zh
+    - name: xray社区
+      url: https://wechat2rss.xlab.app/feed/19e49fc43c29d227aed74edba9830e7e1c71161e.xml
+      description: https://wechat2rss.xlab.app/feed/19e49fc43c29d227aed74edba9830e7e1c71161e.xml
+      enabled: true
+      language: zh
+    - name: 学蚁致用
+      url: https://wechat2rss.xlab.app/feed/60eb4e7d17f9ac498bb307fa863e9fe4cec6fa1d.xml
+      description: https://wechat2rss.xlab.app/feed/60eb4e7d17f9ac498bb307fa863e9fe4cec6fa1d.xml
+      enabled: true
+      language: zh
+    - name: 农夫安全团队
+      url: https://wechat2rss.xlab.app/feed/ea9b226a78afac0166bb9bdee7de836766441073.xml
+      description: https://wechat2rss.xlab.app/feed/ea9b226a78afac0166bb9bdee7de836766441073.xml
+      enabled: true
+      language: zh
+    - name: 皮相
+      url: https://wechat2rss.xlab.app/feed/41a459a80e37e15d9706465eee48ff491911a36f.xml
+      description: https://wechat2rss.xlab.app/feed/41a459a80e37e15d9706465eee48ff491911a36f.xml
+      enabled: true
+      language: zh
+    - name: vivo千镜安全实验室
+      url: https://wechat2rss.xlab.app/feed/6f07fe5af57e7a13c75b12bd0718840bdf4dc3f2.xml
+      description: https://wechat2rss.xlab.app/feed/6f07fe5af57e7a13c75b12bd0718840bdf4dc3f2.xml
+      enabled: true
+      language: zh
+    - name: 雷神众测
+      url: https://wechat2rss.xlab.app/feed/3fc5f554af76c0164779add7c5206bdc6f2efe5b.xml
+      description: https://wechat2rss.xlab.app/feed/3fc5f554af76c0164779add7c5206bdc6f2efe5b.xml
+      enabled: true
+      language: zh
+    - name: 红队防线
+      url: https://wechat2rss.xlab.app/feed/5d5dbfc442f65c9345f4d77cb84e2593d2a0c397.xml
+      description: https://wechat2rss.xlab.app/feed/5d5dbfc442f65c9345f4d77cb84e2593d2a0c397.xml
+      enabled: true
+      language: zh
+    - name: qz安全情报分析
+      url: https://wechat2rss.xlab.app/feed/1bbe066c89588a1aff71eb8b6a4446c7c422499f.xml
+      description: https://wechat2rss.xlab.app/feed/1bbe066c89588a1aff71eb8b6a4446c7c422499f.xml
+      enabled: true
+      language: zh
+    - name: 胖猴实验室
+      url: https://wechat2rss.xlab.app/feed/073cf053abc1ab6a318b246e8f21386e85c53d6a.xml
+      description: https://wechat2rss.xlab.app/feed/073cf053abc1ab6a318b246e8f21386e85c53d6a.xml
+      enabled: true
+      language: zh
+    - name: 猎户攻防实验室
+      url: https://wechat2rss.xlab.app/feed/fe0f4b4ed13da1bd9296fe819c5770526ae910b0.xml
+      description: https://wechat2rss.xlab.app/feed/fe0f4b4ed13da1bd9296fe819c5770526ae910b0.xml
+      enabled: true
+      language: zh
+    - name: 汉客儿
+      url: https://wechat2rss.xlab.app/feed/c9f053d41976b087f8df87064a6e1b6223f9cac1.xml
+      description: https://wechat2rss.xlab.app/feed/c9f053d41976b087f8df87064a6e1b6223f9cac1.xml
+      enabled: true
+      language: zh
+    - name: 灾难控制局
+      url: https://wechat2rss.xlab.app/feed/1559746776b3cf0a4aea8dd4f2979f71108093de.xml
+      description: https://wechat2rss.xlab.app/feed/1559746776b3cf0a4aea8dd4f2979f71108093de.xml
+      enabled: true
+      language: zh
+    - name: 奇安信威胁情报中心
+      url: https://wechat2rss.xlab.app/feed/b93962f981247c0091dad08df5b7a6864ab888e9.xml
+      description: https://wechat2rss.xlab.app/feed/b93962f981247c0091dad08df5b7a6864ab888e9.xml
+      enabled: true
+      language: zh
+    - name: 丁爸情报分析师的工具箱
+      url: https://wechat2rss.xlab.app/feed/4fad165589ac854de97e576a6dbcfbd8b9f75320.xml
+      description: https://wechat2rss.xlab.app/feed/4fad165589ac854de97e576a6dbcfbd8b9f75320.xml
+      enabled: true
+      language: zh
+    - name: 君哥的体历
+      url: https://wechat2rss.xlab.app/feed/947b46dba9754e10360d267a5ee9a87597e0bafe.xml
+      description: https://wechat2rss.xlab.app/feed/947b46dba9754e10360d267a5ee9a87597e0bafe.xml
+      enabled: true
+      language: zh
+    - name: 暗影安全
+      url: https://wechat2rss.xlab.app/feed/44dc3cfe1a58cd4c818178052cbca34c5f9b336d.xml
+      description: https://wechat2rss.xlab.app/feed/44dc3cfe1a58cd4c818178052cbca34c5f9b336d.xml
+      enabled: true
+      language: zh
+    - name: 绿盟科技金融事业部
+      url: https://wechat2rss.xlab.app/feed/0628f5f1764e0d79813846e7706daef229f464a7.xml
+      description: https://wechat2rss.xlab.app/feed/0628f5f1764e0d79813846e7706daef229f464a7.xml
+      enabled: true
+      language: zh
+    - name: 腾讯安全智能
+      url: https://wechat2rss.xlab.app/feed/88c9f7cfba0f4f60415eedf32cc5958b131c7065.xml
+      description: https://wechat2rss.xlab.app/feed/88c9f7cfba0f4f60415eedf32cc5958b131c7065.xml
+      enabled: true
+      language: zh
+    - name: 奇安信ATEAM
+      url: https://wechat2rss.xlab.app/feed/7e9f1ce42f56754f4a6bacb9a67385e48ca643fb.xml
+      description: https://wechat2rss.xlab.app/feed/7e9f1ce42f56754f4a6bacb9a67385e48ca643fb.xml
+      enabled: true
+      language: zh
+    - name: 代码审计SDL
+      url: https://wechat2rss.xlab.app/feed/bec4267fed1028fa85c18e1281f7a358d6c8c706.xml
+      description: https://wechat2rss.xlab.app/feed/bec4267fed1028fa85c18e1281f7a358d6c8c706.xml
+      enabled: true
+      language: zh
+    - name: 代码卫士
+      url: https://wechat2rss.xlab.app/feed/77cfc87fa0e7200d7ef74c8956eca2e44fd6a4ec.xml
+      description: https://wechat2rss.xlab.app/feed/77cfc87fa0e7200d7ef74c8956eca2e44fd6a4ec.xml
+      enabled: true
+      language: zh
+    - name: 取证杂谈
+      url: https://wechat2rss.xlab.app/feed/6ce082e908ac0894ff00b2d9d8e186181cd810bd.xml
+      description: https://wechat2rss.xlab.app/feed/6ce082e908ac0894ff00b2d9d8e186181cd810bd.xml
+      enabled: true
+      language: zh
+    - name: 我的安全视界观
+      url: https://wechat2rss.xlab.app/feed/956e0bcbfd7dc0ca5274a3489bd2cc03cda26907.xml
+      description: https://wechat2rss.xlab.app/feed/956e0bcbfd7dc0ca5274a3489bd2cc03cda26907.xml
+      enabled: true
+      language: zh
+    - name: 技艺丛谈
+      url: https://wechat2rss.xlab.app/feed/45ef431eb5e61b3ff7802ef329290a4dcc377031.xml
+      description: https://wechat2rss.xlab.app/feed/45ef431eb5e61b3ff7802ef329290a4dcc377031.xml
+      enabled: true
+      language: zh
+    - name: Flanker论安全
+      url: https://wechat2rss.xlab.app/feed/18cb4f6ce17f4be6e5062dfb47a6036fe9c36a25.xml
+      description: https://wechat2rss.xlab.app/feed/18cb4f6ce17f4be6e5062dfb47a6036fe9c36a25.xml
+      enabled: true
+      language: zh
+    - name: 同程旅行安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/b12f8ab2025298044029c05a3c26c3bfe8e9256a.xml
+      description: https://wechat2rss.xlab.app/feed/b12f8ab2025298044029c05a3c26c3bfe8e9256a.xml
+      enabled: true
+      language: zh
+    - name: GobySec
+      url: https://wechat2rss.xlab.app/feed/84fdb53acad07ab607128a9f387cefdee53809dd.xml
+      description: https://wechat2rss.xlab.app/feed/84fdb53acad07ab607128a9f387cefdee53809dd.xml
+      enabled: true
+      language: zh
+    - name: 互联网安全内参
+      url: https://wechat2rss.xlab.app/feed/d5eb8577bf93aacdd7481ad0c3364939096b99a1.xml
+      description: https://wechat2rss.xlab.app/feed/d5eb8577bf93aacdd7481ad0c3364939096b99a1.xml
+      enabled: true
+      language: zh
+    - name: 360漏洞云
+      url: https://wechat2rss.xlab.app/feed/ca1fddd8505a3473feed12c0bee898e97d4d5eae.xml
+      description: https://wechat2rss.xlab.app/feed/ca1fddd8505a3473feed12c0bee898e97d4d5eae.xml
+      enabled: true
+      language: zh
+    - name: 红日安全
+      url: https://wechat2rss.xlab.app/feed/3b69d8965599130a19b70d7690b5abdb7d107483.xml
+      description: https://wechat2rss.xlab.app/feed/3b69d8965599130a19b70d7690b5abdb7d107483.xml
+      enabled: true
+      language: zh
+    - name: 信安之路
+      url: https://wechat2rss.xlab.app/feed/05b37f288856a510f293be0ff7ef4dfe212ec7e0.xml
+      description: https://wechat2rss.xlab.app/feed/05b37f288856a510f293be0ff7ef4dfe212ec7e0.xml
+      enabled: true
+      language: zh
+    - name: 阿里云应急响应
+      url: https://wechat2rss.xlab.app/feed/311c02e5c56e5c0bcdf41924909407ed2d569d2a.xml
+      description: https://wechat2rss.xlab.app/feed/311c02e5c56e5c0bcdf41924909407ed2d569d2a.xml
+      enabled: true
+      language: zh
+    - name: 奇安信病毒响应中心
+      url: https://wechat2rss.xlab.app/feed/7874947663d806190d77bdca6f8f6855f65a1b20.xml
+      description: https://wechat2rss.xlab.app/feed/7874947663d806190d77bdca6f8f6855f65a1b20.xml
+      enabled: true
+      language: zh
+    - name: 天黑说嘿话
+      url: https://wechat2rss.xlab.app/feed/d5a661c1beccdff18ba1ae018514e4d702feac74.xml
+      description: https://wechat2rss.xlab.app/feed/d5a661c1beccdff18ba1ae018514e4d702feac74.xml
+      enabled: true
+      language: zh
+    - name: 安全实践
+      url: https://wechat2rss.xlab.app/feed/2d77edf78f6cc321308b81ac9f5d117e2f3fb7d1.xml
+      description: https://wechat2rss.xlab.app/feed/2d77edf78f6cc321308b81ac9f5d117e2f3fb7d1.xml
+      enabled: true
+      language: zh
+    - name: n1nty
+      url: https://wechat2rss.xlab.app/feed/48215981e3bd81ce5f1739196cddf14b59835193.xml
+      description: https://wechat2rss.xlab.app/feed/48215981e3bd81ce5f1739196cddf14b59835193.xml
+      enabled: true
+      language: zh
+    - name: 黑奇士
+      url: https://wechat2rss.xlab.app/feed/47cf1260cf37d1de55b263afbf47e6cb6cae7d29.xml
+      description: https://wechat2rss.xlab.app/feed/47cf1260cf37d1de55b263afbf47e6cb6cae7d29.xml
+      enabled: true
+      language: zh
+    - name: 腾讯安全威胁情报中心
+      url: https://wechat2rss.xlab.app/feed/034265b14906a59ef7cf1fcbd56699b54a696094.xml
+      description: https://wechat2rss.xlab.app/feed/034265b14906a59ef7cf1fcbd56699b54a696094.xml
+      enabled: true
+      language: zh
+    - name: 安恒信息安全研究院
+      url: https://wechat2rss.xlab.app/feed/a54132c52ec3e562fc896bf803a7fe0aa277bab7.xml
+      description: https://wechat2rss.xlab.app/feed/a54132c52ec3e562fc896bf803a7fe0aa277bab7.xml
+      enabled: true
+      language: zh
+    - name: RedTeaming
+      url: https://wechat2rss.xlab.app/feed/e4a8e7ce5182a107ed90452e8738155534dd297a.xml
+      description: https://wechat2rss.xlab.app/feed/e4a8e7ce5182a107ed90452e8738155534dd297a.xml
+      enabled: true
+      language: zh
+    - name: 梦之光芒的电子梦
+      url: https://wechat2rss.xlab.app/feed/e83f8149ea130c384bb4cb8d690b33bd392ce1b6.xml
+      description: https://wechat2rss.xlab.app/feed/e83f8149ea130c384bb4cb8d690b33bd392ce1b6.xml
+      enabled: true
+      language: zh
+    - name: dotNet安全研究僧
+      url: https://wechat2rss.xlab.app/feed/f5af2c80f2132cb0ea9cf4094145ece266a59bc3.xml
+      description: https://wechat2rss.xlab.app/feed/f5af2c80f2132cb0ea9cf4094145ece266a59bc3.xml
+      enabled: true
+      language: zh
+    - name: APT观察
+      url: https://wechat2rss.xlab.app/feed/01cfcd4441ecc8f68af1df0d3669b9233133932a.xml
+      description: https://wechat2rss.xlab.app/feed/01cfcd4441ecc8f68af1df0d3669b9233133932a.xml
+      enabled: true
+      language: zh
+    - name: 安全喷子
+      url: https://wechat2rss.xlab.app/feed/158efac9a94e62404af4bc804a6d6dcd55caa44f.xml
+      description: https://wechat2rss.xlab.app/feed/158efac9a94e62404af4bc804a6d6dcd55caa44f.xml
+      enabled: true
+      language: zh
+    - name: 青衣十三楼飞花堂
+      url: https://wechat2rss.xlab.app/feed/373e03599246ef117e24c9ca900acfe168601a81.xml
+      description: https://wechat2rss.xlab.app/feed/373e03599246ef117e24c9ca900acfe168601a81.xml
+      enabled: true
+      language: zh
+    - name: 404NotF0und
+      url: https://wechat2rss.xlab.app/feed/56ccecd04a64c0459442d07f30325218f8b4f210.xml
+      description: https://wechat2rss.xlab.app/feed/56ccecd04a64c0459442d07f30325218f8b4f210.xml
+      enabled: true
+      language: zh
+    - name: 宽字节安全
+      url: https://wechat2rss.xlab.app/feed/2b4f112d9e25f5ef0abf85e6b31f7d02602672ab.xml
+      description: https://wechat2rss.xlab.app/feed/2b4f112d9e25f5ef0abf85e6b31f7d02602672ab.xml
+      enabled: true
+      language: zh
+    - name: 天御攻防实验室
+      url: https://wechat2rss.xlab.app/feed/8b57281ce8c62c8bf12743aeb0279bfb807eb00d.xml
+      description: https://wechat2rss.xlab.app/feed/8b57281ce8c62c8bf12743aeb0279bfb807eb00d.xml
+      enabled: true
+      language: zh
+    - name: 漏洞战争
+      url: https://wechat2rss.xlab.app/feed/a884cb33e3393db2f683c48d82012836295ec005.xml
+      description: https://wechat2rss.xlab.app/feed/a884cb33e3393db2f683c48d82012836295ec005.xml
+      enabled: true
+      language: zh
+    - name: 认知独省
+      url: https://wechat2rss.xlab.app/feed/83f81eece114fa0cb211ab5379fda72760dc5b68.xml
+      description: https://wechat2rss.xlab.app/feed/83f81eece114fa0cb211ab5379fda72760dc5b68.xml
+      enabled: true
+      language: zh
+    - name: 情报小蜜蜂
+      url: https://wechat2rss.xlab.app/feed/78f3da7a79babd1ab1a2831f37718630f41b77b5.xml
+      description: https://wechat2rss.xlab.app/feed/78f3da7a79babd1ab1a2831f37718630f41b77b5.xml
+      enabled: true
+      language: zh
+    - name: SilverNeedleLab
+      url: https://wechat2rss.xlab.app/feed/8defbaee147ce6fc812f5d1eedca61ea22ecf168.xml
+      description: https://wechat2rss.xlab.app/feed/8defbaee147ce6fc812f5d1eedca61ea22ecf168.xml
+      enabled: true
+      language: zh
+    - name: 零队
+      url: https://wechat2rss.xlab.app/feed/e54af90b7ef21f732ed6d2d7a58d4aefac9f9faa.xml
+      description: https://wechat2rss.xlab.app/feed/e54af90b7ef21f732ed6d2d7a58d4aefac9f9faa.xml
+      enabled: true
+      language: zh
+    - name: bloodzer0
+      url: https://wechat2rss.xlab.app/feed/1861774bb3091197d2b5b99ea778ced110751b8e.xml
+      description: https://wechat2rss.xlab.app/feed/1861774bb3091197d2b5b99ea778ced110751b8e.xml
+      enabled: true
+      language: zh
+    - name: Hacking就是好玩
+      url: https://wechat2rss.xlab.app/feed/01af96b91d0bd5570ab2c3f1237436791fd47d90.xml
+      description: https://wechat2rss.xlab.app/feed/01af96b91d0bd5570ab2c3f1237436791fd47d90.xml
+      enabled: true
+      language: zh
+    - name: 安全树洞
+      url: https://wechat2rss.xlab.app/feed/08f314092c056259db01e6c7075d246ac76dc713.xml
+      description: https://wechat2rss.xlab.app/feed/08f314092c056259db01e6c7075d246ac76dc713.xml
+      enabled: true
+      language: zh
+    - name: 矛和盾的故事
+      url: https://wechat2rss.xlab.app/feed/308da52e82d7f7bc2a9f6a5f63633c5567b7af08.xml
+      description: https://wechat2rss.xlab.app/feed/308da52e82d7f7bc2a9f6a5f63633c5567b7af08.xml
+      enabled: true
+      language: zh
+    - name: 软件安全与逆向分析
+      url: https://wechat2rss.xlab.app/feed/021e3a28dfa435253d1b5610e6678205ea0919b6.xml
+      description: https://wechat2rss.xlab.app/feed/021e3a28dfa435253d1b5610e6678205ea0919b6.xml
+      enabled: true
+      language: zh
+    - name: 我的安全梦
+      url: https://wechat2rss.xlab.app/feed/aff52b9db3b57b1fcf24b40668d44baecd3da044.xml
+      description: https://wechat2rss.xlab.app/feed/aff52b9db3b57b1fcf24b40668d44baecd3da044.xml
+      enabled: true
+      language: zh
+    - name: 云鼎实验室
+      url: https://wechat2rss.xlab.app/feed/d762fbf5f8f256afb63bcfe9a362184072338819.xml
+      description: https://wechat2rss.xlab.app/feed/d762fbf5f8f256afb63bcfe9a362184072338819.xml
+      enabled: true
+      language: zh
+    - name: 安全界
+      url: https://wechat2rss.xlab.app/feed/aed7268b7dd5468e8efca43e19948186d7205886.xml
+      description: https://wechat2rss.xlab.app/feed/aed7268b7dd5468e8efca43e19948186d7205886.xml
+      enabled: true
+      language: zh
+    - name: 58安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/f4ff9e0e30f68dd38a44232522bdb980791a7587.xml
+      description: https://wechat2rss.xlab.app/feed/f4ff9e0e30f68dd38a44232522bdb980791a7587.xml
+      enabled: true
+      language: zh
+    - name: debugeeker
+      url: https://wechat2rss.xlab.app/feed/7772ec79ac327394596861ae412fc25a823e09d0.xml
+      description: https://wechat2rss.xlab.app/feed/7772ec79ac327394596861ae412fc25a823e09d0.xml
+      enabled: true
+      language: zh
+    - name: 汉客儿安全笔记
+      url: https://wechat2rss.xlab.app/feed/71f7fe130360b40edf3b22e222ca2a147912893d.xml
+      description: https://wechat2rss.xlab.app/feed/71f7fe130360b40edf3b22e222ca2a147912893d.xml
+      enabled: true
+      language: zh
+    - name: 慢雾科技
+      url: https://wechat2rss.xlab.app/feed/9e9c3c70e598266a1ac993e50458a10a6d853eb7.xml
+      description: https://wechat2rss.xlab.app/feed/9e9c3c70e598266a1ac993e50458a10a6d853eb7.xml
+      enabled: true
+      language: zh
+    - name: 漏洞推送
+      url: https://wechat2rss.xlab.app/feed/e5a0a3d839536204e4bcec6ede59fe0cc11f6fc6.xml
+      description: https://wechat2rss.xlab.app/feed/e5a0a3d839536204e4bcec6ede59fe0cc11f6fc6.xml
+      enabled: true
+      language: zh
+    - name: 安全学术圈
+      url: https://wechat2rss.xlab.app/feed/8c5d5f0004e7231abeb01dac49cac5da4ec6933d.xml
+      description: https://wechat2rss.xlab.app/feed/8c5d5f0004e7231abeb01dac49cac5da4ec6933d.xml
+      enabled: true
+      language: zh
+    - name: 三六零CERT
+      url: https://wechat2rss.xlab.app/feed/2dbce2e5f7b49dc8415db7a0ab325929e0f5d8c3.xml
+      description: https://wechat2rss.xlab.app/feed/2dbce2e5f7b49dc8415db7a0ab325929e0f5d8c3.xml
+      enabled: true
+      language: zh
+    - name: 真没什么逻辑
+      url: https://wechat2rss.xlab.app/feed/347c1a20a1a8ff2b789e454e938addadc85b2c4b.xml
+      description: https://wechat2rss.xlab.app/feed/347c1a20a1a8ff2b789e454e938addadc85b2c4b.xml
+      enabled: true
+      language: zh
+    - name: 二道情报贩子
+      url: https://wechat2rss.xlab.app/feed/86512202e74d01447788f355c4a4171a3c86740a.xml
+      description: https://wechat2rss.xlab.app/feed/86512202e74d01447788f355c4a4171a3c86740a.xml
+      enabled: true
+      language: zh
+    - name: DataCon大数据安全分析比赛
+      url: https://wechat2rss.xlab.app/feed/4ebcb3d5a0bdb5fada48eb901a77910f8cbef585.xml
+      description: https://wechat2rss.xlab.app/feed/4ebcb3d5a0bdb5fada48eb901a77910f8cbef585.xml
+      enabled: true
+      language: zh
+    - name: IMKP
+      url: https://wechat2rss.xlab.app/feed/09fd2a3e5180ee5ee0f787446046e8bc91f47d65.xml
+      description: https://wechat2rss.xlab.app/feed/09fd2a3e5180ee5ee0f787446046e8bc91f47d65.xml
+      enabled: true
+      language: zh
+    - name: 网安网事
+      url: https://wechat2rss.xlab.app/feed/6e619b6a41994735a9462c567eb402bc1e7ed00b.xml
+      description: https://wechat2rss.xlab.app/feed/6e619b6a41994735a9462c567eb402bc1e7ed00b.xml
+      enabled: true
+      language: zh
+    - name: 掮客酒馆
+      url: https://wechat2rss.xlab.app/feed/10fdc27bdac746197d79a7632053fee231f37bcd.xml
+      description: https://wechat2rss.xlab.app/feed/10fdc27bdac746197d79a7632053fee231f37bcd.xml
+      enabled: true
+      language: zh
+    - name: Tide安全团队
+      url: https://wechat2rss.xlab.app/feed/fb1486a83f41d2b3ab5758c9811936beaa762097.xml
+      description: https://wechat2rss.xlab.app/feed/fb1486a83f41d2b3ab5758c9811936beaa762097.xml
+      enabled: true
+      language: zh
+    - name: InBug实验室
+      url: https://wechat2rss.xlab.app/feed/61d5b534b36746e49e6b7d52a722968eebe131a7.xml
+      description: https://wechat2rss.xlab.app/feed/61d5b534b36746e49e6b7d52a722968eebe131a7.xml
+      enabled: true
+      language: zh
+    - name: 腾讯代码安全检查Xcheck
+      url: https://wechat2rss.xlab.app/feed/267f1258101e978e4cc8507724579217adf600cf.xml
+      description: https://wechat2rss.xlab.app/feed/267f1258101e978e4cc8507724579217adf600cf.xml
+      enabled: true
+      language: zh
+    - name: PeiQi文库
+      url: https://wechat2rss.xlab.app/feed/6553a5e852536cc41d797391eb3da8d8f8f3f18d.xml
+      description: https://wechat2rss.xlab.app/feed/6553a5e852536cc41d797391eb3da8d8f8f3f18d.xml
+      enabled: true
+      language: zh
+    - name: Red0
+      url: https://wechat2rss.xlab.app/feed/8c432d74f325c5c6347230d4dc546ecc33c949cd.xml
+      description: https://wechat2rss.xlab.app/feed/8c432d74f325c5c6347230d4dc546ecc33c949cd.xml
+      enabled: true
+      language: zh
+    - name: 回忆飘如雪
+      url: https://wechat2rss.xlab.app/feed/fa41acf1a0d9c54d4caf973349e7bd99d5de61c6.xml
+      description: https://wechat2rss.xlab.app/feed/fa41acf1a0d9c54d4caf973349e7bd99d5de61c6.xml
+      enabled: true
+      language: zh
+    - name: Fintech安全之路
+      url: https://wechat2rss.xlab.app/feed/8045973546e92ec9048b5cdf10bed4b5889567ea.xml
+      description: https://wechat2rss.xlab.app/feed/8045973546e92ec9048b5cdf10bed4b5889567ea.xml
+      enabled: true
+      language: zh
+    - name: RapidDNS
+      url: https://wechat2rss.xlab.app/feed/2b62c59e45bd71ff9f475c93626cd4871c99f185.xml
+      description: https://wechat2rss.xlab.app/feed/2b62c59e45bd71ff9f475c93626cd4871c99f185.xml
+      enabled: true
+      language: zh
+    - name: kernsec
+      url: https://wechat2rss.xlab.app/feed/4767e1bec36c42a1c1cf1c991a3a1a027d1b49a5.xml
+      description: https://wechat2rss.xlab.app/feed/4767e1bec36c42a1c1cf1c991a3a1a027d1b49a5.xml
+      enabled: true
+      language: zh
+    - name: NEO攻防队
+      url: https://wechat2rss.xlab.app/feed/a093f5ce01f9dd8377ef4e2554648965b4f5dedd.xml
+      description: https://wechat2rss.xlab.app/feed/a093f5ce01f9dd8377ef4e2554648965b4f5dedd.xml
+      enabled: true
+      language: zh
+    - name: 小议安全
+      url: https://wechat2rss.xlab.app/feed/7a1064e1b9d394f6508a3d4f98475d9f12ce655f.xml
+      description: https://wechat2rss.xlab.app/feed/7a1064e1b9d394f6508a3d4f98475d9f12ce655f.xml
+      enabled: true
+      language: zh
+    - name: 安全研究GoSSIP
+      url: https://wechat2rss.xlab.app/feed/ac4004481c5b78892663e13bb3af8422d4ebeb68.xml
+      description: https://wechat2rss.xlab.app/feed/ac4004481c5b78892663e13bb3af8422d4ebeb68.xml
+      enabled: true
+      language: zh
+    - name: 赛博少女
+      url: https://wechat2rss.xlab.app/feed/f17b52a78a32b532f0d7729e6cf7d94a669c1d53.xml
+      description: https://wechat2rss.xlab.app/feed/f17b52a78a32b532f0d7729e6cf7d94a669c1d53.xml
+      enabled: true
+      language: zh
+    - name: 黑哥说安全
+      url: https://wechat2rss.xlab.app/feed/27be924bf0d49a8d3ff45c0a85e9c6e94ba7a93c.xml
+      description: https://wechat2rss.xlab.app/feed/27be924bf0d49a8d3ff45c0a85e9c6e94ba7a93c.xml
+      enabled: true
+      language: zh
+    - name: 无害实验室sec
+      url: https://wechat2rss.xlab.app/feed/4470030205d4d847065a2f0d26219b280b421440.xml
+      description: https://wechat2rss.xlab.app/feed/4470030205d4d847065a2f0d26219b280b421440.xml
+      enabled: true
+      language: zh
+    - name: VLabTeam
+      url: https://wechat2rss.xlab.app/feed/3051a5bf0ae50996df7d16a2a9880c021a41d02a.xml
+      description: https://wechat2rss.xlab.app/feed/3051a5bf0ae50996df7d16a2a9880c021a41d02a.xml
+      enabled: true
+      language: zh
+    - name: 数世咨询
+      url: https://wechat2rss.xlab.app/feed/9da87fba8130d0c2dc52cc45b844f045227e06a7.xml
+      description: https://wechat2rss.xlab.app/feed/9da87fba8130d0c2dc52cc45b844f045227e06a7.xml
+      enabled: true
+      language: zh
+    - name: leveryd
+      url: https://wechat2rss.xlab.app/feed/742b34be22c0c323804fa9b541aa717571cd8147.xml
+      description: https://wechat2rss.xlab.app/feed/742b34be22c0c323804fa9b541aa717571cd8147.xml
+      enabled: true
+      language: zh
+    - name: M01NTeam
+      url: https://wechat2rss.xlab.app/feed/059ae07ca76f11c6e9f9fad7698ab205b3b039c8.xml
+      description: https://wechat2rss.xlab.app/feed/059ae07ca76f11c6e9f9fad7698ab205b3b039c8.xml
+      enabled: true
+      language: zh
+    - name: 关键基础设施安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/1aa5b8c8e4fb27ccb905694f7563b5529cd12269.xml
+      description: https://wechat2rss.xlab.app/feed/1aa5b8c8e4fb27ccb905694f7563b5529cd12269.xml
+      enabled: true
+      language: zh
+    - name: 威胁棱镜
+      url: https://wechat2rss.xlab.app/feed/63688861efb2362716368e36b7f8b8b61d0394a9.xml
+      description: https://wechat2rss.xlab.app/feed/63688861efb2362716368e36b7f8b8b61d0394a9.xml
+      enabled: true
+      language: zh
+    - name: 这里是河马
+      url: https://wechat2rss.xlab.app/feed/0db50f315edb5c0af041413fc89e3d4d80a91fdd.xml
+      description: https://wechat2rss.xlab.app/feed/0db50f315edb5c0af041413fc89e3d4d80a91fdd.xml
+      enabled: true
+      language: zh
+    - name: 非尝咸鱼贩
+      url: https://wechat2rss.xlab.app/feed/255746ce1fb5befc63e2be00eb25795409048fcb.xml
+      description: https://wechat2rss.xlab.app/feed/255746ce1fb5befc63e2be00eb25795409048fcb.xml
+      enabled: true
+      language: zh
+    - name: 鲸落的杂货铺
+      url: https://wechat2rss.xlab.app/feed/0dda9f6157d97813067cd3965f772abc35bfdf4c.xml
+      description: https://wechat2rss.xlab.app/feed/0dda9f6157d97813067cd3965f772abc35bfdf4c.xml
+      enabled: true
+      language: zh
+    - name: 360Quake空间测绘
+      url: https://wechat2rss.xlab.app/feed/fd912d34201eea9dbaaa73e22bffee21636c0f9e.xml
+      description: https://wechat2rss.xlab.app/feed/fd912d34201eea9dbaaa73e22bffee21636c0f9e.xml
+      enabled: true
+      language: zh
+    - name: 安全攻防团队
+      url: https://wechat2rss.xlab.app/feed/85da1127d3027be44cf4f3a7b3198c622f8fbe1b.xml
+      description: https://wechat2rss.xlab.app/feed/85da1127d3027be44cf4f3a7b3198c622f8fbe1b.xml
+      enabled: true
+      language: zh
+    - name: XCTF联赛
+      url: https://wechat2rss.xlab.app/feed/4d448e1e341361f81e9dd715b84f4c324053251b.xml
+      description: https://wechat2rss.xlab.app/feed/4d448e1e341361f81e9dd715b84f4c324053251b.xml
+      enabled: true
+      language: zh
+    - name: 胖哈勃
+      url: https://wechat2rss.xlab.app/feed/280cc6aaef116a9701025a97aa73f7ee731bac36.xml
+      description: https://wechat2rss.xlab.app/feed/280cc6aaef116a9701025a97aa73f7ee731bac36.xml
+      enabled: true
+      language: zh
+    - name: 信息安全国家工程研究中心
+      url: https://wechat2rss.xlab.app/feed/7caad9bdb6b168fe174bc815a9b44b7f52d7198b.xml
+      description: https://wechat2rss.xlab.app/feed/7caad9bdb6b168fe174bc815a9b44b7f52d7198b.xml
+      enabled: true
+      language: zh
+    - name: 电子物证
+      url: https://wechat2rss.xlab.app/feed/bb1aa1ced567490c8eec9d764e4909f694aab711.xml
+      description: https://wechat2rss.xlab.app/feed/bb1aa1ced567490c8eec9d764e4909f694aab711.xml
+      enabled: true
+      language: zh
+    - name: 网安杂谈
+      url: https://wechat2rss.xlab.app/feed/9873e439cbe2e1050b8d3a5ee589c12755bda1bb.xml
+      description: https://wechat2rss.xlab.app/feed/9873e439cbe2e1050b8d3a5ee589c12755bda1bb.xml
+      enabled: true
+      language: zh
+    - name: 物联网IoT安全
+      url: https://wechat2rss.xlab.app/feed/ca637daa3c408cbd4eb29972e4449809ed238374.xml
+      description: https://wechat2rss.xlab.app/feed/ca637daa3c408cbd4eb29972e4449809ed238374.xml
+      enabled: true
+      language: zh
+    - name: 电子数据取证与鉴定
+      url: https://wechat2rss.xlab.app/feed/aa202e8b44eec0847ad9ab2bece74addfede9894.xml
+      description: https://wechat2rss.xlab.app/feed/aa202e8b44eec0847ad9ab2bece74addfede9894.xml
+      enabled: true
+      language: zh
+    - name: 中国信息安全
+      url: https://wechat2rss.xlab.app/feed/567cb1a8cf49f3e2c141d9d8085712f42ffc2fef.xml
+      description: https://wechat2rss.xlab.app/feed/567cb1a8cf49f3e2c141d9d8085712f42ffc2fef.xml
+      enabled: true
+      language: zh
+    - name: 安全圈
+      url: https://wechat2rss.xlab.app/feed/d568d6fca93d750898111f09cc3c551e7a62f7ab.xml
+      description: https://wechat2rss.xlab.app/feed/d568d6fca93d750898111f09cc3c551e7a62f7ab.xml
+      enabled: true
+      language: zh
+    - name: 网信军民融合
+      url: https://wechat2rss.xlab.app/feed/0c01ac36bf3a4f3153d8c568e1255b9e91825688.xml
+      description: https://wechat2rss.xlab.app/feed/0c01ac36bf3a4f3153d8c568e1255b9e91825688.xml
+      enabled: true
+      language: zh
+    - name: 青藤云安全
+      url: https://wechat2rss.xlab.app/feed/f35b2e0c0e9439b0085a851a1514a11c0ad89887.xml
+      description: https://wechat2rss.xlab.app/feed/f35b2e0c0e9439b0085a851a1514a11c0ad89887.xml
+      enabled: true
+      language: zh
+    - name: GeekPwn
+      url: https://wechat2rss.xlab.app/feed/8704aa7fd3c472f8c3bbe3c2b553ce9810326202.xml
+      description: https://wechat2rss.xlab.app/feed/8704aa7fd3c472f8c3bbe3c2b553ce9810326202.xml
+      enabled: true
+      language: zh
+    - name: 极客公园
+      url: https://wechat2rss.xlab.app/feed/1a5aec98e71c707c8ca092bc2c255b9d4bac477d.xml
+      description: https://wechat2rss.xlab.app/feed/1a5aec98e71c707c8ca092bc2c255b9d4bac477d.xml
+      enabled: true
+      language: zh
+    - name: CNCERT风险评估
+      url: https://wechat2rss.xlab.app/feed/c6662e88d278561b8293a607dcdcbe26aea98e04.xml
+      description: https://wechat2rss.xlab.app/feed/c6662e88d278561b8293a607dcdcbe26aea98e04.xml
+      enabled: true
+      language: zh
+    - name: 山石网科安全技术研究院
+      url: https://wechat2rss.xlab.app/feed/dce539f9deadfc68ce8bf82d3be59a4c6d8ddef9.xml
+      description: https://wechat2rss.xlab.app/feed/dce539f9deadfc68ce8bf82d3be59a4c6d8ddef9.xml
+      enabled: true
+      language: zh
+    - name: 星阑科技
+      url: https://wechat2rss.xlab.app/feed/9b29dedffda96370d7cabfb50c7051efbeaa2554.xml
+      description: https://wechat2rss.xlab.app/feed/9b29dedffda96370d7cabfb50c7051efbeaa2554.xml
+      enabled: true
+      language: zh
+    - name: 安全威胁情报
+      url: https://wechat2rss.xlab.app/feed/9823254aff8854917b418bc19efe49ac160669e8.xml
+      description: https://wechat2rss.xlab.app/feed/9823254aff8854917b418bc19efe49ac160669e8.xml
+      enabled: true
+      language: zh
+    - name: 火线Zone
+      url: https://wechat2rss.xlab.app/feed/a64c88f6f65115735413fa0c7e8be27f6acc8292.xml
+      description: https://wechat2rss.xlab.app/feed/a64c88f6f65115735413fa0c7e8be27f6acc8292.xml
+      enabled: true
+      language: zh
+    - name: 长亭科技
+      url: https://wechat2rss.xlab.app/feed/2b3d1f9d72a621232894fa96b6ddf218aade7a1f.xml
+      description: https://wechat2rss.xlab.app/feed/2b3d1f9d72a621232894fa96b6ddf218aade7a1f.xml
+      enabled: true
+      language: zh
+    - name: 补天平台
+      url: https://wechat2rss.xlab.app/feed/716b21d89522f8bb90b25249ebf00692522d5612.xml
+      description: https://wechat2rss.xlab.app/feed/716b21d89522f8bb90b25249ebf00692522d5612.xml
+      enabled: true
+      language: zh
+    - name: SecIN技术平台
+      url: https://wechat2rss.xlab.app/feed/bb354c0b3ebdd4f2a7c27fbbed75eb777943ee42.xml
+      description: https://wechat2rss.xlab.app/feed/bb354c0b3ebdd4f2a7c27fbbed75eb777943ee42.xml
+      enabled: true
+      language: zh
+    - name: KCon黑客大会
+      url: https://wechat2rss.xlab.app/feed/0aca9799e72cc5f479d8a7b9ceda70d7e2193eb1.xml
+      description: https://wechat2rss.xlab.app/feed/0aca9799e72cc5f479d8a7b9ceda70d7e2193eb1.xml
+      enabled: true
+      language: zh
+    - name: 火线安全平台
+      url: https://wechat2rss.xlab.app/feed/36738a4bf3055c808494d72d9b3372c00f38c8e8.xml
+      description: https://wechat2rss.xlab.app/feed/36738a4bf3055c808494d72d9b3372c00f38c8e8.xml
+      enabled: true
+      language: zh
+    - name: 东软网络安全
+      url: https://wechat2rss.xlab.app/feed/b43d85353a1b4bdd46153e06264f4b63583a78ae.xml
+      description: https://wechat2rss.xlab.app/feed/b43d85353a1b4bdd46153e06264f4b63583a78ae.xml
+      enabled: true
+      language: zh
+    - name: 默安科技
+      url: https://wechat2rss.xlab.app/feed/0a0fb079fdb28ad7c49e5a6cbd9cf909c9873d86.xml
+      description: https://wechat2rss.xlab.app/feed/0a0fb079fdb28ad7c49e5a6cbd9cf909c9873d86.xml
+      enabled: true
+      language: zh
+    - name: bigsec岂安科技
+      url: https://wechat2rss.xlab.app/feed/42ae6dc8b414f4be915ce93ae03d8f8460179c72.xml
+      description: https://wechat2rss.xlab.app/feed/42ae6dc8b414f4be915ce93ae03d8f8460179c72.xml
+      enabled: true
+      language: zh
+    - name: 木星安全实验室
+      url: https://wechat2rss.xlab.app/feed/273e7f746e228d3686d6f2fa59a0df5ef906dd23.xml
+      description: https://wechat2rss.xlab.app/feed/273e7f746e228d3686d6f2fa59a0df5ef906dd23.xml
+      enabled: true
+      language: zh
+    - name: 情报分析师
+      url: https://wechat2rss.xlab.app/feed/f50063f977eea0ce26836189fb7c3034f7e3d4f8.xml
+      description: https://wechat2rss.xlab.app/feed/f50063f977eea0ce26836189fb7c3034f7e3d4f8.xml
+      enabled: true
+      language: zh
+    - name: 网安寻路人
+      url: https://wechat2rss.xlab.app/feed/d93b4641ef7b9ab5bb7a2d41d799544d45ace291.xml
+      description: https://wechat2rss.xlab.app/feed/d93b4641ef7b9ab5bb7a2d41d799544d45ace291.xml
+      enabled: true
+      language: zh
+    - name: 安恒威胁情报中心
+      url: https://wechat2rss.xlab.app/feed/de09ec267e5c4545e0a759cc62c3da7866ea49e0.xml
+      description: https://wechat2rss.xlab.app/feed/de09ec267e5c4545e0a759cc62c3da7866ea49e0.xml
+      enabled: true
+      language: zh
+    - name: PeckShield
+      url: https://wechat2rss.xlab.app/feed/d180634ccb9dccfe000b1cfbb843522811b49172.xml
+      description: https://wechat2rss.xlab.app/feed/d180634ccb9dccfe000b1cfbb843522811b49172.xml
+      enabled: true
+      language: zh
+    - name: 谛听ditecting
+      url: https://wechat2rss.xlab.app/feed/e91ca0416d5a5dfc93ce14c0598416d4df1a3bf2.xml
+      description: https://wechat2rss.xlab.app/feed/e91ca0416d5a5dfc93ce14c0598416d4df1a3bf2.xml
+      enabled: true
+      language: zh
+    - name: 数据安全与取证
+      url: https://wechat2rss.xlab.app/feed/8c9b7e3366ca88442203715d5616c05d24d0306c.xml
+      description: https://wechat2rss.xlab.app/feed/8c9b7e3366ca88442203715d5616c05d24d0306c.xml
+      enabled: true
+      language: zh
+    - name: 专注安管平台
+      url: https://wechat2rss.xlab.app/feed/1a525e06c123c345dae49c4992df35964b8c4d53.xml
+      description: https://wechat2rss.xlab.app/feed/1a525e06c123c345dae49c4992df35964b8c4d53.xml
+      enabled: true
+      language: zh
+    - name: NOVASEC
+      url: https://wechat2rss.xlab.app/feed/74ce3507f54a7a5145a4ddd6e4e3407fd76705b5.xml
+      description: https://wechat2rss.xlab.app/feed/74ce3507f54a7a5145a4ddd6e4e3407fd76705b5.xml
+      enabled: true
+      language: zh
+    - name: MS509
+      url: https://wechat2rss.xlab.app/feed/55d7dabccad3e569e3c9fc2a14a07dd86d7b6666.xml
+      description: https://wechat2rss.xlab.app/feed/55d7dabccad3e569e3c9fc2a14a07dd86d7b6666.xml
+      enabled: true
+      language: zh
+    - name: 正阳咨询
+      url: https://wechat2rss.xlab.app/feed/47ea183e577cf1fc9035122675cc567dec908443.xml
+      description: https://wechat2rss.xlab.app/feed/47ea183e577cf1fc9035122675cc567dec908443.xml
+      enabled: true
+      language: zh
+    - name: vessial的安全TrashCan
+      url: https://wechat2rss.xlab.app/feed/f70b4cdac52ea7e980b9fa4ab8fbf79a8516f1f3.xml
+      description: https://wechat2rss.xlab.app/feed/f70b4cdac52ea7e980b9fa4ab8fbf79a8516f1f3.xml
+      enabled: true
+      language: zh
+    - name: 深澜深蓝
+      url: https://wechat2rss.xlab.app/feed/3d9ef879f257a0cd3c11fc0b569792ca3581c0b6.xml
+      description: https://wechat2rss.xlab.app/feed/3d9ef879f257a0cd3c11fc0b569792ca3581c0b6.xml
+      enabled: true
+      language: zh
+    - name: 冷渗透
+      url: https://wechat2rss.xlab.app/feed/c23cb9dcbc234e732381ea10aa3d2fe1394ab36d.xml
+      description: https://wechat2rss.xlab.app/feed/c23cb9dcbc234e732381ea10aa3d2fe1394ab36d.xml
+      enabled: true
+      language: zh
+    - name: 落水轩
+      url: https://wechat2rss.xlab.app/feed/09d2ae436c3aa6166353d53502096e1a957a808a.xml
+      description: https://wechat2rss.xlab.app/feed/09d2ae436c3aa6166353d53502096e1a957a808a.xml
+      enabled: true
+      language: zh
+    - name: Viola后花园
+      url: https://wechat2rss.xlab.app/feed/e666c56abbe20a645da315f389ca6247eed264e2.xml
+      description: https://wechat2rss.xlab.app/feed/e666c56abbe20a645da315f389ca6247eed264e2.xml
+      enabled: true
+      language: zh
+    - name: 复旦白泽战队
+      url: https://wechat2rss.xlab.app/feed/882ec123376dc8e89d3c5f6ef4bd2fdd0af65465.xml
+      description: https://wechat2rss.xlab.app/feed/882ec123376dc8e89d3c5f6ef4bd2fdd0af65465.xml
+      enabled: true
+      language: zh
+    - name: 网络安全应急技术国家工程实验室
+      url: https://wechat2rss.xlab.app/feed/f9a553dbf6aa425ea47b33595b99e612bbcd93ad.xml
+      description: https://wechat2rss.xlab.app/feed/f9a553dbf6aa425ea47b33595b99e612bbcd93ad.xml
+      enabled: true
+      language: zh
+    - name: CNVD漏洞平台
+      url: https://wechat2rss.xlab.app/feed/edf17c7a01a7152b7a1ca14133258dc4abc1ca61.xml
+      description: https://wechat2rss.xlab.app/feed/edf17c7a01a7152b7a1ca14133258dc4abc1ca61.xml
+      enabled: true
+      language: zh
+    - name: 字节跳动安全中心
+      url: https://wechat2rss.xlab.app/feed/f4087ff02b808a1a995e2ba930219ada5b82425d.xml
+      description: https://wechat2rss.xlab.app/feed/f4087ff02b808a1a995e2ba930219ada5b82425d.xml
+      enabled: true
+      language: zh
+    - name: 阿里安全响应中心
+      url: https://wechat2rss.xlab.app/feed/544a8a6edc551b8a2975fbb76b7de1637570d0e7.xml
+      description: https://wechat2rss.xlab.app/feed/544a8a6edc551b8a2975fbb76b7de1637570d0e7.xml
+      enabled: true
+      language: zh
+    - name: 百度安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/2b0b4d99312e57d27a294d18de8dfb8f9c272fd4.xml
+      description: https://wechat2rss.xlab.app/feed/2b0b4d99312e57d27a294d18de8dfb8f9c272fd4.xml
+      enabled: true
+      language: zh
+    - name: OPPO安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/3cacd8073bf05a6d23b63613aad68f1c47d846ec.xml
+      description: https://wechat2rss.xlab.app/feed/3cacd8073bf05a6d23b63613aad68f1c47d846ec.xml
+      enabled: true
+      language: zh
+    - name: 小米安全中心
+      url: https://wechat2rss.xlab.app/feed/c950a13786cac4f432ad2f1dc4ef6dd427a5b802.xml
+      description: https://wechat2rss.xlab.app/feed/c950a13786cac4f432ad2f1dc4ef6dd427a5b802.xml
+      enabled: true
+      language: zh
+    - name: 京东安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/9bce95ccd16c1e5e30f45722847cc9ea2a27c09d.xml
+      description: https://wechat2rss.xlab.app/feed/9bce95ccd16c1e5e30f45722847cc9ea2a27c09d.xml
+      enabled: true
+      language: zh
+    - name: 美团安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/294bc034c9941529cd86a8a4b8999d100186c04d.xml
+      description: https://wechat2rss.xlab.app/feed/294bc034c9941529cd86a8a4b8999d100186c04d.xml
+      enabled: true
+      language: zh
+    - name: 唯品会安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/7419897e85fdd038ed2f390a5859b730657ec7ff.xml
+      description: https://wechat2rss.xlab.app/feed/7419897e85fdd038ed2f390a5859b730657ec7ff.xml
+      enabled: true
+      language: zh
+    - name: 中通安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/fc8ebaf92e238784242d7b967d84584a46d1c23d.xml
+      description: https://wechat2rss.xlab.app/feed/fc8ebaf92e238784242d7b967d84584a46d1c23d.xml
+      enabled: true
+      language: zh
+    - name: 陌陌安全
+      url: https://wechat2rss.xlab.app/feed/9ed3866991b2dec386b67cc579ab80f510abccc2.xml
+      description: https://wechat2rss.xlab.app/feed/9ed3866991b2dec386b67cc579ab80f510abccc2.xml
+      enabled: true
+      language: zh
+    - name: 斗象智能安全
+      url: https://wechat2rss.xlab.app/feed/5b72c7dcf37ab8e8c6e5745ecf2701b4ba3cd355.xml
+      description: https://wechat2rss.xlab.app/feed/5b72c7dcf37ab8e8c6e5745ecf2701b4ba3cd355.xml
+      enabled: true
+      language: zh
+    - name: 美丽联合集团安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/e111066ebfbbba805ee4ab5c745b92b5e567bd90.xml
+      description: https://wechat2rss.xlab.app/feed/e111066ebfbbba805ee4ab5c745b92b5e567bd90.xml
+      enabled: true
+      language: zh
+    - name: 滴滴安全应急响应中心
+      url: https://wechat2rss.xlab.app/feed/97cd46da8232bd740c02838e1c579182f9636e3e.xml
+      description: https://wechat2rss.xlab.app/feed/97cd46da8232bd740c02838e1c579182f9636e3e.xml
+      enabled: true
+      language: zh
+    - name: 喜马拉雅安全响应平台
+      url: https://wechat2rss.xlab.app/feed/ad318af292cc4ba7c2466b7a2665b18f760c72ae.xml
+      description: https://wechat2rss.xlab.app/feed/ad318af292cc4ba7c2466b7a2665b18f760c72ae.xml
+      enabled: true
+      language: zh
+    - name: VIPKID安全响应中心
+      url: https://wechat2rss.xlab.app/feed/0d50a0309f855d2f0344f69be89d784ba72941ba.xml
+      description: https://wechat2rss.xlab.app/feed/0d50a0309f855d2f0344f69be89d784ba72941ba.xml
+      enabled: true
+      language: zh
+    - name: 天融信阿尔法实验室
+      url: https://wechat2rss.xlab.app/feed/a9cfdddef757b0ebac0428f629869b69028c43fa.xml
+      description: https://wechat2rss.xlab.app/feed/a9cfdddef757b0ebac0428f629869b69028c43fa.xml
+      enabled: true
+      language: zh
+    - name: 字节跳动技术团队
+      url: https://wechat2rss.xlab.app/feed/4025ea55575daf8bfd8227e68b28d9638b073267.xml
+      description: https://wechat2rss.xlab.app/feed/4025ea55575daf8bfd8227e68b28d9638b073267.xml
+      enabled: true
+      language: zh
+    - name: 火绒安全实验室
+      url: https://wechat2rss.xlab.app/feed/e6da68c95a8f1e2fb40f6691d0ce9addc51a7532.xml
+      description: https://wechat2rss.xlab.app/feed/e6da68c95a8f1e2fb40f6691d0ce9addc51a7532.xml
+      enabled: true
+      language: zh
+    - name: 永安在线情报平台
+      url: https://wechat2rss.xlab.app/feed/9f7e55c77c8eaf5f2adb43289de4fe194f7d34e5.xml
+      description: https://wechat2rss.xlab.app/feed/9f7e55c77c8eaf5f2adb43289de4fe194f7d34e5.xml
+      enabled: true
+      language: zh
+    - name: 黑伞安全
+      url: https://wechat2rss.xlab.app/feed/9779044929b45805a5c1b0fecf5f6a95c7202818.xml
+      description: https://wechat2rss.xlab.app/feed/9779044929b45805a5c1b0fecf5f6a95c7202818.xml
+      enabled: true
+      language: zh
+    - name: 渊龙Sec安全团队
+      url: https://wechat2rss.xlab.app/feed/21b0fdc5197bc18c5d0a0c4a5a557a98ae4c01c7.xml
+      description: https://wechat2rss.xlab.app/feed/21b0fdc5197bc18c5d0a0c4a5a557a98ae4c01c7.xml
+      enabled: true
+      language: zh
+    - name: 百度安全实验室
+      url: https://wechat2rss.xlab.app/feed/c396e3a4fb11318adaa9dac2637657d6fe56ba90.xml
+      description: https://wechat2rss.xlab.app/feed/c396e3a4fb11318adaa9dac2637657d6fe56ba90.xml
+      enabled: true
+      language: zh
+    - name: 美团技术团队
+      url: https://wechat2rss.xlab.app/feed/eb4d04149424a874693a51c6fdda0dba8673f5e4.xml
+      description: https://wechat2rss.xlab.app/feed/eb4d04149424a874693a51c6fdda0dba8673f5e4.xml
+      enabled: true
+      language: zh
+    - name: ChaBug
+      url: https://wechat2rss.xlab.app/feed/b801577ef970fa6a877911dfd37a7c9ca681d66a.xml
+      description: https://wechat2rss.xlab.app/feed/b801577ef970fa6a877911dfd37a7c9ca681d66a.xml
+      enabled: true
+      language: zh
+    - name: 花指令安全实验室
+      url: https://wechat2rss.xlab.app/feed/1c1f6eeede24a34f08ac362de07be36f79a7e986.xml
+      description: https://wechat2rss.xlab.app/feed/1c1f6eeede24a34f08ac362de07be36f79a7e986.xml
+      enabled: true
+      language: zh
+    - name: 盘古实验室
+      url: https://wechat2rss.xlab.app/feed/88d970d199a87a8a8655e5aa0af7bcea07ac07e6.xml
+      description: https://wechat2rss.xlab.app/feed/88d970d199a87a8a8655e5aa0af7bcea07ac07e6.xml
+      enabled: true
+      language: zh
+    - name: PaiSecTeam
+      url: https://wechat2rss.xlab.app/feed/7528d5257a3331281075aa520209d782adf7bb12.xml
+      description: https://wechat2rss.xlab.app/feed/7528d5257a3331281075aa520209d782adf7bb12.xml
+      enabled: true
+      language: zh
+    - name: 花茶安全攻防Team
+      url: https://wechat2rss.xlab.app/feed/67968324b3147407bc172b38832acd931955e743.xml
+      description: https://wechat2rss.xlab.app/feed/67968324b3147407bc172b38832acd931955e743.xml
+      enabled: true
+      language: zh
+    - name: Rapid7
+      url: https://wechat2rss.xlab.app/feed/0060dbbf4244fc99ca332d9aa76acfe89ba7b415.xml
+      description: https://wechat2rss.xlab.app/feed/0060dbbf4244fc99ca332d9aa76acfe89ba7b415.xml
+      enabled: true
+      language: zh
+    - name: 深信服千里目安全实验室
+      url: https://wechat2rss.xlab.app/feed/027c7f3b98d9d0f2db84513f0cb94f02e9a8a3d7.xml
+      description: https://wechat2rss.xlab.app/feed/027c7f3b98d9d0f2db84513f0cb94f02e9a8a3d7.xml
+      enabled: true
+      language: zh
+    - name: 凌晨一点零三分
+      url: https://wechat2rss.xlab.app/feed/02330475f466041c89e4db3abdf4ce9b1311a6cb.xml
+      description: https://wechat2rss.xlab.app/feed/02330475f466041c89e4db3abdf4ce9b1311a6cb.xml
+      enabled: true
+      language: zh
+    - name: 默安玄甲实验室
+      url: https://wechat2rss.xlab.app/feed/181cb187893448582b37198afeadd4c4cf0750a9.xml
+      description: https://wechat2rss.xlab.app/feed/181cb187893448582b37198afeadd4c4cf0750a9.xml
+      enabled: true
+      language: zh
+    - name: 安全行者老霍
+      url: https://wechat2rss.xlab.app/feed/82cb8f76f8e4d0ca29f497944330ef57aa1f22db.xml
+      description: https://wechat2rss.xlab.app/feed/82cb8f76f8e4d0ca29f497944330ef57aa1f22db.xml
+      enabled: true
+      language: zh
+    - name: 娜璋AI安全之家
+      url: https://wechat2rss.xlab.app/feed/ac86a71f04b6d10cc5a87ec9ecc8c94fff5d80d1.xml
+      description: https://wechat2rss.xlab.app/feed/ac86a71f04b6d10cc5a87ec9ecc8c94fff5d80d1.xml
+      enabled: true
+      language: zh
+    - name: 赛博回忆录
+      url: https://wechat2rss.xlab.app/feed/b2fd128a6c259f160f380ffe90c17ce05bdc780f.xml
+      description: https://wechat2rss.xlab.app/feed/b2fd128a6c259f160f380ffe90c17ce05bdc780f.xml
+      enabled: true
+      language: zh
+    - name: Yak Project
+      url: https://wechat2rss.xlab.app/feed/1800f529b600474a4cd0434c65654c483739e192.xml
+      description: https://wechat2rss.xlab.app/feed/1800f529b600474a4cd0434c65654c483739e192.xml
+      enabled: true
+      language: zh
+    - name: 分类乐色桶
+      url: https://wechat2rss.xlab.app/feed/5978638470af63bf67edad170b4e8e9eb945b948.xml
+      description: https://wechat2rss.xlab.app/feed/5978638470af63bf67edad170b4e8e9eb945b948.xml
+      enabled: true
+      language: zh
+    - name: 乐枕迭代日志
+      url: https://wechat2rss.xlab.app/feed/91295bd6da13eb5cd50a544a9d3df76f6f863fac.xml
+      description: https://wechat2rss.xlab.app/feed/91295bd6da13eb5cd50a544a9d3df76f6f863fac.xml
+      enabled: true
+      language: zh
+    - name: Moonlight Bug Hunter
+      url: https://wechat2rss.xlab.app/feed/ce1158cdf6e3de068710ceb93a3961618f7e4360.xml
+      description: https://wechat2rss.xlab.app/feed/ce1158cdf6e3de068710ceb93a3961618f7e4360.xml
+      enabled: true
+      language: zh
+    - name: 网安国际
+      url: https://wechat2rss.xlab.app/feed/6fa942a9bdf8d6e67cf9b051ed3fae441ddb2bae.xml
+      description: https://wechat2rss.xlab.app/feed/6fa942a9bdf8d6e67cf9b051ed3fae441ddb2bae.xml
+      enabled: true
+      language: zh
+    - name: b1ngz的笔记本
+      url: https://wechat2rss.xlab.app/feed/985deae60a431c56b6d8b4a8f7e5623a6b7dd948.xml
+      description: https://wechat2rss.xlab.app/feed/985deae60a431c56b6d8b4a8f7e5623a6b7dd948.xml
+      enabled: true
+      language: zh
+    - name: 且听安全
+      url: https://wechat2rss.xlab.app/feed/88ffe63b5cffb34f8096461bdeaea02049987c70.xml
+      description: https://wechat2rss.xlab.app/feed/88ffe63b5cffb34f8096461bdeaea02049987c70.xml
+      enabled: true
+      language: zh
+    - name: 跳动的计算器
+      url: https://wechat2rss.xlab.app/feed/f3ace422519a0db0d5848415f0ad2e36ecf2c069.xml
+      description: https://wechat2rss.xlab.app/feed/f3ace422519a0db0d5848415f0ad2e36ecf2c069.xml
+      enabled: true
+      language: zh
+    - name: 白日放歌须纵9
+      url: https://wechat2rss.xlab.app/feed/fbb786b3c5d138ed27a7ca2f9734cfc90e9b9417.xml
+      description: https://wechat2rss.xlab.app/feed/fbb786b3c5d138ed27a7ca2f9734cfc90e9b9417.xml
+      enabled: true
+      language: zh
+    - name: 零鉴科技
+      url: https://wechat2rss.xlab.app/feed/f7f4ab7bdc8c827727561bd14ed6c26ad0624a6f.xml
+      description: https://wechat2rss.xlab.app/feed/f7f4ab7bdc8c827727561bd14ed6c26ad0624a6f.xml
+      enabled: true
+      language: zh
+    - name: 青藤技术服务
+      url: https://wechat2rss.xlab.app/feed/1063f6d607a637eb0ddc129b58bd081820dd31cb.xml
+      description: https://wechat2rss.xlab.app/feed/1063f6d607a637eb0ddc129b58bd081820dd31cb.xml
+      enabled: true
+      language: zh
+    - name: 天问记事簿
+      url: https://wechat2rss.xlab.app/feed/a6b4c4531776fa4f4e837ca1fd56e5acd1df8f54.xml
+      description: https://wechat2rss.xlab.app/feed/a6b4c4531776fa4f4e837ca1fd56e5acd1df8f54.xml
+      enabled: true
+      language: zh
+    - name: 技术猫屋
+      url: https://wechat2rss.xlab.app/feed/c48bba56bd4329af4db5c7b0eacf3d2f1c43c8df.xml
+      description: https://wechat2rss.xlab.app/feed/c48bba56bd4329af4db5c7b0eacf3d2f1c43c8df.xml
+      enabled: true
+      language: zh
+    - name: LoRexxar自留地
+      url: https://wechat2rss.xlab.app/feed/629b8dab22be680d1ae8b1b0e597043a7d0757b7.xml
+      description: https://wechat2rss.xlab.app/feed/629b8dab22be680d1ae8b1b0e597043a7d0757b7.xml
+      enabled: true
+      language: zh
+    - name: 毕方安全实验室
+      url: https://wechat2rss.xlab.app/feed/e30371f4b2e600a87cb0718d649d6c43411622b3.xml
+      description: https://wechat2rss.xlab.app/feed/e30371f4b2e600a87cb0718d649d6c43411622b3.xml
+      enabled: true
+      language: zh
+    - name: 天玄安全实验室
+      url: https://wechat2rss.xlab.app/feed/6756212c81a850d9ee50d69cb4036b6a6f70f31b.xml
+      description: https://wechat2rss.xlab.app/feed/6756212c81a850d9ee50d69cb4036b6a6f70f31b.xml
+      enabled: true
+      language: zh
+    - name: 墨菲安全
+      url: https://wechat2rss.xlab.app/feed/e7d4a6f783d2e42b91a70a9f802e590444d62952.xml
+      description: https://wechat2rss.xlab.app/feed/e7d4a6f783d2e42b91a70a9f802e590444d62952.xml
+      enabled: true
+      language: zh
+    - name: 王小明的事
+      url: https://wechat2rss.xlab.app/feed/4d5625268306f53fca5c6e8cb59daf73ca57d5e0.xml
+      description: https://wechat2rss.xlab.app/feed/4d5625268306f53fca5c6e8cb59daf73ca57d5e0.xml
+      enabled: true
+      language: zh
+    - name: Beacon Tower Lab
+      url: https://wechat2rss.xlab.app/feed/63453a813df919bb2cf5419e6aed91bf0fea5fa7.xml
+      description: https://wechat2rss.xlab.app/feed/63453a813df919bb2cf5419e6aed91bf0fea5fa7.xml
+      enabled: true
+      language: zh
+    - name: RainSec
+      url: https://wechat2rss.xlab.app/feed/086e8d1d0035fb4418b3c2608f7166353e0628dc.xml
+      description: https://wechat2rss.xlab.app/feed/086e8d1d0035fb4418b3c2608f7166353e0628dc.xml
+      enabled: true
+      language: zh
+    - name: 楼兰学习网络安全
+      url: https://wechat2rss.xlab.app/feed/6f8d8640d6c8d59ba52ea8a8b5df8529a59e872a.xml
+      description: https://wechat2rss.xlab.app/feed/6f8d8640d6c8d59ba52ea8a8b5df8529a59e872a.xml
+      enabled: true
+      language: zh
+    - name: f undefined
+      url: https://wechat2rss.xlab.app/feed/5f1bca42a3e1bc932b1e2609abad8c36d9ad37e1.xml
+      description: https://wechat2rss.xlab.app/feed/5f1bca42a3e1bc932b1e2609abad8c36d9ad37e1.xml
+      enabled: true
+      language: zh
+    - name: RASP安全技术
+      url: https://wechat2rss.xlab.app/feed/697d59809497086c9137cc5b21feed775c3455a5.xml
+      description: https://wechat2rss.xlab.app/feed/697d59809497086c9137cc5b21feed775c3455a5.xml
+      enabled: true
+      language: zh
+    - name: 俗世吧
+      url: https://wechat2rss.xlab.app/feed/892464522627f503ae525d1df3c2690bca98b424.xml
+      description: https://wechat2rss.xlab.app/feed/892464522627f503ae525d1df3c2690bca98b424.xml
+      enabled: true
+      language: zh
+    - name: 天书奇坛TFT
+      url: https://wechat2rss.xlab.app/feed/53682fed50f2e9f3be9c8f58329e6022ef2fd201.xml
+      description: https://wechat2rss.xlab.app/feed/53682fed50f2e9f3be9c8f58329e6022ef2fd201.xml
+      enabled: true
+      language: zh
+    - name: 7bits安全团队
+      url: https://wechat2rss.xlab.app/feed/d8600777ce9d3efc16ac3cc3885aba6f107bc10b.xml
+      description: https://wechat2rss.xlab.app/feed/d8600777ce9d3efc16ac3cc3885aba6f107bc10b.xml
+      enabled: true
+      language: zh
+    - name: 头像哥老草
+      url: https://wechat2rss.xlab.app/feed/9ab5d73a93405f75a182b073fcc04e22f24b412d.xml
+      description: https://wechat2rss.xlab.app/feed/9ab5d73a93405f75a182b073fcc04e22f24b412d.xml
+      enabled: true
+      language: zh
+    - name: bluE0x00
+      url: https://wechat2rss.xlab.app/feed/9767c848d0a4d5858d8bb565bc762dde94eeeee1.xml
+      description: https://wechat2rss.xlab.app/feed/9767c848d0a4d5858d8bb565bc762dde94eeeee1.xml
+      enabled: true
+      language: zh
+    - name: 夏虫知冰
+      url: https://wechat2rss.xlab.app/feed/6f5a7b292b4b0232ccf1c8e2b7819b98dcdb173a.xml
+      description: https://wechat2rss.xlab.app/feed/6f5a7b292b4b0232ccf1c8e2b7819b98dcdb173a.xml
+      enabled: true
+      language: zh
+    - name: 安全小黄鸭
+      url: https://wechat2rss.xlab.app/feed/15824aba690f6db2a4922191b262ed22a3b8bec1.xml
+      description: https://wechat2rss.xlab.app/feed/15824aba690f6db2a4922191b262ed22a3b8bec1.xml
+      enabled: true
+      language: zh
+    - name: 甲方安全建设
+      url: https://wechat2rss.xlab.app/feed/130f6c9e835ca7f7c9f329a93140129499970662.xml
+      description: https://wechat2rss.xlab.app/feed/130f6c9e835ca7f7c9f329a93140129499970662.xml
+      enabled: true
+      language: zh
+    - name: 朴实无华lake2
+      url: https://wechat2rss.xlab.app/feed/d452e14a90682f0ce670dcce1a041f56593260fc.xml
+      description: https://wechat2rss.xlab.app/feed/d452e14a90682f0ce670dcce1a041f56593260fc.xml
+      enabled: true
+      language: zh
+    - name: 钱塘门外的互联网散修
+      url: https://wechat2rss.xlab.app/feed/bf791d6a822e8f48b4f6aa056e42758479362281.xml
+      description: https://wechat2rss.xlab.app/feed/bf791d6a822e8f48b4f6aa056e42758479362281.xml
+      enabled: true
+      language: zh
+    - name: 表图
+      url: https://wechat2rss.xlab.app/feed/657873c2f534ea1c50875c8657bc405270ce7cd0.xml
+      description: https://wechat2rss.xlab.app/feed/657873c2f534ea1c50875c8657bc405270ce7cd0.xml
+      enabled: true
+      language: zh
+    - name: 数工复利
+      url: https://wechat2rss.xlab.app/feed/9daa406071d03da194ea8a0b35f1982c288ba366.xml
+      description: https://wechat2rss.xlab.app/feed/9daa406071d03da194ea8a0b35f1982c288ba366.xml
+      enabled: true
+      language: zh
+    - name: 鸟哥谈安全
+      url: https://wechat2rss.xlab.app/feed/564971d18e4771aa4494c8b930dc912b04e6743d.xml
+      description: https://wechat2rss.xlab.app/feed/564971d18e4771aa4494c8b930dc912b04e6743d.xml
+      enabled: true
+      language: zh
+    - name: 全闲话
+      url: https://wechat2rss.xlab.app/feed/a36d83e725f688bd999b039c259940f72d3514b3.xml
+      description: https://wechat2rss.xlab.app/feed/a36d83e725f688bd999b039c259940f72d3514b3.xml
+      enabled: true
+      language: zh
+    - name: 吴鲁加
+      url: https://wechat2rss.xlab.app/feed/9ce69c7f41d24a340778d34bfc977dd71b40c203.xml
+      description: https://wechat2rss.xlab.app/feed/9ce69c7f41d24a340778d34bfc977dd71b40c203.xml
+      enabled: true
+      language: zh
+    - name: 安全防御
+      url: https://wechat2rss.xlab.app/feed/aa17887af0644ece8360baf00c4c3d0642a745df.xml
+      description: https://wechat2rss.xlab.app/feed/aa17887af0644ece8360baf00c4c3d0642a745df.xml
+      enabled: true
+      language: zh
+    - name: 李姐姐的扫描器
+      url: https://wechat2rss.xlab.app/feed/fda4c8b72435cffdc50c9c6e5eb0041a82eac679.xml
+      description: https://wechat2rss.xlab.app/feed/fda4c8b72435cffdc50c9c6e5eb0041a82eac679.xml
+      enabled: true
+      language: zh
+    - name: 网络安全回收站
+      url: https://wechat2rss.xlab.app/feed/3dcfe38cb98fb0a439112b1e1549a84bede6077a.xml
+      description: https://wechat2rss.xlab.app/feed/3dcfe38cb98fb0a439112b1e1549a84bede6077a.xml
+      enabled: true
+      language: zh
+    - name: 360数字安全
+      url: https://wechat2rss.xlab.app/feed/85e7bf4fe192ded1a15f130aa43ac306d227f61b.xml
+      description: https://wechat2rss.xlab.app/feed/85e7bf4fe192ded1a15f130aa43ac306d227f61b.xml
+      enabled: true
+      language: zh
+    - name: 迪哥讲事
+      url: https://wechat2rss.xlab.app/feed/6fbc842cdb8fd52f341af76f6aaf6cba21a23f7c.xml
+      description: https://wechat2rss.xlab.app/feed/6fbc842cdb8fd52f341af76f6aaf6cba21a23f7c.xml
+      enabled: true
+      language: zh
+    - name: 航行笔记
+      url: https://wechat2rss.xlab.app/feed/4a76fbd471f0952829df9c488986bbcc67ff8790.xml
+      description: https://wechat2rss.xlab.app/feed/4a76fbd471f0952829df9c488986bbcc67ff8790.xml
+      enabled: true
+      language: zh
+    - name: 碳基体
+      url: https://wechat2rss.xlab.app/feed/4bc6a2ecb1feb2bd2961a898905147c9f76a4c3a.xml
+      description: https://wechat2rss.xlab.app/feed/4bc6a2ecb1feb2bd2961a898905147c9f76a4c3a.xml
+      enabled: true
+      language: zh
+    - name: Numen Cyber Labs
+      url: https://wechat2rss.xlab.app/feed/48a421edf0498c3b7bf1321174ccc70c266bcd97.xml
+      description: https://wechat2rss.xlab.app/feed/48a421edf0498c3b7bf1321174ccc70c266bcd97.xml
+      enabled: true
+      language: zh
+    - name: 放之
+      url: https://wechat2rss.xlab.app/feed/672af7872ddae7ee20df9a3f2560224fb16babc3.xml
+      description: https://wechat2rss.xlab.app/feed/672af7872ddae7ee20df9a3f2560224fb16babc3.xml
+      enabled: true
+      language: zh
+    - name: NISL实验室
+      url: https://wechat2rss.xlab.app/feed/9c5931fa813fd1a38149e52d5809ce9b19a48ec4.xml
+      description: https://wechat2rss.xlab.app/feed/9c5931fa813fd1a38149e52d5809ce9b19a48ec4.xml
+      enabled: true
+      language: zh
+    - name: FuzzWiki
+      url: https://wechat2rss.xlab.app/feed/1ec2c6e96e3acea1281658383ee23f212a4f22a4.xml
+      description: https://wechat2rss.xlab.app/feed/1ec2c6e96e3acea1281658383ee23f212a4f22a4.xml
+      enabled: true
+      language: zh
+    - name: DarkNavy
+      url: https://wechat2rss.xlab.app/feed/0d4ffa4a2127cb603c2da49daa678b0e780fd66b.xml
+      description: https://wechat2rss.xlab.app/feed/0d4ffa4a2127cb603c2da49daa678b0e780fd66b.xml
+      enabled: true
+      language: zh
+    - name: 在酒吧喝牛奶的牛仔
+      url: https://wechat2rss.xlab.app/feed/79406746c885004942b4fb232aff112a23579018.xml
+      description: https://wechat2rss.xlab.app/feed/79406746c885004942b4fb232aff112a23579018.xml
+      enabled: true
+      language: zh
+    - name: Desync InfoSec
+      url: https://wechat2rss.xlab.app/feed/9e1ec91d1a8cb22871f812bbe62fb7fe6c7b3e28.xml
+      description: https://wechat2rss.xlab.app/feed/9e1ec91d1a8cb22871f812bbe62fb7fe6c7b3e28.xml
+      enabled: true
+      language: zh
+    - name: Security丨Art
+      url: https://wechat2rss.xlab.app/feed/bd7040862c701118e492f070f4abb58c52b8fb02.xml
+      description: https://wechat2rss.xlab.app/feed/bd7040862c701118e492f070f4abb58c52b8fb02.xml
+      enabled: true
+      language: zh
+    - name: 拨开云雾
+      url: https://wechat2rss.xlab.app/feed/b522811243a36e50628af702a4235b29ff0bdd5e.xml
+      description: https://wechat2rss.xlab.app/feed/b522811243a36e50628af702a4235b29ff0bdd5e.xml
+      enabled: true
+      language: zh
+    - name: huasec
+      url: https://wechat2rss.xlab.app/feed/f193cadd8ff8418e027af5e22609abbe04a66687.xml
+      description: https://wechat2rss.xlab.app/feed/f193cadd8ff8418e027af5e22609abbe04a66687.xml
+      enabled: true
+      language: zh
+    - name: 4ra1n
+      url: https://wechat2rss.xlab.app/feed/30d26f1caaba15501cc713e10995ccb55e6c3fad.xml
+      description: https://wechat2rss.xlab.app/feed/30d26f1caaba15501cc713e10995ccb55e6c3fad.xml
+      enabled: true
+      language: zh
+    - name: 深潜之眼
+      url: https://wechat2rss.xlab.app/feed/2bd44e5502a5ab5b55eb8a732449d8342a6defe9.xml
+      description: https://wechat2rss.xlab.app/feed/2bd44e5502a5ab5b55eb8a732449d8342a6defe9.xml
+      enabled: true
+      language: zh
+    - name: 不忘初心px1624
+      url: https://wechat2rss.xlab.app/feed/ccbd9e00f08cbd4c34f7f08060cfb5d4179843a5.xml
+      description: https://wechat2rss.xlab.app/feed/ccbd9e00f08cbd4c34f7f08060cfb5d4179843a5.xml
+      enabled: true
+      language: zh
+    - name: 信安杂记
+      url: https://wechat2rss.xlab.app/feed/68a725789c8e9fc3e3f05813880df328f1880fcb.xml
+      description: https://wechat2rss.xlab.app/feed/68a725789c8e9fc3e3f05813880df328f1880fcb.xml
+      enabled: true
+      language: zh
+    - name: 小陈的Life
+      url: https://wechat2rss.xlab.app/feed/7bc0fb4b036b6997552981cdd445bc48abff59bb.xml
+      description: https://wechat2rss.xlab.app/feed/7bc0fb4b036b6997552981cdd445bc48abff59bb.xml
+      enabled: true
+      language: zh
+    - name: 悬镜安全
+      url: https://wechat2rss.xlab.app/feed/59c134d2e41c3a0724d89cc6fa359bc1abedbc26.xml
+      description: https://wechat2rss.xlab.app/feed/59c134d2e41c3a0724d89cc6fa359bc1abedbc26.xml
+      enabled: true
+      language: zh
+    - name: RedTeam
+      url: https://wechat2rss.xlab.app/feed/5ca1e75ce245541f45d8c3aa00b81ea11e3177c2.xml
+      description: https://wechat2rss.xlab.app/feed/5ca1e75ce245541f45d8c3aa00b81ea11e3177c2.xml
+      enabled: true
+      language: zh
+    - name: 希潭实验室
+      url: https://wechat2rss.xlab.app/feed/f7dd0925a96c6f025dab0dbe8f80e1eb17d12538.xml
+      description: https://wechat2rss.xlab.app/feed/f7dd0925a96c6f025dab0dbe8f80e1eb17d12538.xml
+      enabled: true
+      language: zh
+    - name: OnionSec
+      url: https://wechat2rss.xlab.app/feed/71d830505c0eb2d4e2627dbf1dfc2b2971bc240b.xml
+      description: https://wechat2rss.xlab.app/feed/71d830505c0eb2d4e2627dbf1dfc2b2971bc240b.xml
+      enabled: true
+      language: zh
+    - name: 金色钱江
+      url: https://wechat2rss.xlab.app/feed/e1e2ffe5159e49f081844f257d08c1218908fff3.xml
+      description: https://wechat2rss.xlab.app/feed/e1e2ffe5159e49f081844f257d08c1218908fff3.xml
+      enabled: true
+      language: zh
+    - name: T00ls安全
+      url: https://wechat2rss.xlab.app/feed/ff110d45e94f7e57706e2c0d86d29d16922f43d3.xml
+      description: https://wechat2rss.xlab.app/feed/ff110d45e94f7e57706e2c0d86d29d16922f43d3.xml
+      enabled: true
+      language: zh
+    - name: 纽创信安
+      url: https://wechat2rss.xlab.app/feed/352d9634e6837532ddae7494aaf146e0aa71235a.xml
+      description: https://wechat2rss.xlab.app/feed/352d9634e6837532ddae7494aaf146e0aa71235a.xml
+      enabled: true
+      language: zh
+    - name: 安全419
+      url: https://wechat2rss.xlab.app/feed/6f33507162907318fd059fb11977ca352ff55d8e.xml
+      description: https://wechat2rss.xlab.app/feed/6f33507162907318fd059fb11977ca352ff55d8e.xml
+      enabled: true
+      language: zh
+    - name: 安全村SecUN
+      url: https://wechat2rss.xlab.app/feed/13267b55f2dbff6e536b4d593408fe0ef977cb43.xml
+      description: https://wechat2rss.xlab.app/feed/13267b55f2dbff6e536b4d593408fe0ef977cb43.xml
+      enabled: true
+      language: zh
+    - name: Medi0cr1ty
+      url: https://wechat2rss.xlab.app/feed/929d7672d9f2a7727dc161b4389a433d3a0d6eb0.xml
+      description: https://wechat2rss.xlab.app/feed/929d7672d9f2a7727dc161b4389a433d3a0d6eb0.xml
+      enabled: true
+      language: zh
+    - name: 中孚安全技术研究
+      url: https://wechat2rss.xlab.app/feed/53c125e4f455e348be9bbe5b4e6fc22088621dc2.xml
+      description: https://wechat2rss.xlab.app/feed/53c125e4f455e348be9bbe5b4e6fc22088621dc2.xml
+      enabled: true
+      language: zh
+    - name: ADLab
+      url: https://wechat2rss.xlab.app/feed/16f16b9f4eb45442a824a52e3ddb040941a49f68.xml
+      description: https://wechat2rss.xlab.app/feed/16f16b9f4eb45442a824a52e3ddb040941a49f68.xml
+      enabled: true
+      language: zh
+    - name: 安天AVL威胁情报中心
+      url: https://wechat2rss.xlab.app/feed/c17498223ad8f92e5434100b16f4894a3107a90b.xml
+      description: https://wechat2rss.xlab.app/feed/c17498223ad8f92e5434100b16f4894a3107a90b.xml
+      enabled: true
+      language: zh
+    - name: 白泽安全实验室
+      url: https://wechat2rss.xlab.app/feed/6bdf0d750e8c418f6ddfe8826c7a29f786a74aa4.xml
+      description: https://wechat2rss.xlab.app/feed/6bdf0d750e8c418f6ddfe8826c7a29f786a74aa4.xml
+      enabled: true
+      language: zh
+    - name: 360威胁情报中心
+      url: https://wechat2rss.xlab.app/feed/920f171e3dae0c8eeb4c97b366b229ba19807732.xml
+      description: https://wechat2rss.xlab.app/feed/920f171e3dae0c8eeb4c97b366b229ba19807732.xml
+      enabled: true
+      language: zh
+    - name: 洞源实验室
+      url: https://wechat2rss.xlab.app/feed/ed8dcc9aa1014eb34c7fd7dc0ef6b96272ed99e0.xml
+      description: https://wechat2rss.xlab.app/feed/ed8dcc9aa1014eb34c7fd7dc0ef6b96272ed99e0.xml
+      enabled: true
+      language: zh
+    - name: 41group
+      url: https://wechat2rss.xlab.app/feed/d840d8b21d5635eb5b332a61f472de54579c8a30.xml
+      description: https://wechat2rss.xlab.app/feed/d840d8b21d5635eb5b332a61f472de54579c8a30.xml
+      enabled: true
+      language: zh
+    - name: 大兵说安全
+      url: https://wechat2rss.xlab.app/feed/e5d7d4cd30d4467c6e50410a89bd5262c21eae22.xml
+      description: https://wechat2rss.xlab.app/feed/e5d7d4cd30d4467c6e50410a89bd5262c21eae22.xml
+      enabled: true
+      language: zh
+    - name: 0x727开源安全团队
+      url: https://wechat2rss.xlab.app/feed/fb95636ab2edd220c83bc38b7041bb8e0a723496.xml
+      description: https://wechat2rss.xlab.app/feed/fb95636ab2edd220c83bc38b7041bb8e0a723496.xml
+      enabled: true
+      language: zh
+    - name: 安全产品人的赛博空间
+      url: https://wechat2rss.xlab.app/feed/923ebe72c2b551e158bcce2f9e6262dd563b3b75.xml
+      description: https://wechat2rss.xlab.app/feed/923ebe72c2b551e158bcce2f9e6262dd563b3b75.xml
+      enabled: true
+      language: zh
+    - name: 赛博昆仑CERT
+      url: https://wechat2rss.xlab.app/feed/fb14ec6353e6ebbeb470d35d633471d0bca583a0.xml
+      description: https://wechat2rss.xlab.app/feed/fb14ec6353e6ebbeb470d35d633471d0bca583a0.xml
+      enabled: true
+      language: zh
+    - name: 干杯Security
+      url: https://wechat2rss.xlab.app/feed/a8422817da57b5ad2c39c8f264d2eeef683bb338.xml
+      description: https://wechat2rss.xlab.app/feed/a8422817da57b5ad2c39c8f264d2eeef683bb338.xml
+      enabled: true
+      language: zh
+    - name: 奇安信XLab
+      url: https://wechat2rss.xlab.app/feed/5c7b6eec254fbb0afac7abf4eae95573fc374555.xml
+      description: https://wechat2rss.xlab.app/feed/5c7b6eec254fbb0afac7abf4eae95573fc374555.xml
+      enabled: true
+      language: zh
+    - name: CNNVD安全动态
+      url: https://wechat2rss.xlab.app/feed/899e0eaf0e3ea7abac0211b3db9bb39c616e3255.xml
+      description: https://wechat2rss.xlab.app/feed/899e0eaf0e3ea7abac0211b3db9bb39c616e3255.xml
+      enabled: true
+      language: zh
+    - name: NOP Team
+      url: https://wechat2rss.xlab.app/feed/3f56e6d80d7e3e5f73983bfa6c06045ff62f1530.xml
+      description: https://wechat2rss.xlab.app/feed/3f56e6d80d7e3e5f73983bfa6c06045ff62f1530.xml
+      enabled: true
+      language: zh
+    - name: CodeAnalyzer Ultra
+      url: https://wechat2rss.xlab.app/feed/55250c252549088f7bcfa3527fe540bec5e2e16e.xml
+      description: https://wechat2rss.xlab.app/feed/55250c252549088f7bcfa3527fe540bec5e2e16e.xml
+      enabled: true
+      language: zh
+    - name: CodeWisdom
+      url: https://wechat2rss.xlab.app/feed/4e361ed9f2258098a35e02a6b738d6e53107f8bb.xml
+      description: https://wechat2rss.xlab.app/feed/4e361ed9f2258098a35e02a6b738d6e53107f8bb.xml
+      enabled: true
+      language: zh
+    - name: 逆熵重生
+      url: https://wechat2rss.xlab.app/feed/95efa9e55cc1f8b14fb09b246bfacb6b9cd0c1e8.xml
+      description: https://wechat2rss.xlab.app/feed/95efa9e55cc1f8b14fb09b246bfacb6b9cd0c1e8.xml
+      enabled: true
+      language: zh
+    - name: 鹰眼威胁情报中心
+      url: https://wechat2rss.xlab.app/feed/6bdcd81fd3702868c913261790ec10ffb76df144.xml
+      description: https://wechat2rss.xlab.app/feed/6bdcd81fd3702868c913261790ec10ffb76df144.xml
+      enabled: true
+      language: zh
+    - name: 榫卯江湖
+      url: https://wechat2rss.xlab.app/feed/d1988b840deaf6a79edd32e83a1b152038f1b6a1.xml
+      description: https://wechat2rss.xlab.app/feed/d1988b840deaf6a79edd32e83a1b152038f1b6a1.xml
+      enabled: true
+      language: zh
+    - name: 连续创业的Janky
+      url: https://wechat2rss.xlab.app/feed/66f13ba7620a53ca279f679a8a956f43255fb579.xml
+      description: https://wechat2rss.xlab.app/feed/66f13ba7620a53ca279f679a8a956f43255fb579.xml
+      enabled: true
+      language: zh
+    - name: ChainReactor
+      url: https://wechat2rss.xlab.app/feed/3f75ff947e69e405fc675d0f698988fc56876fc2.xml
+      description: https://wechat2rss.xlab.app/feed/3f75ff947e69e405fc675d0f698988fc56876fc2.xml
+      enabled: true
+      language: zh
+    - name: 数说安全
+      url: https://wechat2rss.xlab.app/feed/b15a925f83a4b108b957f8dd0e8030b6caa7da5e.xml
+      description: https://wechat2rss.xlab.app/feed/b15a925f83a4b108b957f8dd0e8030b6caa7da5e.xml
+      enabled: true
+      language: zh

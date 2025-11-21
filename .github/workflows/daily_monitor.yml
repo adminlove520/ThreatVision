@@ -1,0 +1,63 @@
+name: Daily Security Monitor
+
+on:
+  schedule:
+    # Run at 00:00 UTC every day
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      enable_blog_publish:
+        description: 'Enable blog publishing'
+        required: false
+        default: 'false'
+        type: string
+      ai_provider:
+        description: 'AI provider (gemini or openai)'
+        required: false
+        default: 'gemini'
+        type: string
+      gemini_model:
+        description: 'Gemini model name'
+        required: false
+        default: 'gemini-2.5-flash'
+        type: string
+
+jobs:
+  monitor-and-report:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        cd code
+        pip install -r requirements.txt
+
+    - name: Run Monitor and Generate Report
+      env:
+        GITHUB_TOKENS: ${{ secrets.GITHUB_TOKENS }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        DINGTALK_TOKEN: ${{ secrets.DINGTALK_TOKEN }}
+        DINGTALK_SECRET: ${{ secrets.DINGTALK_SECRET }}
+        BLOG_API_URL: ${{ secrets.BLOG_API_URL }}
+        BLOG_TOKEN: ${{ secrets.BLOG_TOKEN }}
+        ENABLE_BLOG_PUBLISH: ${{ github.event.inputs.enable_blog_publish || 'false' }}
+        AI_PROVIDER: ${{ github.event.inputs.ai_provider || 'gemini' }}
+        GEMINI_MODEL: ${{ github.event.inputs.gemini_model || 'gemini-2.5-flash' }}
+      run: |
+        cd code
+        python main.py --once
+
+    - name: Upload Report Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: daily-report
+        path: code/data/
