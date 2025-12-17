@@ -37,7 +37,6 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd code
         pip install -r requirements.txt
 
     - name: Run Monitor and Generate Report
@@ -53,11 +52,10 @@ jobs:
         AI_PROVIDER: ${{ github.event.inputs.ai_provider || 'gemini' }}
         GEMINI_MODEL: ${{ github.event.inputs.gemini_model || 'gemini-2.5-flash' }}
       run: |
-        cd code
         python main.py --once
 
     - name: Upload Report Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: daily-report
-        path: code/data/
+        path: data/
