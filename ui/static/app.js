@@ -10,7 +10,8 @@ let state = {
     reports: [],
     cves: [],
     repos: [],
-    theme: localStorage.getItem('theme') || 'light'
+    theme: localStorage.getItem('theme') || 'light',
+    charts: {} // Store chart instances
 };
 
 // Initialization
@@ -127,6 +128,9 @@ function renderDashboard() {
         } catch { return false; }
     }).length;
     document.getElementById('stat-high-risk').textContent = highRiskCount;
+
+    // Charts
+    initCharts();
 
     // Latest Report Preview
     if (state.reports.length > 0) {
