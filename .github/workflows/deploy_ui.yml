@@ -70,7 +70,13 @@ jobs:
           mkdir -p output/rss
           if [ -f data/rss/security_news.xml ]; then
             cp data/rss/security_news.xml output/rss/
+          else
+            echo "Warning: RSS file not found in data/rss/"
           fi
+          
+          # Debug: List output directory
+          echo "Listing output directory:"
+          ls -R output
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

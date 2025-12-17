@@ -11,6 +11,9 @@ let state = {
     cves: [],
     repos: [],
     theme: localStorage.getItem('theme') || 'light',
+    cves: [],
+    repos: [],
+    theme: localStorage.getItem('theme') || 'light',
     charts: {} // Store chart instances
 };
 
@@ -366,8 +369,102 @@ function openCVEModal(cveId) {
             </div>
             <div>
                 <span class="text-gray-500">CVSS Score</span>
-                <p class="font-mono">${cve.cvss_score || 'N/A'}</p>
+                <p class="font-mono font-bold text-lg">${cve.cvss_score || 'N/A'}</p>
             </div>
+        </div>
+    `;
+
+    // CNNVD Info
+    if (cve.cnnvd) {
+        content += `
+            <div class="mt-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400">CNNVD Info</h4>
+                    <span class="text-xs font-mono bg-white dark:bg-dark-800 px-2 py-1 rounded border border-blue-200 dark:border-blue-700">${cve.cnnvd.cnnvd_code}</span>
+                </div>
+                <div class="text-sm text-blue-800 dark:text-blue-300 space-y-1">
+                    <p><strong>Name:</strong> ${cve.cnnvd.vul_name}</p>
+                    <p><strong>Hazard Level:</strong> ${cve.cnnvd.hazard_level}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    // MITRE Enriched Data (Metrics & Affected)
+    if (cve.mitre && cve.mitre.exists) {
+        // Metrics
+        if (cve.mitre.metrics && cve.mitre.metrics.length > 0) {
+            const m = cve.mitre.metrics[0];
+            content += `
+                <div class="mt-6">
+                    <h4 class="text-sm font-bold text-gray-500 uppercase mb-3">CVSS Metrics (${m.version || 'V3'})</h4>
+                    <div class="bg-gray-50 dark:bg-dark-800 rounded-lg p-3 font-mono text-xs break-all">
+                        ${m.vectorString || 'N/A'}
+                    </div>
+                    <div class="flex gap-4 mt-2 text-sm">
+                        <div><span class="text-gray-500">Severity:</span> <span class="font-bold">${m.baseSeverity || '-'}</span></div>
+                        <div><span class="text-gray-500">Score:</span> <span class="font-bold">${m.baseScore || '-'}</span></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Affected Products
+        if (cve.mitre.affected && cve.mitre.affected.length > 0) {
+            content += `
+                <div class="mt-6">
+                    <h4 class="text-sm font-bold text-gray-500 uppercase mb-3">Affected Products</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-dark-800 dark:text-gray-400">
+                                <tr>
+                                    <th class="px-3 py-2">Vendor</th>
+                                    <th class="px-3 py-2">Product</th>
+                                    <th class="px-3 py-2">Versions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                                ${cve.mitre.affected.map(a => `
+                                    <tr>
+                                        <td class="px-3 py-2 font-medium">${a.vendor}</td>
+                                        <td class="px-3 py-2">${a.product}</td>
+                                        <td class="px-3 py-2 text-gray-500">${a.versions.join(', ')}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // CISA KEV Alert
+    if (cve.cisa && cve.cisa.in_kev) {
+        content += `
+            <div class="mt-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+                <div class="flex items-center mb-2">
+                    <i class="fa-solid fa-triangle-exclamation text-red-600 dark:text-red-400 mr-2"></i>
+                    <h4 class="font-bold text-red-700 dark:text-red-400">CISA Known Exploited Vulnerability</h4>
+                </div>
+                <div class="text-sm text-red-800 dark:text-red-300 space-y-1">
+                    <p><strong>Date Added:</strong> ${cve.cisa.date_added}</p>
+                    <p><strong>Required Action:</strong> ${cve.cisa.required_action}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    // External Links & New Tab
+    content += `
+        <div class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
+            <div class="flex gap-3">
+                ${cve.mitre ? `<a href="${cve.mitre.url}" target="_blank" class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors">View on CVE.org</a>` : ''}
+                <a href="https://nvd.nist.gov/vuln/detail/${cve.cve_id}" target="_blank" class="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">View on NVD</a>
+            </div>
+            <a href="#cve/${cve.cve_id}" target="_blank" class="text-sm text-gray-500 hover:text-primary-600 flex items-center">
+                <i class="fa-solid fa-up-right-from-square mr-1"></i> Open Full Page
+            </a>
         </div>
     `;
 
@@ -377,17 +474,167 @@ function openCVEModal(cveId) {
 
 function closeModal() {
     document.getElementById('modal').classList.add('hidden');
+    // Clear hash if it was a direct link, but only if we are not in full page mode
+    if (window.location.hash.startsWith('#cve/')) {
+        history.pushState("", document.title, window.location.pathname + window.location.search);
+    }
 }
 
 function setupEventListeners() {
     document.getElementById('cve-search').addEventListener('input', () => {
         renderCVEsView();
     });
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange(); // Handle initial load
 }
 
 function handleHashChange() {
     const hash = window.location.hash.slice(1);
+
+    // Handle CVE Detail Route: #cve/CVE-XXXX-YYYY
+    if (hash.startsWith('cve/')) {
+        const cveId = hash.split('/')[1];
+        if (cveId) {
+            // If data is loaded, open modal. If not, wait for data.
+            if (state.cves.length > 0) {
+                openCVEModal(cveId);
+            } else {
+                // Retry once data is loaded
+                const checkData = setInterval(() => {
+                    if (state.cves.length > 0) {
+                        clearInterval(checkData);
+                        openCVEModal(cveId);
+                    }
+                }, 100);
+            }
+        }
+        return;
+    }
+
     if (hash && ['dashboard', 'reports', 'cves', 'repos'].includes(hash)) {
         switchView(hash);
+    }
+}
+
+// Charts
+function initCharts() {
+    // Destroy existing charts if they exist
+    if (state.charts.trend) state.charts.trend.destroy();
+    if (state.charts.risk) state.charts.risk.destroy();
+
+    const isDark = state.theme === 'dark';
+    const textColor = isDark ? '#94a3b8' : '#64748b';
+    const gridColor = isDark ? '#334155' : '#e2e8f0';
+
+    // 1. Trend Chart Data (Last 7 Days)
+    const dates = [];
+    const counts = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        dates.push(d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }));
+
+        // Count CVEs for this date (based on update_time or publish_time)
+        const count = state.cves.filter(c => {
+            const cDate = (c.publish_time || c.update_time || '').split('T')[0];
+            return cDate === dateStr;
+        }).length;
+        counts.push(count);
+    }
+
+    // Trend Chart
+    const ctxTrend = document.getElementById('trendChart');
+    if (ctxTrend) {
+        state.charts.trend = new Chart(ctxTrend.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'New CVEs',
+                    data: counts,
+                    borderColor: '#0ea5e9',
+                    backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#0ea5e9',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                        titleColor: isDark ? '#f1f5f9' : '#0f172a',
+                        bodyColor: isDark ? '#cbd5e1' : '#334155',
+                        borderColor: isDark ? '#334155' : '#e2e8f0',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor, borderDash: [4, 4] },
+                        ticks: { color: textColor }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: textColor }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Risk Distribution Data
+    let riskCounts = { 'CRITICAL': 0, 'HIGH': 0, 'MEDIUM': 0, 'LOW': 0 };
+    state.cves.forEach(c => {
+        try {
+            const analysis = JSON.parse(c.ai_analysis);
+            let risk = (analysis.risk_level || 'UNKNOWN').toUpperCase();
+            if (risk.includes('CRITICAL') || risk.includes('严重')) riskCounts['CRITICAL']++;
+            else if (risk.includes('HIGH') || risk.includes('高')) riskCounts['HIGH']++;
+            else if (risk.includes('MEDIUM') || risk.includes('中')) riskCounts['MEDIUM']++;
+            else if (risk.includes('LOW') || risk.includes('低')) riskCounts['LOW']++;
+        } catch (e) { }
+    });
+
+    // Risk Chart
+    const ctxRisk = document.getElementById('riskChart');
+    if (ctxRisk) {
+        state.charts.risk = new Chart(ctxRisk.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Critical', 'High', 'Medium', 'Low'],
+                datasets: [{
+                    data: [riskCounts['CRITICAL'], riskCounts['HIGH'], riskCounts['MEDIUM'], riskCounts['LOW']],
+                    backgroundColor: ['#ef4444', '#f97316', '#eab308', '#22c55e'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: textColor, usePointStyle: true, padding: 20 }
+                    }
+                }
+            }
+        });
     }
 }

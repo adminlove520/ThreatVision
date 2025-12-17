@@ -13,6 +13,10 @@ from utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
+from utils.mitre_checker import MitreChecker
+from utils.cisa_checker import CISAChecker
+from utils.cnnvd_checker import CNNVDChecker
+
 class StaticAPIGenerator:
     def __init__(self):
         self.output_dir = os.path.join(Config.BASE_DIR, 'output', 'api')
@@ -22,6 +26,11 @@ class StaticAPIGenerator:
         self.cve_engine = create_engine(f'sqlite:///{Config.DB_PATH_CVE}')
         self.repo_engine = create_engine(f'sqlite:///{Config.DB_PATH_REPO}')
         
+        # Checkers
+        self.mitre = MitreChecker()
+        self.cisa = CISAChecker()
+        self.cnnvd = CNNVDChecker()
+
     def ensure_output_dir(self):
         if os.path.exists(self.output_dir):
             shutil.rmtree(self.output_dir)
@@ -85,13 +94,21 @@ class StaticAPIGenerator:
             
             cves_list = []
             for cve in cves:
+                # Enrich Data
+                mitre_info = self.mitre.check_cve(cve.cve_id)
+                cisa_info = self.cisa.check_cve(cve.cve_id)
+                cnnvd_info = self.cnnvd.check_cve(cve.cve_id)
+                
                 cve_data = {
                     'cve_id': cve.cve_id,
                     'description': cve.description,
                     'publish_time': cve.publish_time.isoformat() if cve.publish_time else None,
                     'update_time': cve.update_time.isoformat() if cve.update_time else None,
                     'cvss_score': cve.cvss_score,
-                    'ai_analysis': cve.ai_analysis
+                    'ai_analysis': cve.ai_analysis,
+                    'mitre': mitre_info,
+                    'cisa': cisa_info,
+                    'cnnvd': cnnvd_info
                 }
                 cves_list.append(cve_data)
                 
