@@ -14,18 +14,30 @@ class GitHubReleaseManager:
     """
     
     def __init__(self):
-        # 优先使用GitHub Actions自动生成的GITHUB_TOKEN
+        # 1. 优先使用GitHub Actions自动生成的GITHUB_TOKEN
         github_action_token = os.getenv('GITHUB_TOKEN')
         if github_action_token:
             self.tokens = [github_action_token]
             logger.info("Using GitHub Actions generated GITHUB_TOKEN")
         else:
-            # 否则使用配置中的tokens（从.env文件加载）
-            self.tokens = Config.GITHUB_TOKENS
-            if self.tokens and self.tokens != ['']:
-                logger.info(f"Using GitHub tokens from .env file: {len(self.tokens)} token(s) available")
+            # 2. 检查环境变量GITHUB_TOKENS（来自workflow配置）
+            env_github_tokens = os.getenv('GITHUB_TOKENS')
+            if env_github_tokens:
+                # 解析逗号分隔的tokens
+                self.tokens = [token.strip() for token in env_github_tokens.split(',') if token.strip()]
+                logger.info(f"Using GitHub tokens from environment variable: {len(self.tokens)} token(s) available")
             else:
-                logger.warning("No GitHub tokens available from .env file")
+                # 3. 否则使用配置中的tokens（从.env文件加载）
+                self.tokens = Config.GITHUB_TOKENS
+                if isinstance(self.tokens, list) and self.tokens and self.tokens != ['']:
+                    # 过滤掉空token
+                    self.tokens = [token for token in self.tokens if token.strip()]
+                    if self.tokens:
+                        logger.info(f"Using GitHub tokens from .env file: {len(self.tokens)} token(s) available")
+                    else:
+                        logger.warning("No valid GitHub tokens available from .env file")
+                else:
+                    logger.warning("No GitHub tokens available from .env file")
         
         # 确保tokens是列表类型
         if not isinstance(self.tokens, list):

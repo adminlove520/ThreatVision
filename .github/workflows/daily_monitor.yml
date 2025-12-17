@@ -52,6 +52,9 @@ jobs:
 
     - name: Run Monitor and Generate Report
       env:
+        # 优先使用GitHub Actions自动生成的GITHUB_TOKEN，提高安全性
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # 保留GITHUB_TOKENS作为备选，确保向后兼容
         GITHUB_TOKENS: ${{ secrets.GITHUB_TOKENS }}
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
