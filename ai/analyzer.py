@@ -1,3 +1,7 @@
+# 抑制所有FutureWarning警告，特别是google.generativeai的弃用警告
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 import os
 import sys
 import json
@@ -15,12 +19,17 @@ logger = setup_logger(__name__)
 import openai
 # 使用新的google.genai包替代过时的google.generativeai
 try:
+    # 首先尝试导入google.genai
     import google.genai as genai
     logger.info("Using new google.genai package")
 except ImportError:
     # 兼容处理：如果新包不可用，尝试使用旧包
-    import google.generativeai as genai
-    logger.warning("Using deprecated google.generativeai package, please upgrade to google.genai")
+    try:
+        import google.generativeai as genai
+        logger.warning("Using deprecated google.generativeai package, please upgrade to google.genai")
+    except ImportError:
+        logger.error("Neither google.genai nor google.generativeai package is available")
+        genai = None
 
 class AIAnalyzer:
     def __init__(self):
@@ -140,39 +149,56 @@ class AIAnalyzer:
             logger.error(f"Gemini API call failed: {e}")
             raise e
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     def analyze_content(self, content, analysis_type='cve'):
         prompt = self._get_prompt(analysis_type, content)
         
-        primary_provider = Config.AI_PROVIDER
+        # 尝试所有可用的AI提供商，直到成功或全部失败
+        providers = []
         
-        if primary_provider == 'gemini':
-            # Try Gemini first
-            try:
-                logger.info(f"Attempting analysis with Gemini ({analysis_type})")
-                result = self._call_gemini(prompt)
-                return self._validate_json(result)
-            except Exception as e:
-                logger.warning(f"Gemini failed, switching to OpenAI: {e}")
-                try:
-                    result = self._call_openai(prompt)
-                    return self._validate_json(result)
-                except Exception as e2:
-                    logger.error(f"All AI models failed after retries: {e2}")
-                    return None
+        # 根据配置添加可用的AI提供商
+        if Config.AI_PROVIDER == 'gemini':
+            # 如果主提供商是Gemini，先尝试Gemini，再尝试OpenAI
+            if self.gemini_api_key:
+                providers.append('gemini')
+            if self.openai_api_key:
+                providers.append('openai')
         else:
-            # Default: Try OpenAI first
+            # 默认先尝试OpenAI，再尝试Gemini
+            if self.openai_api_key:
+                providers.append('openai')
+            if self.gemini_api_key:
+                providers.append('gemini')
+        
+        # 如果没有配置任何AI提供商，返回None
+        if not providers:
+            logger.error("No AI providers configured. Please set OPENAI_API_KEY or GEMINI_API_KEY.")
+            return None
+        
+        # 尝试所有可用的提供商
+        for provider in providers:
             try:
-                logger.info(f"Attempting analysis with OpenAI ({analysis_type})")
-                result = self._call_openai(prompt)
-                return self._validate_json(result)
-            except Exception as e:
-                logger.warning(f"OpenAI failed, switching to Gemini: {e}")
-                try:
+                logger.info(f"Attempting analysis with {provider} ({analysis_type})")
+                if provider == 'gemini':
                     result = self._call_gemini(prompt)
-                    return self._validate_json(result)
-                except Exception as e2:
-                    logger.error(f"All AI models failed after retries: {e2}")
-                    return None
+                    validated = self._validate_json(result)
+                    if validated:
+                        return validated
+                    else:
+                        logger.warning(f"Gemini returned invalid JSON, retrying...")
+                else:
+                    result = self._call_openai(prompt)
+                    validated = self._validate_json(result)
+                    if validated:
+                        return validated
+                    else:
+                        logger.warning(f"OpenAI returned invalid JSON, retrying...")
+            except Exception as e:
+                logger.warning(f"{provider} failed, {'trying next provider...' if providers.index(provider) < len(providers) - 1 else 'retrying...'}: {e}")
+        
+        # 所有尝试都失败，返回None
+        logger.error(f"All AI models failed after {self._call_gemini.retry.statistics.get('attempt_number', 0) + self._call_openai.retry.statistics.get('attempt_number', 0)} attempts")
+        return None
 
     def classify_article(self, title, source=''):
         """

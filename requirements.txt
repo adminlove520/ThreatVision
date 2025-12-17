@@ -1,6 +1,7 @@
 requests
 sqlalchemy
 openai
+google-genai
 google-generativeai
 schedule
 beautifulsoup4
