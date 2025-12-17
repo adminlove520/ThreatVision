@@ -154,10 +154,17 @@ class AIAnalyzer:
         try:
             logger.info(f"Attempting analysis with Gemini ({self.gemini_model})")
             
-            # 使用新版google.genai包的Client API，根据PyPI文档
-            response = self.gemini_client.generate_content(
-                model=self.gemini_model,
-                contents=[
+            # 使用新版google.genai包的正确API调用方式
+            # 直接使用HTTP请求调用Gemini API，确保兼容性
+            import requests
+            
+            headers = {
+                'Authorization': f'Bearer {self.gemini_api_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            data = {
+                'contents': [
                     {
                         'parts': [
                             {
@@ -166,35 +173,34 @@ class AIAnalyzer:
                         ]
                     }
                 ],
-                generation_config={
+                'generationConfig': {
                     'temperature': 0.7,
-                    'max_output_tokens': 2048
+                    'maxOutputTokens': 2048,
+                    'responseMimeType': 'application/json'
                 }
-            )
+            }
             
-            # 解析响应 - 兼容不同响应格式
-            text = ""
-            if hasattr(response, 'text'):
-                # 直接获取文本响应
-                text = response.text
-            elif hasattr(response, 'candidates') and response.candidates:
-                # 结构化响应
-                candidate = response.candidates[0]
-                if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
-                    for part in candidate.content.parts:
-                        if hasattr(part, 'text'):
-                            text += part.text
+            # 使用最新的API端点
+            url = f'https://generativelanguage.googleapis.com/v1/models/{self.gemini_model}:generateContent'
+            response = requests.post(url, headers=headers, json=data, timeout=30)
             
-            # 清理JSON格式
-            if text:
-                if "```json" in text:
-                    text = text.split("```json")[1].split("```")[0]
-                elif "```" in text:
-                    text = text.split("```")[1].split("```")[0]
-                return text.strip()
-            
-            logger.error(f"Unexpected response format from Gemini: {response}")
-            return None
+            if response.status_code == 200:
+                result = response.json()
+                # 解析响应
+                if 'candidates' in result and result['candidates']:
+                    candidate = result['candidates'][0]
+                    if 'content' in candidate and 'parts' in candidate['content']:
+                        text = candidate['content']['parts'][0]['text']
+                        # 清理JSON格式
+                        if "```json" in text:
+                            text = text.split("```json")[1].split("```")[0]
+                        elif "```" in text:
+                            text = text.split("```")[1].split("```")[0]
+                        return text.strip()
+                return None
+            else:
+                logger.error(f"Gemini API returned error: {response.status_code} - {response.text}")
+                raise Exception(f"Gemini API error: {response.status_code} - {response.text}")
         except Exception as e:
             logger.error(f"Gemini API call failed: {e}")
             raise e
