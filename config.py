@@ -62,6 +62,36 @@ class Config:
 
     # Article Sources
     ARTICLE_SOURCES = YAML_CONFIG.get('article_sources', [])
+    
+    # Monitoring Configuration
+    MONITORING = YAML_CONFIG.get('monitoring', {
+        'enabled': True,
+        'cve': True,
+        'github': True,
+        'articles': True,
+        'auto_analyze': True
+    })
 
     # Logging
     LOG_FILE = os.path.join(LOG_DIR, 'security_monitor.log')
+
+    # Redis Configuration
+    # Load from YAML config first, then override with environment variables
+    REDIS_CONFIG = YAML_CONFIG.get('redis', {})
+    REDIS_ENABLED = REDIS_CONFIG.get('enabled', False)
+    REDIS_URL = os.getenv('REDIS_URL', REDIS_CONFIG.get('url', 'redis://localhost:6379/0'))
+    REDIS_QUEUE = os.getenv('REDIS_QUEUE', REDIS_CONFIG.get('queue', 'threatvision_queue'))
+    
+    # UI Configuration
+    UI_DATA_DIR = os.path.join(DATA_DIR, 'ui_data')
+    UI_PORT = int(os.getenv('UI_PORT', '8000'))
+    
+    # RSS Configuration
+    RSS_FILE = os.path.join(DATA_DIR, 'rss', 'security_news.xml')
+    RSS_TITLE = '安全资讯日报'
+    RSS_DESCRIPTION = '基于AI自动生成的安全资讯日报'
+    RSS_LINK = os.getenv('RSS_LINK', '')
+    
+    # Ensure directories exist
+    os.makedirs(UI_DATA_DIR, exist_ok=True)
+    os.makedirs(os.path.join(DATA_DIR, 'rss'), exist_ok=True)

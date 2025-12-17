@@ -285,4 +285,22 @@ class ArticleManager:
         summary = f"# {title}\n\n生成了{len(cve_data) if cve_data else 0}个CVE分析和{len(repo_data) if repo_data else 0}个仓库分析。"
         self.dingtalk_sender.send_markdown(title, summary)
         
+        # Update RSS feed
+        try:
+            from utils.rss_generator import RSSGenerator
+            rss_generator = RSSGenerator()
+            rss_generator.update_rss()
+            logger.info("RSS feed updated successfully")
+        except Exception as e:
+            logger.error(f"Failed to update RSS feed: {e}")
+        
+        # Push report to GitHub Release
+        try:
+            from utils.github_release import GitHubReleaseManager
+            github_release_manager = GitHubReleaseManager()
+            github_release_manager.push_report_to_release(report_path)
+            logger.info("Report pushed to GitHub Release successfully")
+        except Exception as e:
+            logger.error(f"Failed to push report to GitHub Release: {e}")
+        
         return report_path

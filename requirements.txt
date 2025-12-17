@@ -10,3 +10,8 @@ httpx
 PyYAML
 feedparser
 listparser
+redis
+rq
+fastapi
+uvicorn
+python-multipart

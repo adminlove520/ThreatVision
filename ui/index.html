@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreatVision - 安全资讯日报</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+    <!-- Highlight.js for code highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+    
+    <style>
+        /* Custom Tailwind config */
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+        
+        /* Theme variables */
+        :root {
+            --primary-color: #ef4444;
+            --primary-hover: #dc2626;
+            --secondary-color: #3b82f6;
+            --accent-color: #10b981;
+            --bg-dark: #1f2937;
+            --bg-light: #f9fafb;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base styles */
+        body {
+            @apply bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Header styles */
+        header {
+            @apply bg-white shadow-lg transition-all duration-300;
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        
+        nav a.active {
+            @apply text-red-600 font-semibold relative;
+        }
+        
+        nav a.active::after {
+            content: '';
+            @apply absolute bottom-[-8px] left-0 w-full h-0.5 bg-red-600 rounded-full transition-all duration-300;
+        }
+        
+        /* Card styles */
+        .card {
+            @apply bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Button styles */
+        .btn-primary {
+            @apply bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
+        }
+        
+        .btn-secondary {
+            @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-4 py-2 rounded-lg transition-all duration-300;
+        }
+        
+        /* Stat card styles */
+        .stat-card {
+            @apply bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 border border-gray-100;
+        }
+        
+        .stat-card-icon {
+            @apply w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold;
+        }
+        
+        /* Chart container */
+        .chart-container {
+            @apply bg-white rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-lg;
+        }
+        
+        /* Markdown styles */
+        .markdown-content {
+            @apply prose prose-sm sm:prose-base max-w-none;
+        }
+        
+        .markdown-content h1, 
+        .markdown-content h2, 
+        .markdown-content h3, 
+        .markdown-content h4, 
+        .markdown-content h5, 
+        .markdown-content h6 {
+            @apply text-gray-800 font-bold;
+        }
+        
+        .markdown-content a {
+            @apply text-red-600 hover:text-red-800 transition-colors duration-200;
+        }
+        
+        .markdown-content blockquote {
+            @apply border-l-4 border-red-400 pl-4 italic text-gray-600;
+        }
+        
+        .markdown-content pre {
+            @apply bg-gray-900 text-white p-4 rounded-lg overflow-x-auto shadow-lg;
+        }
+        
+        .markdown-content code {
+            @apply font-mono text-sm;
+        }
+        
+        .markdown-content table {
+            @apply w-full border-collapse;
+        }
+        
+        .markdown-content th, 
+        .markdown-content td {
+            @apply border border-gray-200 px-4 py-2;
+        }
+        
+        .markdown-content th {
+            @apply bg-gray-50 font-semibold;
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            @apply animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-600;
+        }
+        
+        /* Search input */
+        .search-input {
+            @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300;
+        }
+        
+        /* Filter buttons */
+        .filter-btn {
+            @apply px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-300 cursor-pointer;
+        }
+        
+        .filter-btn.active {
+            @apply bg-red-600 text-white border-red-600;
+        }
+        
+        /* CVE card */
+        .cve-card {
+            @apply bg-white rounded-xl shadow-md p-5 hover:shadow-xl transition-all duration-300 border border-gray-100;
+        }
+        
+        .cve-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Mobile menu */
+        .mobile-menu {
+            @apply fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-in-out;
+        }
+        
+        .mobile-menu.open {
+            @apply translate-x-0;
+        }
+        
+        .mobile-menu.closed {
+            @apply translate-x-full;
+        }
+        
+        /* Badge styles */
+        .badge {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+        }
+        
+        .badge-high {
+            @apply bg-red-100 text-red-800;
+        }
+        
+        .badge-medium {
+            @apply bg-yellow-100 text-yellow-800;
+        }
+        
+        .badge-low {
+            @apply bg-green-100 text-green-800;
+        }
+        
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Grid layout */
+        .grid-cols-auto {
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        }
+        
+        /* Responsive breakpoints */
+        @media (max-width: 640px) {
+            .container {
+                @apply px-3;
+            }
+            
+            h1 {
+                @apply text-xl;
+            }
+            
+            h2 {
+                @apply text-lg;
+            }
+        }
+        
+        /* Report content */
+        #reportContent {
+            @apply bg-white rounded-xl shadow-md p-6 transition-all duration-300;
+        }
+        
+        /* Table styles */
+        table {
+            @apply min-w-full divide-y divide-gray-200;
+        }
+        
+        th {
+            @apply bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+        }
+        
+        td {
+            @apply whitespace-nowrap text-sm text-gray-900;
+        }
+        
+        tr:nth-child(even) {
+            @apply bg-gray-50;
+        }
+        
+        tr:hover {
+            @apply bg-gray-50;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center shadow-lg">
+                    <i class="fas fa-shield text-white text-xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent">ThreatVision</h1>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="#dashboard" class="nav-link text-gray-600 hover:text-red-600 font-medium transition-all duration-300">首页</a>
+                <a href="#reports" class="nav-link text-gray-600 hover:text-red-600 font-medium transition-all duration-300">安全日报</a>
+                <a href="#cves" class="nav-link text-gray-600 hover:text-red-600 font-medium transition-all duration-300">漏洞分析</a>
+                <a href="#repos" class="nav-link text-gray-600 hover:text-red-600 font-medium transition-all duration-300">仓库监控</a>
+                <a href="#about" class="nav-link text-gray-600 hover:text-red-600 font-medium transition-all duration-300">关于</a>
+            </nav>
+            
+            <!-- Mobile Menu Button -->
+            <button id="mobileMenuBtn" class="md:hidden text-gray-700 hover:text-red-600 text-xl transition-all duration-300">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+    
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu closed">
+        <div class="flex justify-end p-4">
+            <button id="closeMobileMenu" class="text-gray-700 hover:text-red-600 text-xl transition-all duration-300">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="flex flex-col items-center space-y-6 text-xl">
+            <a href="#dashboard" class="mobile-nav-link text-gray-700 hover:text-red-600 font-medium transition-all duration-300">首页</a>
+            <a href="#reports" class="mobile-nav-link text-gray-700 hover:text-red-600 font-medium transition-all duration-300">安全日报</a>
+            <a href="#cves" class="mobile-nav-link text-gray-700 hover:text-red-600 font-medium transition-all duration-300">漏洞分析</a>
+            <a href="#repos" class="mobile-nav-link text-gray-700 hover:text-red-600 font-medium transition-all duration-300">仓库监控</a>
+            <a href="#about" class="mobile-nav-link text-gray-700 hover:text-red-600 font-medium transition-all duration-300">关于</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-chart-line text-red-600 mr-3"></i>
+                仪表盘
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Stats Cards -->
+                <div class="stat-card fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">今日漏洞</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-1" id="todayCves">0</h3>
+                            <p class="text-green-600 text-xs mt-1 flex items-center">
+                                <i class="fas fa-arrow-up mr-1"></i>
+                                <span>较昨日 +2</span>
+                            </p>
+                        </div>
+                        <div class="stat-card-icon bg-red-100 text-red-600">
+                            <i class="fas fa-bug"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card fade-in" style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">监控仓库</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-1" id="totalRepos">0</h3>
+                            <p class="text-gray-500 text-xs mt-1 flex items-center">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                <span>实时监控中</span>
+                            </p>
+                        </div>
+                        <div class="stat-card-icon bg-blue-100 text-blue-600">
+                            <i class="fab fa-github"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card fade-in" style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">安全日报</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-1" id="totalReports">0</h3>
+                            <p class="text-green-600 text-xs mt-1 flex items-center">
+                                <i class="fas fa-calendar-check mr-1"></i>
+                                <span>今日已更新</span>
+                            </p>
+                        </div>
+                        <div class="stat-card-icon bg-green-100 text-green-600">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chart Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                <div class="chart-container fade-in" style="animation-delay: 0.3s">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-chart-area text-blue-600 mr-2"></i>
+                        近7天漏洞趋势
+                    </h3>
+                    <canvas id="cveTrendChart" height="250"></canvas>
+                </div>
+                
+                <div class="chart-container fade-in" style="animation-delay: 0.4s">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-chart-pie text-purple-600 mr-2"></i>
+                        风险等级分布
+                    </h3>
+                    <canvas id="riskDistributionChart" height="250"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Reports Section -->
+        <section id="reports" class="mb-12">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-file-alt text-red-600 mr-3"></i>
+                        安全日报
+                    </h2>
+                    <p class="text-gray-500 mt-1">每日最新安全资讯汇总</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <input type="text" placeholder="搜索日期..." class="search-input w-full md:w-64">
+                    <button class="btn-primary flex items-center space-x-2">
+                        <i class="fas fa-refresh"></i>
+                        <span>刷新</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日期</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">包含内容</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                <th class="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Reports will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Latest Report -->
+        <section id="latestReport" class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-eye text-red-600 mr-3"></i>
+                日报详情
+            </h2>
+            <div id="reportContent" class="card">
+                <div class="flex justify-center items-center py-12 text-gray-500">
+                    <div class="text-center">
+                        <i class="fas fa-file-alt text-4xl mb-4 opacity-50"></i>
+                        <p class="text-lg">请从上方选择一个安全日报查看</p>
+                        <p class="text-sm mt-2">或使用搜索功能查找特定日期的报告</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- CVEs Section -->
+        <section id="cves" class="mb-12">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-exclamation-triangle text-red-600 mr-3"></i>
+                        最新漏洞
+                    </h2>
+                    <p class="text-gray-500 mt-1">高危漏洞实时监控</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button class="filter-btn active" data-filter="all">全部</button>
+                    <button class="filter-btn" data-filter="high">高危</button>
+                    <button class="filter-btn" data-filter="medium">中危</button>
+                    <button class="filter-btn" data-filter="low">低危</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cvesGrid">
+                <!-- CVEs will be inserted here -->
+            </div>
+        </section>
+        
+        <!-- Repositories Section -->
+        <section id="repos" class="mb-12">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fab fa-github text-gray-800 mr-3"></i>
+                        监控仓库
+                    </h2>
+                    <p class="text-gray-500 mt-1">安全相关仓库动态</p>
+                </div>
+                <button class="btn-primary flex items-center space-x-2">
+                    <i class="fas fa-refresh"></i>
+                    <span>刷新</span>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="reposGrid">
+                <!-- Repositories will be inserted here -->
+            </div>
+        </section>
+        
+        <!-- About Section -->
+        <section id="about" class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+                关于 ThreatVision
+            </h2>
+            
+            <div class="card">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">系统简介</h3>
+                        <p class="text-gray-600 mb-4">ThreatVision 是一个自动化安全监控与AI分析系统，旨在实时追踪最新的安全漏洞（CVE）和 GitHub 上的安全相关仓库，并利用人工智能技术进行深度分析。</p>
+                        <p class="text-gray-600">系统 7x24 小时不间断运行，自动完成安全信息收集、分析和报告生成，并通过多种渠道发布安全情报。</p>
+                        
+                        <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-4">核心功能</h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span class="text-gray-600">多源数据监控（CVE、GitHub仓库）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span class="text-gray-600">智能AI分析（OpenAI & Gemini双引擎）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span class="text-gray-600">自动化工作流（7x24小时运行）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span class="text-gray-600">每日安全简报生成与发布</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                <span class="text-gray-600">Redis消息队列优化API调用</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">技术栈</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
+                                <i class="fab fa-python text-blue-600 text-xl"></i>
+                                <span class="text-gray-700 font-medium">Python</span>
+                            </div>
+                            <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
+                                <i class="fas fa-database text-green-600 text-xl"></i>
+                                <span class="text-gray-700 font-medium">SQLite</span>
+                            </div>
+                            <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
+                                <i class="fas fa-redis text-red-600 text-xl"></i>
+                                <span class="text-gray-700 font-medium">Redis</span>
+                            </div>
+                            <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
+                                <i class="fab fa-js text-yellow-600 text-xl"></i>
+                                <span class="text-gray-700 font-medium">JavaScript</span>
+                            </div>
+                            <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
+                                <i class="fas fa-chart-bar text-purple-600 text-xl"></i>
+                                <span class="text-gray-700 font-medium">Chart.js</span>
+                            </div>
+                            <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
+                                <i class="fab fa-github text-gray-800 text-xl"></i>
+                                <span class="text-gray-700 font-medium">GitHub Actions</span>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-4">联系方式</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-envelope text-blue-600 text-lg"></i>
+                                <span class="text-gray-600">contact@threatvision.example</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fab fa-github text-gray-800 text-lg"></i>
+                                <a href="https://github.com" class="text-red-600 hover:text-red-800 transition-colors duration-200">GitHub Repository</a>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-rss text-orange-600 text-lg"></i>
+                                <a href="/rss/security_news.xml" class="text-red-600 hover:text-red-800 transition-colors duration-200">订阅RSS</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center shadow-lg">
+                            <i class="fas fa-shield text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">ThreatVision</h3>
+                    </div>
+                    <p class="text-gray-400 mb-4">自动化安全监控与AI分析系统，实时追踪最新安全漏洞和GitHub仓库动态。</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-red-400 transition-colors duration-300 text-xl">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-red-400 transition-colors duration-300 text-xl">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-red-400 transition-colors duration-300 text-xl">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-red-400 transition-colors duration-300 text-xl">
+                            <i class="fas fa-rss"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">快速链接</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#dashboard" class="text-gray-400 hover:text-white transition-colors duration-300">仪表盘</a></li>
+                        <li><a href="#reports" class="text-gray-400 hover:text-white transition-colors duration-300">安全日报</a></li>
+                        <li><a href="#cves" class="text-gray-400 hover:text-white transition-colors duration-300">漏洞分析</a></li>
+                        <li><a href="#repos" class="text-gray-400 hover:text-white transition-colors duration-300">仓库监控</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition-colors duration-300">关于我们</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">核心功能</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">CVE监控</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">GitHub仓库监控</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">AI智能分析</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">每日安全简报</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">自动发布系统</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">订阅更新</h4>
+                    <p class="text-gray-400 mb-4">获取最新安全资讯和系统更新通知</p>
+                    <div class="flex flex-col space-y-3">
+                        <div class="flex">
+                            <input type="email" placeholder="您的邮箱地址" class="flex-1 px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-700 border border-gray-600 text-white">
+                            <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-r-lg transition-colors duration-300">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500">我们不会向您发送垃圾邮件</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-10 pt-6 text-center text-gray-400">
+                <p>© 2025 ThreatVision. 保留所有权利。</p>
+                <p class="text-sm mt-2">基于AI自动生成的安全资讯日报系统</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="static/app.js"></script>
+</body>
+</html>

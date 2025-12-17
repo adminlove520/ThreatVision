@@ -1,3 +1,17 @@
+# 可选择性监控配置
+monitoring:
+  enabled: true
+  cve: true
+  github: true
+  articles: false
+  auto_analyze: true
+
+# Redis配置
+redis:
+  enabled: true  # 设置为false，避免在没有Redis的环境下尝试连接
+  url: "redis://localhost:6379/0"  # Redis连接URL
+  queue: "threatvision_queue"  # Redis队列名称
+
 # GitHub 监控关键词
 github_keywords:
   - 'CVE-2024'
@@ -5,14 +19,15 @@ github_keywords:
   - 'exploit'
   - 'vulnerability'
   - '0day'
-  - 'poc'
+  - 'poc&exp'
   - 'RCE'
-  - 'bypass'
+  - 'bypass&绕过'
 
 # 重点监控仓库列表 (owner/repo)
 watched_repositories:
   - 'projectdiscovery/nuclei-templates'
   - 'rapid7/metasploit-framework'
+  - 'adysec/nuclei_poc'
 
 
 # RSS/OPML Configuration

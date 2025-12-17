@@ -1,0 +1,82 @@
+name: Deploy Preview-UI to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'ui/**'
+      - '.github/workflows/deploy_ui.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    
+    services:
+      redis:
+        image: redis:6.0
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate static content
+        env:
+          REDIS_ENABLED: true
+        run: |
+          # Create output directory
+          mkdir -p output/ui
+          
+          # Copy UI files
+          cp -r ui/* output/ui/
+          
+          # Generate initial RSS feed
+          python -c "from utils.rss_generator import RSSGenerator; generator = RSSGenerator(); generator.generate_rss()"
+          
+          # Copy RSS feed to output directory
+          mkdir -p output/rss
+          if [ -f data/rss/security_news.xml ]; then
+            cp data/rss/security_news.xml output/rss/
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './output'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

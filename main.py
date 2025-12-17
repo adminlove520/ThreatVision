@@ -14,6 +14,7 @@ from ai.analyzer import AIAnalyzer
 from utils.logger import setup_logger
 from utils.article_manager import ArticleManager
 from utils.article_fetcher import ArticleFetcher
+from utils.queue_manager import QueueManager
 
 logger = setup_logger("Main")
 
@@ -26,7 +27,10 @@ class ThreatVision:
         self.article_manager = ArticleManager()
         self.article_fetcher = ArticleFetcher()
         
-        # Thread pool for analysis tasks
+        # Redis Queue Manager
+        self.queue_manager = QueueManager()
+        
+        # Thread pool for analysis tasks (fallback if Redis is not available)
         self.executor = ThreadPoolExecutor(max_workers=3)
 
     def init_system(self):
@@ -40,14 +44,38 @@ class ThreatVision:
             try:
                 logger.info("--- Starting Monitor Cycle ---")
                 
-                # 1. CVE Monitor
-                self.cve_monitor.monitor()
+                # Check if monitoring is enabled at all
+                if Config.MONITORING.get('enabled', True):
+                    # 1. CVE Monitor - Add to Redis Queue
+                    if Config.MONITORING.get('cve', True):
+                        logger.info("Running CVE Monitor...")
+                        if self.queue_manager.is_connected():
+                            self.queue_manager.add_cve_monitor_task()
+                        else:
+                            # Fallback to direct execution
+                            logger.warning("Redis not connected, falling back to direct execution for CVE monitoring")
+                            self.cve_monitor.monitor()
+                    else:
+                        logger.info("CVE monitoring is disabled in config")
                 
-                # 2. GitHub Monitor
-                self.github_monitor.monitor()
+                # 2. GitHub Monitor - Add to Redis Queue
+                if Config.MONITORING.get('enabled', True) and Config.MONITORING.get('github', True):
+                    logger.info("Running GitHub Monitor...")
+                    if self.queue_manager.is_connected():
+                        self.queue_manager.add_github_monitor_task()
+                    else:
+                        # Fallback to direct execution
+                        logger.warning("Redis not connected, falling back to direct execution for GitHub monitoring")
+                        self.github_monitor.monitor()
+                else:
+                    logger.info("GitHub monitoring is disabled in config")
                 
-                # 3. Trigger Analysis (Async)
-                self.trigger_analysis()
+                # 3. Trigger Analysis (Async) - only if auto_analyze is enabled
+                if Config.MONITORING.get('enabled', True) and Config.MONITORING.get('auto_analyze', True):
+                    logger.info("Triggering AI analysis...")
+                    self.trigger_analysis()
+                else:
+                    logger.info("Auto analysis is disabled in config")
                 
                 logger.info(f"Cycle complete. Sleeping for {Config.MONITOR_INTERVAL}s")
                 for _ in range(Config.MONITOR_INTERVAL):
@@ -64,7 +92,11 @@ class ThreatVision:
         try:
             unprocessed_cves = session.query(CVERecord).filter(CVERecord.ai_analysis == None).limit(5).all()
             for cve in unprocessed_cves:
-                self.executor.submit(self.analyze_cve, cve.cve_id, cve.description)
+                if self.queue_manager.is_connected():
+                    self.queue_manager.add_analysis_task('cve', cve.cve_id, cve.description)
+                else:
+                    # Fallback to direct execution
+                    self.executor.submit(self.analyze_cve, cve.cve_id, cve.description)
         finally:
             session.close()
 
@@ -73,7 +105,11 @@ class ThreatVision:
         try:
             unprocessed_repos = session.query(Repository).filter(Repository.ai_analysis == None).limit(5).all()
             for repo in unprocessed_repos:
-                self.executor.submit(self.analyze_repo, repo.name, repo.description)
+                if self.queue_manager.is_connected():
+                    self.queue_manager.add_analysis_task('repo', repo.name, repo.description)
+                else:
+                    # Fallback to direct execution
+                    self.executor.submit(self.analyze_repo, repo.name, repo.description)
         finally:
             session.close()
 
@@ -109,6 +145,7 @@ class ThreatVision:
                     record.ai_analysis = json.dumps(result)
                     session.commit()
                     logger.info(f"Analysis complete for {repo_name}")
+            except Exception as e:
                 logger.error(f"Error saving analysis for {repo_name}: {e}")
             finally:
                 session.close()
@@ -116,23 +153,33 @@ class ThreatVision:
     def daily_job(self):
         logger.info("Running daily reporting job...")
         
-        # 1. Fetch Articles (RSS + Configured Sources)
+        # 1. Fetch Articles (RSS + Configured Sources) - only if articles monitoring is enabled
         articles = []
-        
-        # RSS Feeds from OPML
-        try:
-            from utils.opml_manager import OPMLManager
-            opml_manager = OPMLManager()
-            # 使用新的方法获取更详细的feed信息
-            feeds_with_info = opml_manager.get_merged_feeds(return_objects=True)
-            self.logger.info(f"Processing {len(feeds_with_info)} RSS feeds for daily report")
-            rss_feeds = [feed['url'] for feed in feeds_with_info]
-            if rss_feeds:
-                rss_articles = self.article_fetcher.fetch_rss_articles(rss_feeds)
-                logger.info(f"Fetched {len(rss_articles)} articles from RSS feeds.")
-                articles.extend(rss_articles)
-        except Exception as e:
-            logger.error(f"Error fetching RSS articles: {e}")
+        if Config.MONITORING.get('enabled', True) and Config.MONITORING.get('articles', True):
+            # RSS Feeds from OPML
+            try:
+                from utils.opml_manager import OPMLManager
+                opml_manager = OPMLManager()
+                # 使用新的方法获取更详细的feed信息
+                feeds_with_info = opml_manager.get_merged_feeds(return_objects=True)
+                logger.info(f"Processing {len(feeds_with_info)} RSS feeds for daily report")
+                rss_feeds = [feed['url'] for feed in feeds_with_info]
+                
+                # Fetch RSS articles
+                if self.queue_manager.is_connected():
+                    self.queue_manager.add_article_fetch_task(rss_feeds)
+                    # Note: Article fetching is async via queue, we'll use previously fetched articles for now
+                    # TODO: Implement async article fetching with result handling
+                    logger.info("RSS article fetching scheduled via queue")
+                else:
+                    # Fallback to direct execution
+                    rss_articles = self.article_fetcher.fetch_rss_articles(rss_feeds)
+                    logger.info(f"Fetched {len(rss_articles)} articles from RSS feeds.")
+                    articles.extend(rss_articles)
+            except Exception as e:
+                logger.error(f"Error fetching RSS articles: {e}")
+        else:
+            logger.info("Articles monitoring is disabled in config")
 
         # Filter new articles
         new_articles = []
@@ -163,20 +210,34 @@ class ThreatVision:
         logger.info("Running single execution cycle...")
         
         # 1. Monitors
-        self.cve_monitor.monitor()
-        self.github_monitor.monitor()
+        if Config.MONITORING.get('enabled', True):
+            if Config.MONITORING.get('cve', True):
+                logger.info("Running CVE Monitor...")
+                self.cve_monitor.monitor()
+            else:
+                logger.info("CVE monitoring is disabled in config")
+        
+        if Config.MONITORING.get('enabled', True) and Config.MONITORING.get('github', True):
+            logger.info("Running GitHub Monitor...")
+            self.github_monitor.monitor()
+        else:
+            logger.info("GitHub monitoring is disabled in config")
         
         # 2. Analysis
-        # Submit tasks
-        self.trigger_analysis()
-        # Wait for completion
-        logger.info("Waiting for analysis to complete...")
-        self.executor.shutdown(wait=True)
-        
-        # Re-init executor for potential future use (though we are exiting)
-        self.executor = ThreadPoolExecutor(max_workers=3)
+        if Config.MONITORING.get('enabled', True) and Config.MONITORING.get('auto_analyze', True):
+            logger.info("Triggering AI analysis...")
+            self.trigger_analysis()
+            # Wait for completion
+            logger.info("Waiting for analysis to complete...")
+            self.executor.shutdown(wait=True)
+            
+            # Re-init executor for potential future use (though we are exiting)
+            self.executor = ThreadPoolExecutor(max_workers=3)
+        else:
+            logger.info("Auto analysis is disabled in config")
         
         # 3. Report
+        logger.info("Generating daily report...")
         self.daily_job()
         logger.info("Single execution cycle complete.")
 
