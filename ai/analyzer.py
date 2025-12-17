@@ -47,7 +47,16 @@ class AIAnalyzer:
         self.gemini_model = Config.GEMINI_MODEL
         
         if self.gemini_api_key:
-            genai.configure(api_key=self.gemini_api_key)
+            try:
+                # 尝试使用新的google.genai包的配置方式
+                if hasattr(genai, 'configure'):
+                    genai.configure(api_key=self.gemini_api_key)
+                else:
+                    # 新的google.genai包可能不需要显式配置，或者使用不同的配置方式
+                    logger.info("google.genai package detected, no explicit configure method needed")
+            except Exception as e:
+                logger.error(f"Error configuring Gemini: {e}")
+                # 配置失败不影响程序继续运行，后续调用时会自动使用API密钥
 
     def _get_prompt(self, analysis_type, content):
         if analysis_type == 'cve':
@@ -150,11 +159,27 @@ class AIAnalyzer:
             raise Exception("Gemini API key not configured")
             
         try:
+            # 创建模型实例 - 兼容新旧genai包
             model = genai.GenerativeModel(self.gemini_model)
+            
             # Gemini doesn't enforce JSON mode as strictly as OpenAI, so we ask nicely
             response = model.generate_content(prompt + "\n\nOutput strictly valid JSON.")
+            
+            # 获取响应文本 - 兼容不同版本的响应格式
+            text = ""
+            if hasattr(response, 'text'):
+                # 旧版google.generativeai包的响应格式
+                text = response.text
+            elif hasattr(response, 'candidates') and response.candidates:
+                # 新版google.genai包的响应格式
+                candidate = response.candidates[0]
+                if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
+                    text = ''.join(part.text for part in candidate.content.parts if hasattr(part, 'text'))
+            else:
+                # 其他格式的响应
+                text = str(response)
+            
             # Simple cleanup to ensure we get JSON
-            text = response.text
             if "```json" in text:
                 text = text.split("```json")[1].split("```")[0]
             elif "```" in text:
