@@ -1,17 +1,26 @@
-import openai
-import google.generativeai as genai
-import json
 import os
 import sys
+import json
 import time
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import Config
 from utils.logger import setup_logger
+from config import Config
 
+# 初始化logger
 logger = setup_logger(__name__)
+
+import openai
+# 使用新的google.genai包替代过时的google.generativeai
+try:
+    import google.genai as genai
+    logger.info("Using new google.genai package")
+except ImportError:
+    # 兼容处理：如果新包不可用，尝试使用旧包
+    import google.generativeai as genai
+    logger.warning("Using deprecated google.generativeai package, please upgrade to google.genai")
 
 class AIAnalyzer:
     def __init__(self):

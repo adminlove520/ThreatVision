@@ -4,6 +4,7 @@ import requests
 from datetime import datetime
 from config import Config
 from .logger import setup_logger
+from .github_token_manager import GitHubTokenManager
 
 logger = setup_logger(__name__)
 
@@ -14,39 +15,8 @@ class GitHubReleaseManager:
     """
     
     def __init__(self):
-        # 1. 优先使用GitHub Actions自动生成的GITHUB_TOKEN
-        github_action_token = os.getenv('GITHUB_TOKEN')
-        if github_action_token:
-            self.tokens = [github_action_token]
-            logger.info("Using GitHub Actions generated GITHUB_TOKEN")
-        else:
-            # 2. 检查环境变量GITHUB_TOKENS（来自workflow配置）
-            env_github_tokens = os.getenv('GITHUB_TOKENS')
-            if env_github_tokens:
-                # 解析逗号分隔的tokens
-                self.tokens = [token.strip() for token in env_github_tokens.split(',') if token.strip()]
-                logger.info(f"Using GitHub tokens from environment variable: {len(self.tokens)} token(s) available")
-            else:
-                # 3. 否则使用配置中的tokens（从.env文件加载）
-                self.tokens = Config.GITHUB_TOKENS
-                if isinstance(self.tokens, list) and self.tokens and self.tokens != ['']:
-                    # 过滤掉空token
-                    self.tokens = [token for token in self.tokens if token.strip()]
-                    if self.tokens:
-                        logger.info(f"Using GitHub tokens from .env file: {len(self.tokens)} token(s) available")
-                    else:
-                        logger.warning("No valid GitHub tokens available from .env file")
-                else:
-                    logger.warning("No GitHub tokens available from .env file")
-        
-        # 确保tokens是列表类型
-        if not isinstance(self.tokens, list):
-            self.tokens = []
-        
-        # 过滤掉空token
-        self.tokens = [token for token in self.tokens if token.strip()]
-        
-        self.current_token_index = 0
+        # 使用统一的GitHub Token管理器
+        self.token_manager = GitHubTokenManager()
         self.repo = os.getenv('GITHUB_REPOSITORY', '')
         
         # 如果没有设置GITHUB_REPOSITORY环境变量，尝试从当前目录的git配置中获取
@@ -75,21 +45,11 @@ class GitHubReleaseManager:
     
     def get_headers(self):
         """获取GitHub API请求头"""
-        if not self.tokens:
-            logger.warning("No GitHub tokens available")
-            return {}
-        token = self.tokens[self.current_token_index]
-        return {
-            'Authorization': f'token {token}',
-            'Accept': 'application/vnd.github.v3+json'
-        }
+        return self.token_manager.get_headers()
     
     def rotate_token(self):
         """轮换GitHub令牌"""
-        if not self.tokens:
-            return
-        self.current_token_index = (self.current_token_index + 1) % len(self.tokens)
-        logger.info(f"Rotated to GitHub token index: {self.current_token_index}")
+        self.token_manager.rotate_token()
     
     def create_release(self, tag_name, release_name, body=''):
         """

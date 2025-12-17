@@ -12,32 +12,26 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import Config
 from database.models import CVERecord, get_session
 from utils.logger import setup_logger
+from utils.github_token_manager import GitHubTokenManager
 
 logger = setup_logger(__name__)
 
 class CVEMonitor:
     def __init__(self):
-        self.tokens = Config.GITHUB_TOKENS
-        self.current_token_index = 0
+        # 使用统一的GitHub Token管理器
+        self.token_manager = GitHubTokenManager()
         self.keywords = Config.GITHUB_KEYWORDS
         
         # Database setup
         self.engine = create_engine(f'sqlite:///{Config.DB_PATH_CVE}')
         
     def get_headers(self):
-        if not self.tokens:
-            return {}
-        token = self.tokens[self.current_token_index]
-        return {
-            'Authorization': f'token {token}',
-            'Accept': 'application/vnd.github.v3+json'
-        }
-
+        """获取带有Authorization头的请求头"""
+        return self.token_manager.get_headers()
+    
     def rotate_token(self):
-        if not self.tokens:
-            return
-        self.current_token_index = (self.current_token_index + 1) % len(self.tokens)
-        logger.info(f"Rotated to GitHub token index: {self.current_token_index}")
+        """轮换到下一个token"""
+        self.token_manager.rotate_token()
 
     def search_github(self, keyword):
         url = f"https://api.github.com/search/repositories?q={keyword}&sort=updated&order=desc"

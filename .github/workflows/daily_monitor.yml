@@ -22,6 +22,12 @@ on:
         default: 'gemini-2.5-flash'
         type: string
 
+permissions:
+  # 确保GITHUB_TOKEN有创建Release的权限
+  contents: write
+  # 确保GITHUB_TOKEN有触发workflow的权限
+  actions: write
+
 jobs:
   monitor-and-report:
     runs-on: ubuntu-latest
