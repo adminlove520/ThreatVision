@@ -7,6 +7,10 @@ on:
       - 'ui/**'
       - '.github/workflows/deploy_ui.yml'
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Daily Security Monitor"]
+    types:
+      - completed
 
 permissions:
   contents: read
@@ -23,6 +27,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     
     services:
       redis:
@@ -38,6 +43,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: main # Ensure we checkout the latest main branch with data
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -53,9 +60,17 @@ jobs:
       - name: Generate static content
         env:
           REDIS_ENABLED: true
+          RSS_LINK: "https://adminlove520.github.io/ThreatVision"
         run: |
+          # Debug: List data directory
+          echo "Listing data directory:"
+          ls -R data/
+          
           # Create output directory
           mkdir -p output
+          
+          # Create .nojekyll to bypass Jekyll processing (fixes 404s for _* files and some others)
+          touch output/.nojekyll
           
           # Copy UI files to root of output
           cp -r ui/* output/
@@ -64,14 +79,17 @@ jobs:
           python utils/static_api_generator.py
           
           # Generate initial RSS feed
+          echo "Generating RSS feed..."
           python -c "from utils.rss_generator import RSSGenerator; generator = RSSGenerator(); generator.generate_rss()"
           
           # Copy RSS feed to output directory
           mkdir -p output/rss
           if [ -f data/rss/security_news.xml ]; then
             cp data/rss/security_news.xml output/rss/
+            echo "RSS feed copied successfully."
           else
-            echo "Warning: RSS file not found in data/rss/"
+            echo "Error: RSS file not found in data/rss/"
+            exit 1 # Fail the build if RSS is missing
           fi
           
           # Debug: List output directory
