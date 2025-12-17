@@ -74,8 +74,8 @@ class ArticleManager:
         content = f"\n### {cve.cve_id}"
         
         # Try to extract repo name if available
-        if hasattr(cve, 'url') and cve.url:
-            content += f" - {cve.url.split('/')[-1]}\n\n"
+        if hasattr(cve, 'repo_url') and cve.repo_url:
+            content += f" - [{cve.repo_url.split('/')[-1]}]({cve.repo_url})\n\n"
         else:
             content += "\n\n"
         

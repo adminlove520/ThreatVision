@@ -105,6 +105,7 @@ class StaticAPIGenerator:
                     'publish_time': cve.publish_time.isoformat() if cve.publish_time else None,
                     'update_time': cve.update_time.isoformat() if cve.update_time else None,
                     'cvss_score': cve.cvss_score,
+                    'repo_url': cve.repo_url,
                     'ai_analysis': cve.ai_analysis,
                     'mitre': mitre_info,
                     'cisa': cisa_info,

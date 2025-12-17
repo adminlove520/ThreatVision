@@ -147,7 +147,10 @@ function renderDashboard() {
         <div class="p-4 hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors cursor-pointer" onclick="openCVEModal('${cve.cve_id}')">
             <div class="flex justify-between items-start">
                 <div>
-                    <span class="text-sm font-mono font-medium text-primary-600 dark:text-primary-400">${cve.cve_id}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-mono font-medium text-primary-600 dark:text-primary-400">${cve.cve_id}</span>
+                        ${cve.repo_url ? `<a href="${cve.repo_url}" target="_blank" class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" onclick="event.stopPropagation()"><i class="fa-brands fa-github"></i> PoC</a>` : ''}
+                    </div>
                     <p class="text-xs text-gray-500 mt-1 line-clamp-1">${cve.description}</p>
                 </div>
                 ${getRiskBadge(cve.ai_analysis)}
@@ -235,7 +238,10 @@ function renderCVEsView() {
     gridEl.innerHTML = filtered.map(cve => `
         <div class="bg-white dark:bg-dark-900 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow">
             <div class="flex justify-between items-start mb-4">
-                <h3 class="text-lg font-bold font-mono text-primary-600 cursor-pointer hover:underline" onclick="openCVEModal('${cve.cve_id}')">${cve.cve_id}</h3>
+                <div class="flex items-center gap-2">
+                    <h3 class="text-lg font-bold font-mono text-primary-600 cursor-pointer hover:underline" onclick="openCVEModal('${cve.cve_id}')">${cve.cve_id}</h3>
+                    ${cve.repo_url ? `<a href="${cve.repo_url}" target="_blank" class="text-xs bg-gray-100 dark:bg-dark-800 px-2 py-1 rounded text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-colors" onclick="event.stopPropagation()"><i class="fa-brands fa-github"></i> PoC</a>` : ''}
+                </div>
                 ${getRiskBadge(cve.ai_analysis)}
             </div>
             <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-4">${cve.description}</p>
@@ -278,7 +284,8 @@ function getRiskBadge(aiAnalysis) {
 
     if (aiAnalysis) {
         try {
-            const analysis = JSON.parse(aiAnalysis);
+            // Handle both string and object
+            const analysis = typeof aiAnalysis === 'string' ? JSON.parse(aiAnalysis) : aiAnalysis;
             risk = (analysis.risk_level || 'UNKNOWN').toUpperCase();
 
             if (risk.includes('CRITICAL') || risk.includes('严重')) {
@@ -315,7 +322,20 @@ function openCVEModal(cveId) {
     const cve = state.cves.find(c => c.cve_id === cveId);
     if (!cve) return;
 
-    document.getElementById('modal-title').textContent = cve.cve_id;
+    // Determine CVSS Score (Enriched > Local)
+    let cvssScore = cve.cvss_score;
+    if (cve.mitre && cve.mitre.metrics && cve.mitre.metrics.length > 0) {
+        cvssScore = cve.mitre.metrics[0].baseScore;
+    }
+
+    // Title with PoC Link
+    const titleHtml = `
+        <div class="flex items-center gap-3">
+            <span>${cve.cve_id}</span>
+            ${cve.repo_url ? `<a href="${cve.repo_url}" target="_blank" class="text-sm font-normal bg-gray-100 dark:bg-dark-800 px-3 py-1 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-colors"><i class="fa-brands fa-github mr-1"></i> PoC</a>` : ''}
+        </div>
+    `;
+    document.getElementById('modal-title').innerHTML = titleHtml;
 
     let content = `
         <div class="mb-6">
@@ -369,7 +389,7 @@ function openCVEModal(cveId) {
             </div>
             <div>
                 <span class="text-gray-500">CVSS Score</span>
-                <p class="font-mono font-bold text-lg">${cve.cvss_score || 'N/A'}</p>
+                <p class="font-mono font-bold text-lg">${cvssScore || 'N/A'}</p>
             </div>
         </div>
     `;
@@ -495,11 +515,18 @@ function handleHashChange() {
     if (hash.startsWith('cve/')) {
         const cveId = hash.split('/')[1];
         if (cveId) {
-            // If data is loaded, open modal. If not, wait for data.
+            // Hide all main views
+            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+
+            // Ensure modal is visible and styled for full page
+            const modal = document.getElementById('modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('full-page-mode'); // Add a class for custom styling if needed
+
+            // If data is loaded, open modal content
             if (state.cves.length > 0) {
                 openCVEModal(cveId);
             } else {
-                // Retry once data is loaded
                 const checkData = setInterval(() => {
                     if (state.cves.length > 0) {
                         clearInterval(checkData);
@@ -511,6 +538,8 @@ function handleHashChange() {
         return;
     }
 
+    // Normal navigation
+    document.getElementById('modal').classList.remove('full-page-mode');
     if (hash && ['dashboard', 'reports', 'cves', 'repos'].includes(hash)) {
         switchView(hash);
     }
