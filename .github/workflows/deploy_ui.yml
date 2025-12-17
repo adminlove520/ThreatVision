@@ -82,13 +82,14 @@ jobs:
           echo "Generating RSS feed..."
           python -c "from utils.rss_generator import RSSGenerator; generator = RSSGenerator(); generator.generate_rss()"
           
-          # Copy RSS feed to output directory
+          # Copy RSS feed and assets to output directory
           mkdir -p output/rss
-          if [ -f data/rss/security_news.xml ]; then
-            cp data/rss/security_news.xml output/rss/
+          cp -r data/rss/* output/rss/
+          
+          if [ -f output/rss/security_news.xml ]; then
             echo "RSS feed copied successfully."
           else
-            echo "Error: RSS file not found in data/rss/"
+            echo "Error: RSS file not found in output/rss/"
             exit 1 # Fail the build if RSS is missing
           fi
           
