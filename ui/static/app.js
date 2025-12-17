@@ -1,7 +1,8 @@
 // ThreatVision Preview UI JavaScript
 
 // API Base URL
-const API_BASE_URL = '/api';
+// API Base URL (Static JSON)
+const API_BASE_URL = 'api';
 
 // DOM Elements
 const reportsTableBody = document.getElementById('reportsTableBody');
@@ -30,33 +31,33 @@ let cveData = [];
 // Initialize the application
 function init() {
     console.log('Initializing ThreatVision UI...');
-    
+
     // Initialize UI components
     initMobileMenu();
     initNavigation();
     initFilters();
     initSearch();
     initSmoothScroll();
-    
+
     // Load data
     loadReports();
     loadStats();
     loadCVEs();
     loadRepos();
-    
+
     // Initialize charts
     initCharts();
-    
+
     // Add event listeners
     document.querySelector('#reports button').addEventListener('click', loadReports);
     document.querySelector('#repos button').addEventListener('click', loadRepos);
-    
+
     // Enable code highlighting
     hljs.highlightAll();
-    
+
     // Add marked options for better rendering
     marked.setOptions({
-        highlight: function(code, lang) {
+        highlight: function (code, lang) {
             const language = hljs.getLanguage(lang) ? lang : 'plaintext';
             return hljs.highlight(code, { language }).value;
         },
@@ -72,9 +73,9 @@ function initMobileMenu() {
         mobileMenu.classList.add('open');
         document.body.style.overflow = 'hidden';
     });
-    
+
     closeMobileMenu.addEventListener('click', closeMobileMenuHandler);
-    
+
     // Close menu when clicking outside
     mobileMenu.addEventListener('click', (e) => {
         if (e.target === mobileMenu) {
@@ -98,7 +99,7 @@ function initNavigation() {
             // Update active state
             navLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
-            
+
             // Scroll to section
             const targetId = link.getAttribute('href');
             if (targetId.startsWith('#')) {
@@ -107,17 +108,17 @@ function initNavigation() {
             }
         });
     });
-    
+
     // Mobile navigation
     mobileNavLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             // Close mobile menu
             closeMobileMenuHandler();
-            
+
             // Update active state
             mobileNavLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
-            
+
             // Scroll to section
             const targetId = link.getAttribute('href');
             if (targetId.startsWith('#')) {
@@ -126,7 +127,7 @@ function initNavigation() {
             }
         });
     });
-    
+
     // Update active link on scroll
     window.addEventListener('scroll', updateActiveLink);
 }
@@ -135,12 +136,12 @@ function initNavigation() {
 function updateActiveLink() {
     const sections = document.querySelectorAll('section[id]');
     const scrollPosition = window.scrollY + 100;
-    
+
     sections.forEach(section => {
         const sectionTop = section.offsetTop;
         const sectionHeight = section.offsetHeight;
         const sectionId = section.getAttribute('id');
-        
+
         if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
             // Update desktop navigation
             navLinks.forEach(link => {
@@ -149,7 +150,7 @@ function updateActiveLink() {
                     link.classList.add('active');
                 }
             });
-            
+
             // Update mobile navigation
             mobileNavLinks.forEach(link => {
                 link.classList.remove('active');
@@ -168,10 +169,10 @@ function initFilters() {
             // Update active state
             filterBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
+
             // Update filter
             currentFilter = btn.getAttribute('data-filter');
-            
+
             // Apply filter
             applyFilter();
         });
@@ -196,7 +197,7 @@ function initSmoothScroll() {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
             if (href === '#') return;
-            
+
             e.preventDefault();
             scrollToSection(href);
         });
@@ -218,10 +219,10 @@ function scrollToSection(selector) {
 // Apply filter to CVEs
 function applyFilter() {
     if (cveData.length === 0) return;
-    
+
     // Clear existing CVEs
     cvesGrid.innerHTML = '';
-    
+
     // Filter CVEs
     let filteredCves = cveData;
     if (currentFilter !== 'all') {
@@ -235,7 +236,7 @@ function applyFilter() {
             }
         });
     }
-    
+
     // Render filtered CVEs
     renderCVEs(filteredCves);
 }
@@ -246,7 +247,7 @@ function renderCVEs(cves) {
         const cveCard = createCVECard(cve);
         cvesGrid.appendChild(cveCard);
     });
-    
+
     // If no CVEs found
     if (cves.length === 0) {
         cvesGrid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">
@@ -260,16 +261,16 @@ function renderCVEs(cves) {
 function createCVECard(cve) {
     const cveCard = document.createElement('div');
     cveCard.className = 'cve-card fade-in';
-    
+
     // Get AI analysis if available
     let riskLevel = '未知';
     let riskColor = 'badge bg-gray-100 text-gray-800';
-    
+
     if (cve.ai_analysis) {
         try {
             const analysis = JSON.parse(cve.ai_analysis);
             riskLevel = analysis.risk_level || '未知';
-            
+
             // Set color based on risk level
             switch (riskLevel.toLowerCase()) {
                 case 'high':
@@ -288,7 +289,7 @@ function createCVECard(cve) {
             console.error('Error parsing AI analysis:', e);
         }
     }
-    
+
     cveCard.innerHTML = `
         <div class="flex justify-between items-start mb-3">
             <h3 class="text-lg font-semibold text-gray-900 hover:text-red-600 transition-colors duration-200 cursor-pointer" onclick="loadCVE('${cve.cve_id}')">${cve.cve_id}</h3>
@@ -307,7 +308,7 @@ function createCVECard(cve) {
             </div>
         </div>
     `;
-    
+
     return cveCard;
 }
 
@@ -316,31 +317,31 @@ async function loadReports() {
     try {
         // Show loading state
         showLoading(reportsTableBody, '加载中...');
-        
-        const response = await fetch(`${API_BASE_URL}/reports`);
+
+        const response = await fetch(`${API_BASE_URL}/reports.json`);
         if (!response.ok) {
             throw new Error('Failed to fetch reports');
         }
         const data = await response.json();
-        
+
         // Update stats
         totalReports.textContent = data.total || 0;
-        
+
         // Remove loading state
         removeLoading();
-        
+
         // Clear existing reports
         reportsTableBody.innerHTML = '';
-        
+
         // Ensure reports is an array
         const reports = Array.isArray(data.reports) ? data.reports : [];
-        
+
         // Add new reports
         if (reports.length === 0) {
             reportsTableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-gray-500">暂无安全日报</td></tr>';
             return;
         }
-        
+
         reports.forEach(report => {
             const row = document.createElement('tr');
             row.className = 'fade-in hover:bg-gray-50 transition-colors duration-200';
@@ -358,14 +359,14 @@ async function loadReports() {
                     <button onclick="loadReport('${report.date}')" class="text-red-600 hover:text-red-900 font-medium text-sm mr-3">
                         <i class="fas fa-eye mr-1"></i>查看
                     </button>
-                    <a href="${API_BASE_URL}/reports/${report.date}" target="_blank" class="text-gray-600 hover:text-gray-900 font-medium text-sm">
+                    <a href="${API_BASE_URL}/reports/${report.date}.json" target="_blank" class="text-gray-600 hover:text-gray-900 font-medium text-sm">
                         <i class="fas fa-download mr-1"></i>下载
                     </a>
                 </td>
             `;
             reportsTableBody.appendChild(row);
         });
-        
+
         // Load latest report if available
         if (reports.length > 0) {
             loadReport(reports[0].date);
@@ -383,20 +384,20 @@ async function loadReport(date) {
     try {
         // Show loading state
         showLoading(reportContent, '加载报告中...');
-        
-        const response = await fetch(`${API_BASE_URL}/reports/${date}`);
+
+        const response = await fetch(`${API_BASE_URL}/reports/${date}.json`);
         const data = await response.json();
-        
+
         // Render markdown content with syntax highlighting
         const htmlContent = marked.parse(data.content);
         reportContent.innerHTML = htmlContent;
-        
+
         // Apply syntax highlighting to code blocks
         hljs.highlightAll();
-        
+
         // Scroll to report section
         scrollToSection('#latestReport');
-        
+
         // Update URL hash
         history.pushState(null, null, `#report-${date}`);
     } catch (error) {
@@ -416,21 +417,21 @@ async function loadReport(date) {
 async function loadStats() {
     try {
         // Get CVEs count
-        const cveResponse = await fetch(`${API_BASE_URL}/cves?limit=1`);
+        const cveResponse = await fetch(`${API_BASE_URL}/cves.json`);
         if (!cveResponse.ok) {
             throw new Error('Failed to load CVE stats');
         }
         const cveData = await cveResponse.json();
         todayCves.textContent = cveData.total || 0;
-        
+
         // Get repos count
-        const repoResponse = await fetch(`${API_BASE_URL}/repos?limit=1`);
+        const repoResponse = await fetch(`${API_BASE_URL}/repos.json`);
         if (!repoResponse.ok) {
             throw new Error('Failed to load repo stats');
         }
         const repoData = await repoResponse.json();
         totalRepos.textContent = repoData.total || 0;
-        
+
     } catch (error) {
         console.error('Error loading stats:', error);
         // Keep default values or show 0 instead of breaking UI
@@ -444,19 +445,19 @@ async function loadCVEs() {
     try {
         // Show loading state
         showLoading(cvesGrid, '加载漏洞数据中...');
-        
-        const response = await fetch(`${API_BASE_URL}/cves?limit=9`);
+
+        const response = await fetch(`${API_BASE_URL}/cves.json`);
         if (!response.ok) {
             throw new Error('Failed to fetch CVEs');
         }
         const data = await response.json();
-        
+
         // Store CVE data for filtering
         cveData = Array.isArray(data.cves) ? data.cves : [];
-        
+
         // Remove loading state
         removeLoading();
-        
+
         // Render CVEs
         renderCVEs(cveData);
     } catch (error) {
@@ -476,22 +477,22 @@ async function loadRepos() {
     try {
         // Show loading state
         showLoading(reposGrid, '加载仓库数据中...');
-        
-        const response = await fetch(`${API_BASE_URL}/repos?limit=6`);
+
+        const response = await fetch(`${API_BASE_URL}/repos.json`);
         if (!response.ok) {
             throw new Error('Failed to fetch repositories');
         }
         const data = await response.json();
-        
+
         // Remove loading state
         removeLoading();
-        
+
         // Clear existing repos
         reposGrid.innerHTML = '';
-        
+
         // Ensure repos is an array
         const repos = Array.isArray(data.repos) ? data.repos : [];
-        
+
         // Add new repos
         if (repos.length === 0) {
             reposGrid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">
@@ -501,7 +502,7 @@ async function loadRepos() {
             </div>`;
             return;
         }
-        
+
         repos.forEach(repo => {
             const repoCard = createRepoCard(repo);
             reposGrid.appendChild(repoCard);
@@ -522,7 +523,7 @@ async function loadRepos() {
 function createRepoCard(repo) {
     const repoCard = document.createElement('div');
     repoCard.className = 'card fade-in';
-    
+
     repoCard.innerHTML = `
         <div class="flex items-start space-x-4">
             <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-gray-700 text-2xl">
@@ -543,7 +544,7 @@ function createRepoCard(repo) {
             </div>
         </div>
     `;
-    
+
     return repoCard;
 }
 
@@ -552,14 +553,14 @@ async function loadCVE(cveId) {
     try {
         // Show loading state
         showLoading(document.body, '加载漏洞详情中...');
-        
-        const response = await fetch(`${API_BASE_URL}/cves/${cveId}`);
+
+        const response = await fetch(`${API_BASE_URL}/cves/${cveId}.json`);
         const cve = await response.json();
-        
+
         // Create modal content
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
-        
+
         // Get AI analysis if available
         let analysisContent = '';
         if (cve.ai_analysis) {
@@ -611,7 +612,7 @@ async function loadCVE(cveId) {
                 console.error('Error parsing AI analysis:', e);
             }
         }
-        
+
         modal.innerHTML = `
             <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 <div class="p-6">
@@ -647,13 +648,13 @@ async function loadCVE(cveId) {
                 </div>
             </div>
         `;
-        
+
         // Remove loading state
         removeLoading();
-        
+
         // Add modal to DOM
         document.body.appendChild(modal);
-        
+
         // Add close event listener for modal background
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
@@ -733,7 +734,7 @@ function initCharts() {
             }
         }
     });
-    
+
     // Risk Distribution Chart
     const riskDistributionCtx = document.getElementById('riskDistributionChart').getContext('2d');
     riskDistributionChart = new Chart(riskDistributionCtx, {
@@ -792,14 +793,14 @@ function showLoading(element, message = '加载中...') {
     const loadingDiv = document.createElement('div');
     loadingDiv.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
     loadingDiv.id = 'loading-overlay';
-    
+
     loadingDiv.innerHTML = `
         <div class="bg-white rounded-lg shadow-xl p-8 text-center">
             <div class="loading-spinner mx-auto mb-4"></div>
             <p class="text-gray-700 font-medium">${message}</p>
         </div>
     `;
-    
+
     document.body.appendChild(loadingDiv);
     document.body.style.overflow = 'hidden';
 }
@@ -818,7 +819,7 @@ function showError(message) {
     // Create error element
     const errorDiv = document.createElement('div');
     errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 slide-up';
-    
+
     errorDiv.innerHTML = `
         <div class="flex items-center space-x-3">
             <i class="fas fa-exclamation-circle text-xl"></i>
@@ -828,10 +829,10 @@ function showError(message) {
             </button>
         </div>
     `;
-    
+
     // Add to DOM
     document.body.appendChild(errorDiv);
-    
+
     // Remove after 5 seconds
     setTimeout(() => {
         if (errorDiv.parentNode) {

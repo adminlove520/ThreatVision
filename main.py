@@ -124,7 +124,8 @@ class ThreatVision:
                 record = session.query(CVERecord).filter_by(cve_id=cve_id).first()
                 if record:
                     record.ai_analysis = json.dumps(result)
-                    if result.get('risk_level') == 'High':
+                    risk = result.get('risk_level', '').upper()
+                    if 'HIGH' in risk or 'CRITICAL' in risk or '高' in risk or '严重' in risk:
                         record.is_high_value = True
                     session.commit()
                     logger.info(f"Analysis complete for {cve_id}")

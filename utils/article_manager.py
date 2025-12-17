@@ -90,10 +90,11 @@ class ArticleManager:
                 
                 risk_level = analysis.get('risk_level', 'MEDIUM')
                 # Map Chinese risk levels back to English keywords if necessary
-                if '高' in risk_level: risk_level = 'HIGH'
-                elif '中' in risk_level: risk_level = 'MEDIUM'
-                elif '低' in risk_level: risk_level = 'LOW'
-                elif '严重' in risk_level: risk_level = 'CRITICAL'
+                risk_str = str(risk_level).upper()
+                if '高' in risk_str or 'HIGH' in risk_str: risk_level = 'HIGH'
+                elif '中' in risk_str or 'MEDIUM' in risk_str: risk_level = 'MEDIUM'
+                elif '低' in risk_str or 'LOW' in risk_str: risk_level = 'LOW'
+                elif '严重' in risk_str or 'CRITICAL' in risk_str: risk_level = 'CRITICAL'
                 content += f"| 风险等级 | `{risk_level}` |\n"
                 content += f"| 利用状态 | `{analysis.get('exploitation_status', '未知')}` |\n"
                 

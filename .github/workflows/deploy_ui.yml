@@ -55,10 +55,13 @@ jobs:
           REDIS_ENABLED: true
         run: |
           # Create output directory
-          mkdir -p output/ui
+          mkdir -p output
           
-          # Copy UI files
-          cp -r ui/* output/ui/
+          # Copy UI files to root of output
+          cp -r ui/* output/
+          
+          # Generate Static API
+          python utils/static_api_generator.py
           
           # Generate initial RSS feed
           python -c "from utils.rss_generator import RSSGenerator; generator = RSSGenerator(); generator.generate_rss()"

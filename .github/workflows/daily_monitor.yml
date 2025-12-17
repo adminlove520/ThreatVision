@@ -75,6 +75,18 @@ jobs:
       run: |
         python main.py --once
 
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data/ rss/
+        if ! git diff --staged --quiet; then
+          git commit -m "Auto-update: Daily security report and data"
+          git push
+        else
+          echo "No changes to commit"
+        fi
+
     - name: Upload Report Artifact
       uses: actions/upload-artifact@v4
       with:
