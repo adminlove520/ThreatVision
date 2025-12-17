@@ -148,23 +148,26 @@ class AIAnalyzer:
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10), retry=_should_retry)
     def _call_gemini(self, prompt):
-        if not self.gemini_client:
-            raise Exception("Gemini client not configured")
+        if not self.gemini_api_key:
+            raise Exception("Gemini API key not configured")
             
         try:
             logger.info(f"Attempting analysis with Gemini ({self.gemini_model})")
             
-            # 使用新版google.genai包的正确API调用方式
-            # 直接使用HTTP请求调用Gemini API，确保兼容性
-            import requests
+            # 使用google.genai客户端库，按照API文档最佳实践
+            from google import genai
             
-            headers = {
-                'Authorization': f'Bearer {self.gemini_api_key}',
-                'Content-Type': 'application/json'
-            }
+            # 确保客户端已经初始化
+            if not hasattr(self, 'gemini_client') or not self.gemini_client:
+                logger.info("Initializing Gemini client...")
+                self.gemini_client = genai.Client(api_key=self.gemini_api_key)
+                logger.info("Gemini client initialized successfully")
             
-            data = {
-                'contents': [
+            # 使用客户端库调用Gemini API，按照API文档
+            # 注意：generate_content方法不接受generation_config参数
+            response = self.gemini_client.models.generate_content(
+                model=self.gemini_model,
+                contents=[
                     {
                         'parts': [
                             {
@@ -172,35 +175,32 @@ class AIAnalyzer:
                             }
                         ]
                     }
-                ],
-                'generationConfig': {
-                    'temperature': 0.7,
-                    'maxOutputTokens': 2048,
-                    'responseMimeType': 'application/json'
-                }
-            }
+                ]
+            )
             
-            # 使用最新的API端点
-            url = f'https://generativelanguage.googleapis.com/v1/models/{self.gemini_model}:generateContent'
-            response = requests.post(url, headers=headers, json=data, timeout=30)
+            # 处理响应，按照客户端库的响应格式
+            text = ""
+            if hasattr(response, 'text'):
+                # 直接获取文本响应
+                text = response.text
+            elif hasattr(response, 'candidates') and response.candidates:
+                # 结构化响应
+                for candidate in response.candidates:
+                    if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
+                        for part in candidate.content.parts:
+                            if hasattr(part, 'text'):
+                                text += part.text
             
-            if response.status_code == 200:
-                result = response.json()
-                # 解析响应
-                if 'candidates' in result and result['candidates']:
-                    candidate = result['candidates'][0]
-                    if 'content' in candidate and 'parts' in candidate['content']:
-                        text = candidate['content']['parts'][0]['text']
-                        # 清理JSON格式
-                        if "```json" in text:
-                            text = text.split("```json")[1].split("```")[0]
-                        elif "```" in text:
-                            text = text.split("```")[1].split("```")[0]
-                        return text.strip()
-                return None
-            else:
-                logger.error(f"Gemini API returned error: {response.status_code} - {response.text}")
-                raise Exception(f"Gemini API error: {response.status_code} - {response.text}")
+            # 清理JSON格式
+            if text:
+                if "```json" in text:
+                    text = text.split("```json")[1].split("```")[0]
+                elif "```" in text:
+                    text = text.split("```")[1].split("```")[0]
+                return text.strip()
+            
+            logger.warning(f"No valid text content found in Gemini response: {response}")
+            return None
         except Exception as e:
             logger.error(f"Gemini API call failed: {e}")
             raise e

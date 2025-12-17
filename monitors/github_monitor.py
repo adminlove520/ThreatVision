@@ -33,7 +33,7 @@ class GithubMonitor:
         """Get info for a specific repo (owner/name)"""
         url = f"https://api.github.com/repos/{repo_name}"
         try:
-            response = requests.get(url, headers=self.get_headers(), timeout=10)
+            response = requests.get(url, headers=self.get_headers(), timeout=10, proxies={'http': None, 'https': None})
             if response.status_code == 200:
                 return response.json()
             elif response.status_code == 403:
@@ -50,7 +50,7 @@ class GithubMonitor:
         """Fetch recent commits to see if there's interesting activity"""
         url = f"https://api.github.com/repos/{repo_name}/commits"
         try:
-            response = requests.get(url, headers=self.get_headers(), timeout=10)
+            response = requests.get(url, headers=self.get_headers(), timeout=10, proxies={'http': None, 'https': None})
             if response.status_code == 200:
                 commits = response.json()
                 # Simple logic: return latest commit message
