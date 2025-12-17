@@ -1,6 +1,7 @@
 requests
 sqlalchemy
 openai
+jiter
 google-genai
 google-generativeai
 schedule

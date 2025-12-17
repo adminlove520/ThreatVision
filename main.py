@@ -227,38 +227,52 @@ class ThreatVision:
         if Config.MONITORING.get('enabled', True) and Config.MONITORING.get('auto_analyze', True):
             logger.info("Triggering AI analysis...")
             
-            # Check if Redis queue is enabled and available
-            if self.queue_manager.is_connected():
-                # When Redis queue is available, execute analysis tasks directly instead of adding to queue
-                # This ensures analysis completes before report generation
-                logger.info("Using direct execution for analysis tasks to ensure completion before report generation")
-                
-                # CVEs
-                session = get_session(self.cve_monitor.engine)
-                try:
-                    unprocessed_cves = session.query(CVERecord).filter(CVERecord.ai_analysis == None).limit(5).all()
-                    for cve in unprocessed_cves:
-                        self.analyze_cve(cve.cve_id, cve.description)
-                finally:
-                    session.close()
-                
-                # Repos
-                session = get_session(self.github_monitor.engine)
-                try:
-                    unprocessed_repos = session.query(Repository).filter(Repository.ai_analysis == None).limit(5).all()
-                    for repo in unprocessed_repos:
-                        self.analyze_repo(repo.name, repo.description)
-                finally:
-                    session.close()
-            else:
-                # When Redis queue is not available, use thread pool
-                self.trigger_analysis()
-                # Wait for completion
-                logger.info("Waiting for analysis to complete...")
-                self.executor.shutdown(wait=True)
-                
-                # Re-init executor for potential future use (though we are exiting)
-                self.executor = ThreadPoolExecutor(max_workers=3)
+            try:
+                # Check if Redis queue is enabled and available
+                if self.queue_manager.is_connected():
+                    # When Redis queue is available, execute analysis tasks directly instead of adding to queue
+                    # This ensures analysis completes before report generation
+                    logger.info("Using direct execution for analysis tasks to ensure completion before report generation")
+                    
+                    # CVEs
+                    session = get_session(self.cve_monitor.engine)
+                    try:
+                        unprocessed_cves = session.query(CVERecord).filter(CVERecord.ai_analysis == None).limit(5).all()
+                        for cve in unprocessed_cves:
+                            try:
+                                self.analyze_cve(cve.cve_id, cve.description)
+                            except Exception as e:
+                                logger.error(f"Error analyzing CVE {cve.cve_id}: {e}")
+                                # 继续分析下一个CVE，不中断整个流程
+                                continue
+                    finally:
+                        session.close()
+                    
+                    # Repos
+                    session = get_session(self.github_monitor.engine)
+                    try:
+                        unprocessed_repos = session.query(Repository).filter(Repository.ai_analysis == None).limit(5).all()
+                        for repo in unprocessed_repos:
+                            try:
+                                self.analyze_repo(repo.name, repo.description)
+                            except Exception as e:
+                                logger.error(f"Error analyzing Repo {repo.name}: {e}")
+                                # 继续分析下一个仓库，不中断整个流程
+                                continue
+                    finally:
+                        session.close()
+                else:
+                    # When Redis queue is not available, use thread pool
+                    self.trigger_analysis()
+                    # Wait for completion
+                    logger.info("Waiting for analysis to complete...")
+                    self.executor.shutdown(wait=True)
+                    
+                    # Re-init executor for potential future use (though we are exiting)
+                    self.executor = ThreadPoolExecutor(max_workers=3)
+            except Exception as e:
+                logger.error(f"Error during AI analysis: {e}")
+                logger.info("AI analysis failed, proceeding to report generation with available data...")
         else:
             logger.info("Auto analysis is disabled in config")
         

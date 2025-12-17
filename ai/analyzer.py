@@ -110,7 +110,22 @@ class AIAnalyzer:
         else:
             return f"Analyze the following text and provide a summary in JSON format: {content}"
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    # 定义不重试的异常类型
+    @staticmethod
+    def _should_retry(retry_state):
+        # 不重试网络连接错误
+        if isinstance(retry_state.outcome.exception(), (ConnectionError, OSError, TimeoutError)):
+            logger.error(f"Network error occurred, skipping retry: {retry_state.outcome.exception()}")
+            return False
+        # 不重试认证错误
+        if hasattr(retry_state.outcome.exception(), 'status_code'):
+            if retry_state.outcome.exception().status_code in [401, 403]:
+                logger.error(f"Authentication error occurred, skipping retry: {retry_state.outcome.exception()}")
+                return False
+        # 其他情况重试
+        return True
+    
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10), retry=_should_retry)
     def _call_openai(self, prompt):
         if not self.openai_api_key:
             raise Exception("OpenAI API key not configured")
@@ -129,7 +144,7 @@ class AIAnalyzer:
             logger.error(f"OpenAI API call failed: {e}")
             raise e
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10), retry=_should_retry)
     def _call_gemini(self, prompt):
         if not self.gemini_api_key:
             raise Exception("Gemini API key not configured")
@@ -149,7 +164,7 @@ class AIAnalyzer:
             logger.error(f"Gemini API call failed: {e}")
             raise e
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10), retry=_should_retry)
     def analyze_content(self, content, analysis_type='cve'):
         prompt = self._get_prompt(analysis_type, content)
         
