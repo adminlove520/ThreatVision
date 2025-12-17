@@ -55,6 +55,9 @@ def init_db():
     
     return engine_cve, engine_repo
 
+_session_makers = {}
+
 def get_session(engine):
-    Session = sessionmaker(bind=engine)
-    return Session()
+    if engine not in _session_makers:
+        _session_makers[engine] = sessionmaker(bind=engine)
+    return _session_makers[engine]()

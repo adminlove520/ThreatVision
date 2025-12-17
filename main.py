@@ -4,7 +4,7 @@ import threading
 import signal
 import sys
 import os
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from config import Config
 from database.models import init_db, get_session, CVERecord, Repository
@@ -165,17 +165,21 @@ class ThreatVision:
                 logger.info(f"Processing {len(feeds_with_info)} RSS feeds for daily report")
                 rss_feeds = [feed['url'] for feed in feeds_with_info]
                 
-                # Fetch RSS articles
-                if self.queue_manager.is_connected():
-                    self.queue_manager.add_article_fetch_task(rss_feeds)
-                    # Note: Article fetching is async via queue, we'll use previously fetched articles for now
-                    # TODO: Implement async article fetching with result handling
-                    logger.info("RSS article fetching scheduled via queue")
-                else:
-                    # Fallback to direct execution
-                    rss_articles = self.article_fetcher.fetch_rss_articles(rss_feeds)
-                    logger.info(f"Fetched {len(rss_articles)} articles from RSS feeds.")
-                    articles.extend(rss_articles)
+                # Fetch RSS articles in parallel
+                logger.info(f"Fetching articles from {len(rss_feeds)} feeds in parallel...")
+                futures = []
+                for url in rss_feeds:
+                    futures.append(self.executor.submit(self.article_fetcher.fetch_rss_articles, [url]))
+                
+                for future in as_completed(futures):
+                    try:
+                        fetched = future.result()
+                        if fetched:
+                            articles.extend(fetched)
+                    except Exception as e:
+                        logger.error(f"Error in RSS fetch task: {e}")
+                
+                logger.info(f"Fetched total {len(articles)} articles from RSS feeds.")
             except Exception as e:
                 logger.error(f"Error fetching RSS articles: {e}")
         else:
@@ -303,8 +307,9 @@ class ThreatVision:
     def stop(self):
         logger.info("Stopping system...")
         self.running = False
-        self.executor.shutdown(wait=False)
-        sys.exit(0)
+        logger.info("Waiting for pending tasks to complete...")
+        self.executor.shutdown(wait=True)
+        logger.info("System stopped.")
 
 if __name__ == "__main__":
     import argparse

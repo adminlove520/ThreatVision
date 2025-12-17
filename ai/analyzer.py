@@ -6,7 +6,7 @@ import os
 import sys
 import json
 import time
-from tenacity import retry, stop_after_attempt, wait_exponential
+import logging
 
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -54,206 +54,221 @@ class AIAnalyzer:
     def _get_prompt(self, analysis_type, content):
         if analysis_type == 'cve':
             return f"""
-            分析以下CVE漏洞信息,返回详细的结构化JSON分析。
+            # Role
+            You are a Senior Cybersecurity Threat Intelligence Analyst. Your task is to analyze the following CVE vulnerability and provide a professional risk assessment.
 
-            CVE信息: {content}
+            # Input Data
+            CVE Information: {content}
 
-            请返回以下JSON格式(严格遵守,不要添加其他字段):
+            # Analysis Requirements
+            1. **Risk Assessment**: Determine the practical risk level (CRITICAL/HIGH/MEDIUM/LOW) based on exploitability and impact, not just CVSS.
+            2. **Exploitation Status**: accurate determination of exploit availability (POC available/Active exploitation/No known exploit).
+            3. **Technical Depth**: Provide technical details on the vulnerability mechanism (e.g., buffer overflow, deserialization) and attack vector.
+            4. **Value**: Assess the value for security researchers and defenders.
+
+            # Output Format
+            Return a strictly valid JSON object with the following schema:
             {{
-                "risk_level": "CRITICAL/HIGH/MEDIUM/LOW之一",
-                "exploitation_status": "POC可用/漏洞利用可用/无公开利用/未知",
-                "summary": "简明的漏洞概述,2-3句话",
+                "risk_level": "CRITICAL", // CRITICAL, HIGH, MEDIUM, or LOW
+                "exploitation_status": "POC Available", // POC Available, Active Exploitation, No Known Exploit, or Unknown
+                "summary": "Concise executive summary (2-3 sentences).",
                 "key_findings": [
-                    "关键发现1",
-                    "关键发现2",
-                    "至少3-5个关键点"
+                    "Key finding 1",
+                    "Key finding 2",
+                    "Key finding 3"
                 ],
                 "technical_details": [
-                    "技术细节1: 漏洞原理说明",
-                    "技术细节2: 利用方法",
-                    "技术细节3: 修复建议"
+                    "Vulnerability mechanism explanation",
+                    "Attack vector details",
+                    "Mitigation strategies"
                 ],
                 "affected_components": [
-                    "受影响的软件/系统1",
-                    "受影响的软件/系统2"
+                    "Component 1",
+                    "Component 2"
                 ],
-                "value_assessment": "对安全研究人员的价值评估,说明为什么重要"
+                "value_assessment": "Why this is important for the security community."
             }}
             """
         elif analysis_type == 'repo':
             return f"""
-            分析以下GitHub仓库更新信息,返回详细的结构化JSON分析。
+            # Role
+            You are a Senior Security Researcher specializing in open-source threat intelligence. Your task is to analyze the following GitHub repository update.
 
-            仓库信息: {content}
+            # Input Data
+            Repository Information: {content}
 
-            请返回以下JSON格式(严格遵守):
+            # Analysis Requirements
+            1. **Classification**: Accurately classify the tool/code (e.g., POC, Malware, Security Tool, C2 Framework).
+            2. **Intent Analysis**: Determine if the update introduces new offensive capabilities or is a defensive improvement.
+            3. **Risk Level**: Assess the potential impact if this tool is misused.
+
+            # Output Format
+            Return a strictly valid JSON object with the following schema:
             {{
-                "security_type": "POC更新/漏洞利用/安全工具/C2框架/安全研究/恶意软件/其他",
-                "update_type": "SECURITY_CRITICAL/SECURITY_IMPROVEMENT/新增/GENERAL_UPDATE",
-                "risk_level": "CRITICAL/HIGH/MEDIUM/LOW",
-                "summary": "仓库更新的简明概述,2-3句话",
+                "security_type": "POC", // POC, Exploit, Security Tool, C2 Framework, Malware, Research, or Other
+                "update_type": "SECURITY_CRITICAL", // SECURITY_CRITICAL, SECURITY_IMPROVEMENT, NEW_FEATURE, or GENERAL_UPDATE
+                "risk_level": "HIGH", // CRITICAL, HIGH, MEDIUM, or LOW
+                "summary": "Concise summary of the repository and recent changes.",
                 "key_findings": [
-                    "关键发现1",
-                    "关键发现2",
-                    "至少3-4个关键点"
+                    "Major capability 1",
+                    "Major capability 2",
+                    "Major capability 3"
                 ],
                 "technical_details": [
-                    "技术细节1",
-                    "技术细节2"
+                    "Technical implementation details",
+                    "Usage context"
                 ],
                 "affected_components": [
-                    "相关技术/产品1",
-                    "相关技术/产品2"
+                    "Targeted technologies",
+                    "Affected protocols"
                 ],
-                "value_assessment": "对安全研究的价值,为什么值得关注",
-                "is_malware": false
+                "value_assessment": "Value for security research or red teaming.",
+                "is_malware": false // true if the repo itself is malicious (e.g., backdoored tool), false otherwise
             }}
             """
         else:
             return f"Analyze the following text and provide a summary in JSON format: {content}"
 
-    # 定义不重试的异常类型
-    @staticmethod
-    def _should_retry(retry_state):
-        # 不重试网络连接错误
-        if isinstance(retry_state.outcome.exception(), (ConnectionError, OSError, TimeoutError)):
-            logger.error(f"Network error occurred, skipping retry: {retry_state.outcome.exception()}")
-            return False
-        # 不重试认证错误
-        if hasattr(retry_state.outcome.exception(), 'status_code'):
-            if retry_state.outcome.exception().status_code in [401, 403]:
-                logger.error(f"Authentication error occurred, skipping retry: {retry_state.outcome.exception()}")
-                return False
-        # 其他情况重试
-        return True
-    
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10), retry=_should_retry)
     def _call_openai(self, prompt):
         if not self.openai_api_key:
             raise Exception("OpenAI API key not configured")
             
-        try:
-            response = openai.chat.completions.create(
-                model=self.openai_model,
-                messages=[
-                    {"role": "system", "content": "You are a cybersecurity expert assistant. You output strictly valid JSON."},
-                    {"role": "user", "content": prompt}
-                ],
-                response_format={"type": "json_object"}
-            )
-            return response.choices[0].message.content
-        except Exception as e:
-            logger.error(f"OpenAI API call failed: {e}")
-            raise e
+        # Validate Base URL
+        if "api.openai.com" in self.openai_base_url and not self.openai_base_url.endswith("/v1"):
+             logger.warning(f"OpenAI Base URL '{self.openai_base_url}' might be missing '/v1' suffix. Standard is 'https://api.openai.com/v1'")
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10), retry=_should_retry)
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = openai.chat.completions.create(
+                    model=self.openai_model,
+                    messages=[
+                        {"role": "system", "content": "You are a cybersecurity expert assistant. You output strictly valid JSON."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    response_format={"type": "json_object"}
+                )
+                return response.choices[0].message.content
+            except Exception as e:
+                error_msg = str(e)
+                logger.warning(f"OpenAI API call failed (Attempt {attempt+1}/{max_retries}): {error_msg}")
+                
+                # Check for HTML response (Proxy/404 issue)
+                if "<html" in error_msg.lower() or "404" in error_msg:
+                    logger.error("OpenAI returned HTML or 404. This usually indicates a proxy or base URL configuration issue.")
+                    logger.error(f"Current Base URL: {self.openai_base_url}")
+                    # If it's a configuration error, retrying might not help, but we'll follow the loop
+                
+                if attempt < max_retries - 1:
+                    time.sleep(2 ** attempt) # Exponential backoff: 1s, 2s, 4s
+                else:
+                    logger.error("OpenAI API failed after all retries.")
+                    return None
+
     def _call_gemini(self, prompt):
         if not self.gemini_api_key:
             raise Exception("Gemini API key not configured")
             
-        try:
-            logger.info(f"Attempting analysis with Gemini ({self.gemini_model})")
-            
-            # 使用google.genai客户端库，按照API文档最佳实践
-            from google import genai
-            
-            # 确保客户端已经初始化
-            if not hasattr(self, 'gemini_client') or not self.gemini_client:
-                logger.info("Initializing Gemini client...")
-                self.gemini_client = genai.Client(api_key=self.gemini_api_key)
-                logger.info("Gemini client initialized successfully")
-            
-            # 使用客户端库调用Gemini API，按照API文档
-            # 注意：generate_content方法不接受generation_config参数
-            response = self.gemini_client.models.generate_content(
-                model=self.gemini_model,
-                contents=[
-                    {
-                        'parts': [
-                            {
-                                'text': prompt + "\n\nOutput strictly valid JSON."
-                            }
-                        ]
-                    }
-                ]
-            )
-            
-            # 处理响应，按照客户端库的响应格式
-            text = ""
-            if hasattr(response, 'text'):
-                # 直接获取文本响应
-                text = response.text
-            elif hasattr(response, 'candidates') and response.candidates:
-                # 结构化响应
-                for candidate in response.candidates:
-                    if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
-                        for part in candidate.content.parts:
-                            if hasattr(part, 'text'):
-                                text += part.text
-            
-            # 清理JSON格式
-            if text:
-                if "```json" in text:
-                    text = text.split("```json")[1].split("```")[0]
-                elif "```" in text:
-                    text = text.split("```")[1].split("```")[0]
-                return text.strip()
-            
-            logger.warning(f"No valid text content found in Gemini response: {response}")
-            return None
-        except Exception as e:
-            logger.error(f"Gemini API call failed: {e}")
-            raise e
-
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10), retry=_should_retry)
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                logger.info(f"Attempting analysis with Gemini ({self.gemini_model}) (Attempt {attempt+1}/{max_retries})")
+                
+                # 使用google.genai客户端库，按照API文档最佳实践
+                from google import genai
+                
+                # 确保客户端已经初始化
+                if not hasattr(self, 'gemini_client') or not self.gemini_client:
+                    logger.info("Initializing Gemini client...")
+                    self.gemini_client = genai.Client(api_key=self.gemini_api_key)
+                    logger.info("Gemini client initialized successfully")
+                
+                # 使用客户端库调用Gemini API，按照API文档
+                # 注意：generate_content方法不接受generation_config参数
+                response = self.gemini_client.models.generate_content(
+                    model=self.gemini_model,
+                    contents=[
+                        {
+                            'parts': [
+                                {
+                                    'text': prompt + "\n\nOutput strictly valid JSON."
+                                }
+                            ]
+                        }
+                    ]
+                )
+                
+                # 处理响应，按照客户端库的响应格式
+                text = ""
+                if hasattr(response, 'text'):
+                    # 直接获取文本响应
+                    text = response.text
+                elif hasattr(response, 'candidates') and response.candidates:
+                    # 结构化响应
+                    for candidate in response.candidates:
+                        if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
+                            for part in candidate.content.parts:
+                                if hasattr(part, 'text'):
+                                    text += part.text
+                
+                # 清理JSON格式
+                if text:
+                    if "```json" in text:
+                        text = text.split("```json")[1].split("```")[0]
+                    elif "```" in text:
+                        text = text.split("```")[1].split("```")[0]
+                    return text.strip()
+                
+                logger.warning(f"No valid text content found in Gemini response: {response}")
+                # If no text, retry
+                if attempt < max_retries - 1:
+                    time.sleep(2 ** attempt)
+                    continue
+                
+            except Exception as e:
+                logger.warning(f"Gemini API call failed (Attempt {attempt+1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(2 ** attempt)
+                else:
+                    logger.error("Gemini API failed after all retries.")
+                    return None
+        return None
+    
     def analyze_content(self, content, analysis_type='cve'):
         prompt = self._get_prompt(analysis_type, content)
         
-        # 尝试所有可用的AI提供商，直到成功或全部失败
-        providers = []
+        # 优先使用配置的提供商
+        primary_provider = Config.AI_PROVIDER
         
-        # 根据配置添加可用的AI提供商
-        if Config.AI_PROVIDER == 'gemini':
-            # 如果主提供商是Gemini，先尝试Gemini，再尝试OpenAI
-            if self.gemini_api_key:
-                providers.append('gemini')
-            if self.openai_api_key:
-                providers.append('openai')
-        else:
-            # 默认先尝试OpenAI，再尝试Gemini
-            if self.openai_api_key:
-                providers.append('openai')
-            if self.gemini_api_key:
-                providers.append('gemini')
+        # 1. Try Primary Provider
+        if primary_provider == 'gemini' and self.gemini_api_key:
+            result = self._call_gemini(prompt)
+            if result:
+                validated = self._validate_json(result)
+                if validated: return validated
+        elif primary_provider == 'openai' and self.openai_api_key:
+            result = self._call_openai(prompt)
+            if result:
+                validated = self._validate_json(result)
+                if validated: return validated
         
-        # 如果没有配置任何AI提供商，返回None
-        if not providers:
-            logger.error("No AI providers configured. Please set OPENAI_API_KEY or GEMINI_API_KEY.")
-            return None
+        # 2. Try Secondary Provider (Fallback)
+        logger.info(f"Primary provider {primary_provider} failed or not configured. Trying fallback...")
         
-        # 尝试所有可用的提供商
-        for provider in providers:
-            try:
-                logger.info(f"Attempting analysis with {provider} ({analysis_type})")
-                if provider == 'gemini':
-                    result = self._call_gemini(prompt)
-                    validated = self._validate_json(result)
-                    if validated:
-                        return validated
-                    else:
-                        logger.warning(f"Gemini returned invalid JSON, retrying...")
-                else:
-                    result = self._call_openai(prompt)
-                    validated = self._validate_json(result)
-                    if validated:
-                        return validated
-                    else:
-                        logger.warning(f"OpenAI returned invalid JSON, retrying...")
-            except Exception as e:
-                logger.warning(f"{provider} failed, {'trying next provider...' if providers.index(provider) < len(providers) - 1 else 'retrying...'}: {e}")
-        
-        # 所有尝试都失败，返回None
-        logger.error(f"All AI models failed after {self._call_gemini.retry.statistics.get('attempt_number', 0) + self._call_openai.retry.statistics.get('attempt_number', 0)} attempts")
+        if primary_provider == 'gemini' and self.openai_api_key:
+            # Fallback to OpenAI
+            result = self._call_openai(prompt)
+            if result:
+                validated = self._validate_json(result)
+                if validated: return validated
+        elif primary_provider != 'gemini' and self.gemini_api_key:
+             # Fallback to Gemini
+            result = self._call_gemini(prompt)
+            if result:
+                validated = self._validate_json(result)
+                if validated: return validated
+                
+        logger.error("All AI providers failed.")
         return None
 
     def classify_article(self, title, source=''):
@@ -261,22 +276,27 @@ class AIAnalyzer:
         Classify article into categories: 漏洞分析, 安全研究, 威胁情报, 安全工具, 最佳实践, 吃瓜新闻, 其他
         """
         prompt = f"""
-        请将以下安全相关文章标题分类到一个最合适的类别中。
-        
-        文章标题: {title}
-        来源: {source}
-        
-        类别选项:
-        - 漏洞分析: CVE漏洞、漏洞复现、漏洞挖掘等
-        - 安全研究: 技术研究、逆向分析、渗透测试案例等
-        - 威胁情报: APT组织、攻击事件、恶意软件分析等
-        - 安全工具: 安全工具介绍、工具更新等
-        - 最佳实践: 安全防护指南、最佳实践、安全建议等
-        - 吃瓜新闻: 行业动态、安全事件、周报等
-        - 其他: 不属于以上任何类别
-        
-        返回JSON格式: {{"category": "类别名称"}}
-        只返回一个最合适的类别,不要解释。
+        # Role
+        You are a Tech Content Curator for a cybersecurity news feed. Your task is to categorize the following article based on its title and source.
+
+        # Input Data
+        Article Title: {title}
+        Source: {source}
+
+        # Categories
+        - **漏洞分析**: Deep dives into specific vulnerabilities (CVEs), reproduction steps, or exploit analysis.
+        - **安全研究**: Technical research papers, reverse engineering, new attack techniques, or whitepapers.
+        - **威胁情报**: APT reports, active campaign analysis, malware analysis, or breach reports.
+        - **安全工具**: Releases or updates of security tools (red team/blue team).
+        - **最佳实践**: Guides, tutorials, compliance, or defensive hardening.
+        - **吃瓜新闻**: Industry news, acquisitions, gossip, or high-level summaries.
+        - **其他**: Anything that doesn't fit the above.
+
+        # Output Format
+        Return a strictly valid JSON object:
+        {{
+            "category": "Category Name" // Must be one of the exact category names listed above
+        }}
         """
         
         try:
@@ -286,9 +306,10 @@ class AIAnalyzer:
             else:
                 result = self._call_openai(prompt)
             
-            parsed = self._validate_json(result)
-            if parsed and 'category' in parsed:
-                return parsed['category']
+            if result:
+                parsed = self._validate_json(result)
+                if parsed and 'category' in parsed:
+                    return parsed['category']
         except Exception as e:
             logger.warning(f"Article classification failed: {e}")
         
