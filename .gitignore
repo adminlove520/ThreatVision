@@ -50,7 +50,7 @@ dist/
 *.temp
 .cache/
 
-
+.trae/*
 
 # Project specific
 /venv/

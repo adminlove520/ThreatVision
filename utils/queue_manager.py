@@ -121,6 +121,7 @@ class QueueManager:
         except Exception as e:
             # Only log warning once, not every time we check
             # We already logged the connection failure in __init__
+            logger.debug(f"Redis ping failed: {e}")  # Use debug level to reduce log noise
             self.redis_available = False
             self.ping_checked = True
             return False

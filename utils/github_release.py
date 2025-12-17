@@ -14,7 +14,26 @@ class GitHubReleaseManager:
     """
     
     def __init__(self):
-        self.tokens = Config.GITHUB_TOKENS
+        # 优先使用GitHub Actions自动生成的GITHUB_TOKEN
+        github_action_token = os.getenv('GITHUB_TOKEN')
+        if github_action_token:
+            self.tokens = [github_action_token]
+            logger.info("Using GitHub Actions generated GITHUB_TOKEN")
+        else:
+            # 否则使用配置中的tokens（从.env文件加载）
+            self.tokens = Config.GITHUB_TOKENS
+            if self.tokens and self.tokens != ['']:
+                logger.info(f"Using GitHub tokens from .env file: {len(self.tokens)} token(s) available")
+            else:
+                logger.warning("No GitHub tokens available from .env file")
+        
+        # 确保tokens是列表类型
+        if not isinstance(self.tokens, list):
+            self.tokens = []
+        
+        # 过滤掉空token
+        self.tokens = [token for token in self.tokens if token.strip()]
+        
         self.current_token_index = 0
         self.repo = os.getenv('GITHUB_REPOSITORY', '')
         
@@ -92,11 +111,18 @@ class GitHubReleaseManager:
             if response.status_code == 201:
                 logger.info(f"Created GitHub Release: {release_name}")
                 return response.json()
+            elif response.status_code == 401:
+                logger.error(f"GitHub API 401 Unauthorized: Invalid or expired token")
+                logger.warning("Please check your GitHub token configuration")
             elif response.status_code == 403:
                 logger.warning("GitHub API rate limit exceeded, rotating token")
                 self.rotate_token()
             else:
                 logger.error(f"Failed to create release: {response.status_code} - {response.text}")
+        except requests.exceptions.ConnectionError:
+            logger.error("Failed to connect to GitHub API. Please check your network connection.")
+        except requests.exceptions.Timeout:
+            logger.error("GitHub API request timed out")
         except Exception as e:
             logger.error(f"Error creating release: {e}")
         
@@ -123,23 +149,41 @@ class GitHubReleaseManager:
             return None
         
         file_name = os.path.basename(file_path)
-        url = f"{self.api_base_url}/repos/{self.repo}/releases/{release_id}/assets?name={file_name}"
+        file_size = os.path.getsize(file_path)
+        
+        # 使用正确的GitHub API URL格式
+        url = f"{self.api_base_url}/repos/{self.repo}/releases/{release_id}/assets"
         
         try:
             with open(file_path, 'rb') as f:
                 headers = self.get_headers()
                 headers['Content-Type'] = content_type
+                headers['Content-Length'] = str(file_size)
                 
-                response = requests.post(url, headers=headers, data=f, timeout=60)
+                # 使用multipart/form-data上传
+                files = {
+                    'asset': (file_name, f, content_type)
+                }
+                
+                response = requests.post(url, headers=headers, files=files, timeout=60)
                 
                 if response.status_code == 201:
                     logger.info(f"Uploaded asset: {file_name}")
                     return response.json()
+                elif response.status_code == 401:
+                    logger.error(f"GitHub API 401 Unauthorized: Invalid or expired token")
+                    logger.warning("Please check your GitHub token configuration")
                 elif response.status_code == 403:
                     logger.warning("GitHub API rate limit exceeded, rotating token")
                     self.rotate_token()
+                elif response.status_code == 404:
+                    logger.error(f"Failed to upload asset: 404 - Release not found or no permission")
                 else:
                     logger.error(f"Failed to upload asset: {response.status_code} - {response.text}")
+        except requests.exceptions.ConnectionError:
+            logger.error("Failed to connect to GitHub API. Please check your network connection.")
+        except requests.exceptions.Timeout:
+            logger.error("GitHub API request timed out")
         except Exception as e:
             logger.error(f"Error uploading asset: {e}")
         

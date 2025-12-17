@@ -71,3 +71,17 @@ jobs:
       with:
         name: daily-report
         path: data/
+
+    - name: Trigger UI Deployment
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          // Trigger UI deployment workflow
+          await github.rest.actions.createWorkflowDispatch({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'deploy_ui.yml',
+            ref: 'main'
+          });
+          console.log('Triggered UI deployment workflow')
