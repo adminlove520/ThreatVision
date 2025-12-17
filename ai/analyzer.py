@@ -17,19 +17,13 @@ from config import Config
 logger = setup_logger(__name__)
 
 import openai
-# 使用新的google.genai包替代过时的google.generativeai
+# 只使用新的google.genai包
 try:
-    # 首先尝试导入google.genai
-    import google.genai as genai
+    from google import genai
     logger.info("Using new google.genai package")
 except ImportError:
-    # 兼容处理：如果新包不可用，尝试使用旧包
-    try:
-        import google.generativeai as genai
-        logger.warning("Using deprecated google.generativeai package, please upgrade to google.genai")
-    except ImportError:
-        logger.error("Neither google.genai nor google.generativeai package is available")
-        genai = None
+    logger.error("google.genai package is not available. Please install it with 'pip install google-genai'")
+    genai = None
 
 class AIAnalyzer:
     def __init__(self):
@@ -45,18 +39,17 @@ class AIAnalyzer:
         # Gemini Setup
         self.gemini_api_key = Config.GEMINI_API_KEY
         self.gemini_model = Config.GEMINI_MODEL
+        self.gemini_client = None
         
         if self.gemini_api_key:
             try:
-                # 尝试使用新的google.genai包的配置方式
-                if hasattr(genai, 'configure'):
-                    genai.configure(api_key=self.gemini_api_key)
-                else:
-                    # 新的google.genai包可能不需要显式配置，或者使用不同的配置方式
-                    logger.info("google.genai package detected, no explicit configure method needed")
+                # 使用新版google.genai包的Client API
+                from google import genai
+                self.gemini_client = genai.Client(api_key=self.gemini_api_key)
+                logger.info("Gemini client initialized successfully")
             except Exception as e:
-                logger.error(f"Error configuring Gemini: {e}")
-                # 配置失败不影响程序继续运行，后续调用时会自动使用API密钥
+                logger.error(f"Error initializing Gemini client: {e}")
+                self.gemini_client = None
 
     def _get_prompt(self, analysis_type, content):
         if analysis_type == 'cve':
@@ -155,36 +148,53 @@ class AIAnalyzer:
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10), retry=_should_retry)
     def _call_gemini(self, prompt):
-        if not self.gemini_api_key:
-            raise Exception("Gemini API key not configured")
+        if not self.gemini_client:
+            raise Exception("Gemini client not configured")
             
         try:
-            # 创建模型实例 - 兼容新旧genai包
-            model = genai.GenerativeModel(self.gemini_model)
+            logger.info(f"Attempting analysis with Gemini ({self.gemini_model})")
             
-            # Gemini doesn't enforce JSON mode as strictly as OpenAI, so we ask nicely
-            response = model.generate_content(prompt + "\n\nOutput strictly valid JSON.")
+            # 使用新版google.genai包的Client API，根据PyPI文档
+            response = self.gemini_client.generate_content(
+                model=self.gemini_model,
+                contents=[
+                    {
+                        'parts': [
+                            {
+                                'text': prompt + "\n\nOutput strictly valid JSON."
+                            }
+                        ]
+                    }
+                ],
+                generation_config={
+                    'temperature': 0.7,
+                    'max_output_tokens': 2048
+                }
+            )
             
-            # 获取响应文本 - 兼容不同版本的响应格式
+            # 解析响应 - 兼容不同响应格式
             text = ""
             if hasattr(response, 'text'):
-                # 旧版google.generativeai包的响应格式
+                # 直接获取文本响应
                 text = response.text
             elif hasattr(response, 'candidates') and response.candidates:
-                # 新版google.genai包的响应格式
+                # 结构化响应
                 candidate = response.candidates[0]
                 if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
-                    text = ''.join(part.text for part in candidate.content.parts if hasattr(part, 'text'))
-            else:
-                # 其他格式的响应
-                text = str(response)
+                    for part in candidate.content.parts:
+                        if hasattr(part, 'text'):
+                            text += part.text
             
-            # Simple cleanup to ensure we get JSON
-            if "```json" in text:
-                text = text.split("```json")[1].split("```")[0]
-            elif "```" in text:
-                text = text.split("```")[1].split("```")[0]
-            return text.strip()
+            # 清理JSON格式
+            if text:
+                if "```json" in text:
+                    text = text.split("```json")[1].split("```")[0]
+                elif "```" in text:
+                    text = text.split("```")[1].split("```")[0]
+                return text.strip()
+            
+            logger.error(f"Unexpected response format from Gemini: {response}")
+            return None
         except Exception as e:
             logger.error(f"Gemini API call failed: {e}")
             raise e
