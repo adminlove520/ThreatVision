@@ -24,7 +24,7 @@ class ArticleFetcher:
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def fetch_url(self, url):
         try:
-            response = requests.get(url, headers=self.headers, timeout=10)
+            response = requests.get(url, headers=self.headers, proxies=Config.get_proxies(), timeout=10)
             response.raise_for_status()
             return response.text
         except Exception as e:
@@ -73,7 +73,7 @@ class ArticleFetcher:
             # Simulate request with retries
             for i in range(3):
                 try:
-                    response = requests.get(target_url, headers=self.headers, timeout=10)
+                    response = requests.get(target_url, headers=self.headers, proxies=Config.get_proxies(), timeout=10)
                     if response.status_code == 200:
                         soup = BeautifulSoup(response.text, 'html.parser')
                         links = soup.find_all('a', href=True)

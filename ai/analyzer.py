@@ -55,79 +55,81 @@ class AIAnalyzer:
         if analysis_type == 'cve':
             return f"""
             # Role
-            You are a Senior Cybersecurity Threat Intelligence Analyst. Your task is to analyze the following CVE vulnerability and provide a professional risk assessment.
+            You are a Senior Cybersecurity Threat Intelligence Analyst (资深网络安全威胁情报分析师). Your task is to analyze the following CVE vulnerability and provide a professional risk assessment in **Chinese**.
 
             # Input Data
             CVE Information: {content}
 
             # Analysis Requirements
-            1. **Risk Assessment**: Determine the practical risk level (CRITICAL/HIGH/MEDIUM/LOW) based on exploitability and impact, not just CVSS.
-            2. **Exploitation Status**: accurate determination of exploit availability (POC available/Active exploitation/No known exploit).
-            3. **Technical Depth**: Provide technical details on the vulnerability mechanism (e.g., buffer overflow, deserialization) and attack vector.
+            1. **Risk Assessment**: Determine the practical risk level (CRITICAL/HIGH/MEDIUM/LOW) based on exploitability and impact.
+            2. **Exploitation Status**: Accurate determination of exploit availability.
+            3. **Technical Depth**: Provide technical details on the vulnerability mechanism and attack vector.
             4. **Value**: Assess the value for security researchers and defenders.
+            5. **Language**: **All content in the JSON values must be in Chinese (简体中文).**
 
             # Output Format
             Return a strictly valid JSON object with the following schema:
             {{
-                "risk_level": "CRITICAL", // CRITICAL, HIGH, MEDIUM, or LOW
-                "exploitation_status": "POC Available", // POC Available, Active Exploitation, No Known Exploit, or Unknown
-                "summary": "Concise executive summary (2-3 sentences).",
+                "risk_level": "CRITICAL", // CRITICAL, HIGH, MEDIUM, or LOW (Keep these keywords in English)
+                "exploitation_status": "POC Available", // POC Available, Active Exploitation, No Known Exploit, or Unknown (Keep these keywords in English)
+                "summary": "简明的漏洞概述，2-3句话 (Must be in Chinese)",
                 "key_findings": [
-                    "Key finding 1",
-                    "Key finding 2",
-                    "Key finding 3"
+                    "关键发现 1 (Must be in Chinese)",
+                    "关键发现 2 (Must be in Chinese)",
+                    "关键发现 3 (Must be in Chinese)"
                 ],
                 "technical_details": [
-                    "Vulnerability mechanism explanation",
-                    "Attack vector details",
-                    "Mitigation strategies"
+                    "漏洞原理说明 (Must be in Chinese)",
+                    "攻击向量细节 (Must be in Chinese)",
+                    "修复建议 (Must be in Chinese)"
                 ],
                 "affected_components": [
-                    "Component 1",
-                    "Component 2"
+                    "受影响组件 1",
+                    "受影响组件 2"
                 ],
-                "value_assessment": "Why this is important for the security community."
+                "value_assessment": "对安全社区的价值评估 (Must be in Chinese)"
             }}
             """
         elif analysis_type == 'repo':
             return f"""
             # Role
-            You are a Senior Security Researcher specializing in open-source threat intelligence. Your task is to analyze the following GitHub repository update.
+            You are a Senior Security Researcher (资深安全研究员) specializing in open-source threat intelligence. Your task is to analyze the following GitHub repository update in **Chinese**.
 
             # Input Data
             Repository Information: {content}
 
             # Analysis Requirements
-            1. **Classification**: Accurately classify the tool/code (e.g., POC, Malware, Security Tool, C2 Framework).
+            1. **Classification**: Accurately classify the tool/code.
             2. **Intent Analysis**: Determine if the update introduces new offensive capabilities or is a defensive improvement.
             3. **Risk Level**: Assess the potential impact if this tool is misused.
+            4. **Language**: **All content in the JSON values must be in Chinese (简体中文).**
 
             # Output Format
             Return a strictly valid JSON object with the following schema:
             {{
-                "security_type": "POC", // POC, Exploit, Security Tool, C2 Framework, Malware, Research, or Other
-                "update_type": "SECURITY_CRITICAL", // SECURITY_CRITICAL, SECURITY_IMPROVEMENT, NEW_FEATURE, or GENERAL_UPDATE
-                "risk_level": "HIGH", // CRITICAL, HIGH, MEDIUM, or LOW
-                "summary": "Concise summary of the repository and recent changes.",
+                "security_type": "POC", // POC, Exploit, Security Tool, C2 Framework, Malware, Research, or Other (Keep these keywords in English)
+                "update_type": "SECURITY_CRITICAL", // SECURITY_CRITICAL, SECURITY_IMPROVEMENT, NEW_FEATURE, or GENERAL_UPDATE (Keep these keywords in English)
+                "risk_level": "HIGH", // CRITICAL, HIGH, MEDIUM, or LOW (Keep these keywords in English)
+                "summary": "仓库及更新的简明概述 (Must be in Chinese)",
                 "key_findings": [
-                    "Major capability 1",
-                    "Major capability 2",
-                    "Major capability 3"
+                    "主要能力 1 (Must be in Chinese)",
+                    "主要能力 2 (Must be in Chinese)",
+                    "主要能力 3 (Must be in Chinese)"
                 ],
                 "technical_details": [
-                    "Technical implementation details",
-                    "Usage context"
+                    "技术实现细节 (Must be in Chinese)",
+                    "使用场景 (Must be in Chinese)"
                 ],
                 "affected_components": [
-                    "Targeted technologies",
-                    "Affected protocols"
+                    "目标技术/协议",
+                    "受影响组件"
                 ],
-                "value_assessment": "Value for security research or red teaming.",
-                "is_malware": false // true if the repo itself is malicious (e.g., backdoored tool), false otherwise
+                "value_assessment": "对安全研究或红队的价值 (Must be in Chinese)",
+                "is_malware": false // true if the repo itself is malicious, false otherwise
             }}
             """
         else:
-            return f"Analyze the following text and provide a summary in JSON format: {content}"
+            return f"Analyze the following text and provide a summary in JSON format (in Chinese): {content}"
 
     def _call_openai(self, prompt):
         if not self.openai_api_key:

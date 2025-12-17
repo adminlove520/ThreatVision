@@ -36,7 +36,7 @@ class CVEMonitor:
     def search_github(self, keyword):
         url = f"https://api.github.com/search/repositories?q={keyword}&sort=updated&order=desc"
         try:
-            response = requests.get(url, headers=self.get_headers(), timeout=10)
+            response = requests.get(url, headers=self.get_headers(), proxies=Config.get_proxies(), timeout=10)
             if response.status_code == 200:
                 return response.json().get('items', [])
             elif response.status_code == 403:

@@ -64,7 +64,11 @@ class OPMLManager:
             
             try:
                 logger.info(f"Downloading OPML: {name} from {url}")
-                response = requests.get(url, timeout=timeout)
+                response = requests.get(
+                    url, 
+                    proxies=Config.get_proxies(),
+                    timeout=timeout
+                )
                 response.raise_for_status()
                 
                 with open(filepath, 'wb') as f:
@@ -94,7 +98,7 @@ class OPMLManager:
             
             feeds = []
             for feed in parsed.feeds:
-                if hasattr(feed, 'url') and feed.url:
+                if hasattr(feed, 'url') and feed.url and feed.url.startswith('http'):
                     feed_info = {
                         'url': feed.url,
                         'title': getattr(feed, 'title', '').strip() or os.path.basename(filepath),
@@ -104,8 +108,10 @@ class OPMLManager:
                         'enabled': True
                     }
                     feeds.append(feed_info)
+                else:
+                    logger.debug(f"Skipping invalid feed in {filepath}: {getattr(feed, 'title', 'Unknown')}")
             
-            logger.info(f"Parsed {len(feeds)} feeds from {filepath}")
+            logger.info(f"Parsed {len(feeds)} valid feeds from {filepath}")
             return feeds
         except Exception as e:
             logger.error(f"Error parsing OPML {filepath}: {e}")
@@ -196,7 +202,11 @@ class OPMLManager:
                     try:
                         url = config.get('url')
                         if url:
-                            response = requests.get(url, timeout=self.global_settings['timeout'])
+                            response = requests.get(
+                                url, 
+                                proxies=Config.get_proxies(),
+                                timeout=self.global_settings['timeout']
+                            )
                             response.raise_for_status()
                             with open(filepath, 'wb') as f:
                                 f.write(response.content)

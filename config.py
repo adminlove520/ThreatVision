@@ -124,3 +124,15 @@ class Config:
     # Ensure directories exist
     os.makedirs(UI_DATA_DIR, exist_ok=True)
     os.makedirs(os.path.join(DATA_DIR, 'rss'), exist_ok=True)
+    # Proxy Configuration
+    PROXY_URL = os.getenv('PROXY_URL') or os.getenv('HTTP_PROXY') or os.getenv('HTTPS_PROXY')
+
+    @staticmethod
+    def get_proxies():
+        """Get proxies dictionary for requests"""
+        if Config.PROXY_URL:
+            return {
+                "http": Config.PROXY_URL,
+                "https": Config.PROXY_URL
+            }
+        return None

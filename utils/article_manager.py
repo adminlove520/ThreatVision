@@ -89,6 +89,11 @@ class ArticleManager:
                 analysis = json.loads(cve.ai_analysis)
                 
                 risk_level = analysis.get('risk_level', 'MEDIUM')
+                # Map Chinese risk levels back to English keywords if necessary
+                if '高' in risk_level: risk_level = 'HIGH'
+                elif '中' in risk_level: risk_level = 'MEDIUM'
+                elif '低' in risk_level: risk_level = 'LOW'
+                elif '严重' in risk_level: risk_level = 'CRITICAL'
                 content += f"| 风险等级 | `{risk_level}` |\n"
                 content += f"| 利用状态 | `{analysis.get('exploitation_status', '未知')}` |\n"
                 
