@@ -79,7 +79,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add data/ rss/  output/
+        git add data/
         if ! git diff --staged --quiet; then
           git commit -m "Auto-update: Daily security report and data"
           git push

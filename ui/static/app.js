@@ -1,872 +1,389 @@
-// ThreatVision Preview UI JavaScript
+// ThreatVision Premium UI Logic
 
-// API Base URL
-// API Base URL (Static JSON)
-const API_BASE_URL = 'api';
-
-// DOM Elements
-const reportsTableBody = document.getElementById('reportsTableBody');
-const reportContent = document.getElementById('reportContent');
-const todayCves = document.getElementById('todayCves');
-const totalRepos = document.getElementById('totalRepos');
-const totalReports = document.getElementById('totalReports');
-const cvesGrid = document.getElementById('cvesGrid');
-const reposGrid = document.getElementById('reposGrid');
-const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-const closeMobileMenu = document.getElementById('closeMobileMenu');
-const mobileMenu = document.getElementById('mobileMenu');
-const navLinks = document.querySelectorAll('.nav-link');
-const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-const filterBtns = document.querySelectorAll('.filter-btn');
-const searchInput = document.querySelector('.search-input');
-
-// Charts
-let cveTrendChart = null;
-let riskDistributionChart = null;
+// Configuration
+const API_BASE = 'api';
+const REPO_URL = 'https://github.com/adminlove520/ThreatVision';
 
 // State
-let currentFilter = 'all';
-let cveData = [];
+let state = {
+    currentView: 'dashboard',
+    reports: [],
+    cves: [],
+    repos: [],
+    theme: localStorage.getItem('theme') || 'light'
+};
 
-// Initialize the application
-function init() {
-    console.log('Initializing ThreatVision UI...');
+// Initialization
+document.addEventListener('DOMContentLoaded', async () => {
+    initTheme();
+    await loadData();
+    renderDashboard();
+    setupEventListeners();
 
-    // Initialize UI components
-    initMobileMenu();
-    initNavigation();
-    initFilters();
-    initSearch();
-    initSmoothScroll();
+    // Check URL hash for direct navigation
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+});
 
-    // Load data
-    loadReports();
-    loadStats();
-    loadCVEs();
-    loadRepos();
-
-    // Initialize charts
-    initCharts();
-
-    // Add event listeners
-    document.querySelector('#reports button').addEventListener('click', loadReports);
-    document.querySelector('#repos button').addEventListener('click', loadRepos);
-
-    // Enable code highlighting
-    hljs.highlightAll();
-
-    // Add marked options for better rendering
-    marked.setOptions({
-        highlight: function (code, lang) {
-            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-            return hljs.highlight(code, { language }).value;
-        },
-        breaks: true,
-        gfm: true
-    });
+// Theme Management
+function initTheme() {
+    if (state.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        state.theme = 'dark';
+    } else {
+        document.documentElement.classList.remove('dark');
+        state.theme = 'light';
+    }
 }
 
-// Initialize mobile menu
-function initMobileMenu() {
-    mobileMenuBtn.addEventListener('click', () => {
-        mobileMenu.classList.remove('closed');
-        mobileMenu.classList.add('open');
-        document.body.style.overflow = 'hidden';
-    });
-
-    closeMobileMenu.addEventListener('click', closeMobileMenuHandler);
-
-    // Close menu when clicking outside
-    mobileMenu.addEventListener('click', (e) => {
-        if (e.target === mobileMenu) {
-            closeMobileMenuHandler();
-        }
-    });
+function toggleTheme() {
+    state.theme = state.theme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme', state.theme);
+    initTheme();
 }
 
-// Close mobile menu
-function closeMobileMenuHandler() {
-    mobileMenu.classList.remove('open');
-    mobileMenu.classList.add('closed');
-    document.body.style.overflow = '';
+// Navigation
+function switchView(viewName) {
+    // Update State
+    state.currentView = viewName;
+
+    // Update UI
+    document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+    document.getElementById(`view-${viewName}`).classList.remove('hidden');
+
+    // Update Nav Active State
+    document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.remove('bg-primary-50', 'text-primary-600', 'dark:bg-primary-500/10', 'dark:text-primary-500');
+        el.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:bg-gray-50', 'dark:hover:bg-dark-800');
+    });
+
+    const activeNav = document.getElementById(`nav-${viewName}`);
+    if (activeNav) {
+        activeNav.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:bg-gray-50', 'dark:hover:bg-dark-800');
+        activeNav.classList.add('bg-primary-50', 'text-primary-600', 'dark:bg-primary-500/10', 'dark:text-primary-500');
+    }
+
+    // Render View Content
+    if (viewName === 'reports') renderReportsView();
+    if (viewName === 'cves') renderCVEsView();
+    if (viewName === 'repos') renderReposView();
+
+    // Close mobile sidebar if open
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobile-overlay');
+    if (!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+        toggleSidebar();
+    }
 }
 
-// Initialize navigation
-function initNavigation() {
-    // Desktop navigation
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            // Update active state
-            navLinks.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobile-overlay');
 
-            // Scroll to section
-            const targetId = link.getAttribute('href');
-            if (targetId.startsWith('#')) {
-                e.preventDefault();
-                scrollToSection(targetId);
+    if (sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+    } else {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    }
+}
+
+// Data Loading
+async function loadData() {
+    try {
+        const [reportsRes, cvesRes, reposRes] = await Promise.all([
+            fetch(`${API_BASE}/reports.json`),
+            fetch(`${API_BASE}/cves.json`),
+            fetch(`${API_BASE}/repos.json`)
+        ]);
+
+        const reportsData = await reportsRes.json();
+        const cvesData = await cvesRes.json();
+        const reposData = await reposRes.json();
+
+        state.reports = reportsData.reports || [];
+        state.cves = cvesData.cves || [];
+        state.repos = reposData.repos || [];
+
+    } catch (error) {
+        console.error('Failed to load data:', error);
+        // Show error toast
+    }
+}
+
+// Rendering Logic
+function renderDashboard() {
+    // Stats
+    document.getElementById('stat-today-cves').textContent = state.cves.filter(c => isToday(c.publish_time)).length;
+    document.getElementById('stat-total-repos').textContent = state.repos.length;
+    document.getElementById('stat-total-reports').textContent = state.reports.length;
+
+    const highRiskCount = state.cves.filter(c => {
+        try {
+            const analysis = JSON.parse(c.ai_analysis);
+            const risk = (analysis.risk_level || '').toUpperCase();
+            return risk.includes('HIGH') || risk.includes('CRITICAL') || risk.includes('高') || risk.includes('严重');
+        } catch { return false; }
+    }).length;
+    document.getElementById('stat-high-risk').textContent = highRiskCount;
+
+    // Latest Report Preview
+    if (state.reports.length > 0) {
+        loadReportContent(state.reports[0].date, 'dashboard-report-preview');
+    }
+
+    // Recent CVEs List
+    const recentCVEs = state.cves.slice(0, 5);
+    const cveListEl = document.getElementById('dashboard-cve-list');
+    cveListEl.innerHTML = recentCVEs.map(cve => `
+        <div class="p-4 hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors cursor-pointer" onclick="openCVEModal('${cve.cve_id}')">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="text-sm font-mono font-medium text-primary-600 dark:text-primary-400">${cve.cve_id}</span>
+                    <p class="text-xs text-gray-500 mt-1 line-clamp-1">${cve.description}</p>
+                </div>
+                ${getRiskBadge(cve.ai_analysis)}
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderReportsView() {
+    const listEl = document.getElementById('report-list');
+    listEl.innerHTML = state.reports.map((report, index) => `
+        <button onclick="loadFullReport('${report.date}')" class="w-full text-left p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors flex items-center justify-between group">
+            <div class="flex items-center">
+                <div class="w-8 h-8 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center mr-3 group-hover:bg-primary-100 transition-colors">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-900 dark:text-gray-200">${report.date}</p>
+                    <p class="text-xs text-gray-500">Security Daily Report</p>
+                </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-gray-300 group-hover:text-gray-400"></i>
+        </button>
+    `).join('');
+
+    // Load first report if none selected
+    if (state.reports.length > 0 && !document.querySelector('#report-viewer article').hasAttribute('data-loaded')) {
+        loadFullReport(state.reports[0].date);
+    }
+}
+
+async function loadFullReport(date) {
+    const viewerEl = document.getElementById('report-viewer');
+    viewerEl.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fa-solid fa-circle-notch fa-spin text-2xl text-primary-500"></i></div>';
+
+    try {
+        const res = await fetch(`${API_BASE}/reports/${date}.json`);
+        const data = await res.json();
+
+        // Configure Marked
+        marked.setOptions({
+            highlight: function (code, lang) {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
+            },
+            langPrefix: 'hljs language-'
+        });
+
+        viewerEl.innerHTML = `
+            <article class="prose dark:prose-invert max-w-4xl mx-auto" data-loaded="true">
+                ${marked.parse(data.content)}
+            </article>
+        `;
+
+        // Highlight code blocks
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+
+    } catch (error) {
+        viewerEl.innerHTML = '<div class="text-center text-red-500">Failed to load report</div>';
+    }
+}
+
+async function loadReportContent(date, targetId) {
+    try {
+        const res = await fetch(`${API_BASE}/reports/${date}.json`);
+        const data = await res.json();
+        const html = marked.parse(data.content.split('## 安全分析')[0]); // Only show first part for dashboard
+        document.getElementById(targetId).innerHTML = html;
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function renderCVEsView() {
+    const gridEl = document.getElementById('cve-grid');
+    const searchTerm = document.getElementById('cve-search').value.toLowerCase();
+
+    const filtered = state.cves.filter(c =>
+        c.cve_id.toLowerCase().includes(searchTerm) ||
+        (c.description && c.description.toLowerCase().includes(searchTerm))
+    );
+
+    gridEl.innerHTML = filtered.map(cve => `
+        <div class="bg-white dark:bg-dark-900 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-lg font-bold font-mono text-primary-600 cursor-pointer hover:underline" onclick="openCVEModal('${cve.cve_id}')">${cve.cve_id}</h3>
+                ${getRiskBadge(cve.ai_analysis)}
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-4">${cve.description}</p>
+            <div class="flex justify-between items-center text-xs text-gray-500">
+                <span>${formatDate(cve.publish_time)}</span>
+                <button onclick="openCVEModal('${cve.cve_id}')" class="text-primary-500 hover:text-primary-600 font-medium">Details <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderReposView() {
+    const gridEl = document.getElementById('repo-grid');
+    gridEl.innerHTML = state.repos.map(repo => `
+        <div class="bg-white dark:bg-dark-900 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-dark-800 flex items-center justify-center mr-3 text-gray-700 dark:text-gray-300">
+                    <i class="fa-brands fa-github text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-900 dark:text-white line-clamp-1">${repo.name}</h3>
+                    <div class="flex items-center text-xs text-gray-500 mt-0.5">
+                        <span class="flex items-center mr-3"><i class="fa-solid fa-star text-yellow-400 mr-1"></i> ${repo.stars}</span>
+                        <span>Updated ${formatDate(repo.last_updated)}</span>
+                    </div>
+                </div>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-4 h-10">${repo.description || 'No description'}</p>
+            <a href="${repo.url}" target="_blank" class="block w-full text-center py-2 rounded-lg bg-gray-50 dark:bg-dark-800 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors">
+                View Repository
+            </a>
+        </div>
+    `).join('');
+}
+
+// Helpers
+function getRiskBadge(aiAnalysis) {
+    let risk = 'UNKNOWN';
+    let colorClass = 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400';
+
+    if (aiAnalysis) {
+        try {
+            const analysis = JSON.parse(aiAnalysis);
+            risk = (analysis.risk_level || 'UNKNOWN').toUpperCase();
+
+            if (risk.includes('CRITICAL') || risk.includes('严重')) {
+                colorClass = 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400';
+            } else if (risk.includes('HIGH') || risk.includes('高')) {
+                colorClass = 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400';
+            } else if (risk.includes('MEDIUM') || risk.includes('中')) {
+                colorClass = 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400';
+            } else if (risk.includes('LOW') || risk.includes('低')) {
+                colorClass = 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400';
             }
-        });
-    });
-
-    // Mobile navigation
-    mobileNavLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            // Close mobile menu
-            closeMobileMenuHandler();
-
-            // Update active state
-            mobileNavLinks.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
-
-            // Scroll to section
-            const targetId = link.getAttribute('href');
-            if (targetId.startsWith('#')) {
-                e.preventDefault();
-                scrollToSection(targetId);
-            }
-        });
-    });
-
-    // Update active link on scroll
-    window.addEventListener('scroll', updateActiveLink);
-}
-
-// Update active link based on scroll position
-function updateActiveLink() {
-    const sections = document.querySelectorAll('section[id]');
-    const scrollPosition = window.scrollY + 100;
-
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.offsetHeight;
-        const sectionId = section.getAttribute('id');
-
-        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-            // Update desktop navigation
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${sectionId}`) {
-                    link.classList.add('active');
-                }
-            });
-
-            // Update mobile navigation
-            mobileNavLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${sectionId}`) {
-                    link.classList.add('active');
-                }
-            });
-        }
-    });
-}
-
-// Initialize filters
-function initFilters() {
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Update active state
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // Update filter
-            currentFilter = btn.getAttribute('data-filter');
-
-            // Apply filter
-            applyFilter();
-        });
-    });
-}
-
-// Initialize search
-function initSearch() {
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            // TODO: Implement search functionality
-            console.log('Searching for:', searchTerm);
-        });
-    }
-}
-
-// Initialize smooth scrolling
-function initSmoothScroll() {
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            const href = this.getAttribute('href');
-            if (href === '#') return;
-
-            e.preventDefault();
-            scrollToSection(href);
-        });
-    });
-}
-
-// Scroll to section
-function scrollToSection(selector) {
-    const element = document.querySelector(selector);
-    if (element) {
-        const offsetTop = element.offsetTop - 80; // Account for fixed header
-        window.scrollTo({
-            top: offsetTop,
-            behavior: 'smooth'
-        });
-    }
-}
-
-// Apply filter to CVEs
-function applyFilter() {
-    if (cveData.length === 0) return;
-
-    // Clear existing CVEs
-    cvesGrid.innerHTML = '';
-
-    // Filter CVEs
-    let filteredCves = cveData;
-    if (currentFilter !== 'all') {
-        filteredCves = cveData.filter(cve => {
-            if (!cve.ai_analysis) return false;
-            try {
-                const analysis = JSON.parse(cve.ai_analysis);
-                return analysis.risk_level?.toLowerCase() === currentFilter;
-            } catch (e) {
-                return false;
-            }
-        });
+        } catch (e) { }
     }
 
-    // Render filtered CVEs
-    renderCVEs(filteredCves);
+    return `<span class="px-2 py-1 rounded text-xs font-bold ${colorClass}">${risk}</span>`;
 }
 
-// Render CVEs
-function renderCVEs(cves) {
-    cves.forEach(cve => {
-        const cveCard = createCVECard(cve);
-        cvesGrid.appendChild(cveCard);
-    });
-
-    // If no CVEs found
-    if (cves.length === 0) {
-        cvesGrid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">
-            <i class="fas fa-exclamation-triangle text-4xl mb-4 opacity-50"></i>
-            <p class="text-lg">未找到匹配的漏洞</p>
-        </div>`;
-    }
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleDateString('zh-CN');
 }
 
-// Create CVE card element
-function createCVECard(cve) {
-    const cveCard = document.createElement('div');
-    cveCard.className = 'cve-card fade-in';
+function isToday(dateStr) {
+    if (!dateStr) return false;
+    const date = new Date(dateStr);
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear();
+}
 
-    // Get AI analysis if available
-    let riskLevel = '未知';
-    let riskColor = 'badge bg-gray-100 text-gray-800';
+// Modals
+function openCVEModal(cveId) {
+    const cve = state.cves.find(c => c.cve_id === cveId);
+    if (!cve) return;
+
+    document.getElementById('modal-title').textContent = cve.cve_id;
+
+    let content = `
+        <div class="mb-6">
+            <h4 class="text-sm font-bold text-gray-500 uppercase mb-2">Description</h4>
+            <p class="text-gray-800 dark:text-gray-200">${cve.description}</p>
+        </div>
+    `;
 
     if (cve.ai_analysis) {
         try {
             const analysis = JSON.parse(cve.ai_analysis);
-            riskLevel = analysis.risk_level || '未知';
-
-            // Set color based on risk level
-            switch (riskLevel.toLowerCase()) {
-                case 'high':
-                    riskColor = 'badge badge-high';
-                    break;
-                case 'medium':
-                    riskColor = 'badge badge-medium';
-                    break;
-                case 'low':
-                    riskColor = 'badge badge-low';
-                    break;
-                default:
-                    riskColor = 'badge bg-gray-100 text-gray-800';
-            }
-        } catch (e) {
-            console.error('Error parsing AI analysis:', e);
-        }
-    }
-
-    cveCard.innerHTML = `
-        <div class="flex justify-between items-start mb-3">
-            <h3 class="text-lg font-semibold text-gray-900 hover:text-red-600 transition-colors duration-200 cursor-pointer" onclick="loadCVE('${cve.cve_id}')">${cve.cve_id}</h3>
-            <span class="${riskColor}">${riskLevel}</span>
-        </div>
-        <p class="text-sm text-gray-600 mb-3 line-clamp-3">${cve.description}</p>
-        <div class="flex items-center justify-between text-sm text-gray-500">
-            ${cve.publish_time ? `<span class="flex items-center"><i class="far fa-clock mr-1"></i>${formatDate(cve.publish_time)}</span>` : ''}
-            <div class="flex items-center space-x-3">
-                <button onclick="loadCVE('${cve.cve_id}')" class="text-red-600 hover:text-red-800 transition-colors duration-200 flex items-center text-sm font-medium">
-                    <i class="fas fa-eye mr-1"></i>详情
-                </button>
-                <a href="#" class="text-gray-500 hover:text-gray-700 transition-colors duration-200">
-                    <i class="fas fa-share-alt"></i>
-                </a>
-            </div>
-        </div>
-    `;
-
-    return cveCard;
-}
-
-// Load reports
-async function loadReports() {
-    try {
-        // Show loading state
-        showLoading(reportsTableBody, '加载中...');
-
-        const response = await fetch(`${API_BASE_URL}/reports.json`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch reports');
-        }
-        const data = await response.json();
-
-        // Update stats
-        totalReports.textContent = data.total || 0;
-
-        // Remove loading state
-        removeLoading();
-
-        // Clear existing reports
-        reportsTableBody.innerHTML = '';
-
-        // Ensure reports is an array
-        const reports = Array.isArray(data.reports) ? data.reports : [];
-
-        // Add new reports
-        if (reports.length === 0) {
-            reportsTableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-gray-500">暂无安全日报</td></tr>';
-            return;
-        }
-
-        reports.forEach(report => {
-            const row = document.createElement('tr');
-            row.className = 'fade-in hover:bg-gray-50 transition-colors duration-200';
-            row.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">${report.date}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-600">CVE漏洞、GitHub仓库、安全资讯</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="badge bg-green-100 text-green-800">已发布</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right">
-                    <button onclick="loadReport('${report.date}')" class="text-red-600 hover:text-red-900 font-medium text-sm mr-3">
-                        <i class="fas fa-eye mr-1"></i>查看
-                    </button>
-                    <a href="${API_BASE_URL}/reports/${report.date}.json" target="_blank" class="text-gray-600 hover:text-gray-900 font-medium text-sm">
-                        <i class="fas fa-download mr-1"></i>下载
-                    </a>
-                </td>
-            `;
-            reportsTableBody.appendChild(row);
-        });
-
-        // Load latest report if available
-        if (reports.length > 0) {
-            loadReport(reports[0].date);
-        }
-    } catch (error) {
-        console.error('Error loading reports:', error);
-        removeLoading();
-        reportsTableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-gray-500">暂无安全日报</td></tr>';
-        // Don't show error toast for empty data, it's a normal state
-    }
-}
-
-// Load a specific report
-async function loadReport(date) {
-    try {
-        // Show loading state
-        showLoading(reportContent, '加载报告中...');
-
-        const response = await fetch(`${API_BASE_URL}/reports/${date}.json`);
-        const data = await response.json();
-
-        // Render markdown content with syntax highlighting
-        const htmlContent = marked.parse(data.content);
-        reportContent.innerHTML = htmlContent;
-
-        // Apply syntax highlighting to code blocks
-        hljs.highlightAll();
-
-        // Scroll to report section
-        scrollToSection('#latestReport');
-
-        // Update URL hash
-        history.pushState(null, null, `#report-${date}`);
-    } catch (error) {
-        console.error('Error loading report:', error);
-        reportContent.innerHTML = `<div class="flex justify-center items-center py-12 text-red-500">
-            <i class="fas fa-exclamation-circle text-4xl mb-4 mr-4"></i>
-            <div>
-                <h3 class="text-xl font-semibold mb-2">加载报告失败</h3>
-                <p>无法加载该报告，请稍后重试</p>
-            </div>
-        </div>`;
-        showError('无法加载报告，请稍后重试');
-    }
-}
-
-// Load stats
-async function loadStats() {
-    try {
-        // Get CVEs count
-        const cveResponse = await fetch(`${API_BASE_URL}/cves.json`);
-        if (!cveResponse.ok) {
-            throw new Error('Failed to load CVE stats');
-        }
-        const cveData = await cveResponse.json();
-        todayCves.textContent = cveData.total || 0;
-
-        // Get repos count
-        const repoResponse = await fetch(`${API_BASE_URL}/repos.json`);
-        if (!repoResponse.ok) {
-            throw new Error('Failed to load repo stats');
-        }
-        const repoData = await repoResponse.json();
-        totalRepos.textContent = repoData.total || 0;
-
-    } catch (error) {
-        console.error('Error loading stats:', error);
-        // Keep default values or show 0 instead of breaking UI
-        todayCves.textContent = 0;
-        totalRepos.textContent = 0;
-    }
-}
-
-// Load CVEs
-async function loadCVEs() {
-    try {
-        // Show loading state
-        showLoading(cvesGrid, '加载漏洞数据中...');
-
-        const response = await fetch(`${API_BASE_URL}/cves.json`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch CVEs');
-        }
-        const data = await response.json();
-
-        // Store CVE data for filtering
-        cveData = Array.isArray(data.cves) ? data.cves : [];
-
-        // Remove loading state
-        removeLoading();
-
-        // Render CVEs
-        renderCVEs(cveData);
-    } catch (error) {
-        console.error('Error loading CVEs:', error);
-        removeLoading();
-        cvesGrid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">
-            <i class="fas fa-exclamation-circle text-4xl mb-4 opacity-50"></i>
-            <p class="text-lg">暂无漏洞数据</p>
-            <p class="text-sm mt-2">系统正在监控中，请稍后刷新查看</p>
-        </div>`;
-        // Don't show error toast for empty data, it's a normal state
-    }
-}
-
-// Load repositories
-async function loadRepos() {
-    try {
-        // Show loading state
-        showLoading(reposGrid, '加载仓库数据中...');
-
-        const response = await fetch(`${API_BASE_URL}/repos.json`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch repositories');
-        }
-        const data = await response.json();
-
-        // Remove loading state
-        removeLoading();
-
-        // Clear existing repos
-        reposGrid.innerHTML = '';
-
-        // Ensure repos is an array
-        const repos = Array.isArray(data.repos) ? data.repos : [];
-
-        // Add new repos
-        if (repos.length === 0) {
-            reposGrid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">
-                <i class="fas fa-github text-4xl mb-4 opacity-50"></i>
-                <p class="text-lg">暂无监控仓库数据</p>
-                <p class="text-sm mt-2">系统正在监控中，请稍后刷新查看</p>
-            </div>`;
-            return;
-        }
-
-        repos.forEach(repo => {
-            const repoCard = createRepoCard(repo);
-            reposGrid.appendChild(repoCard);
-        });
-    } catch (error) {
-        console.error('Error loading repositories:', error);
-        removeLoading();
-        reposGrid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">
-            <i class="fas fa-github text-4xl mb-4 opacity-50"></i>
-            <p class="text-lg">暂无监控仓库数据</p>
-            <p class="text-sm mt-2">系统正在监控中，请稍后刷新查看</p>
-        </div>`;
-        // Don't show error toast for empty data, it's a normal state
-    }
-}
-
-// Create repository card
-function createRepoCard(repo) {
-    const repoCard = document.createElement('div');
-    repoCard.className = 'card fade-in';
-
-    repoCard.innerHTML = `
-        <div class="flex items-start space-x-4">
-            <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-gray-700 text-2xl">
-                <i class="fab fa-github"></i>
-            </div>
-            <div class="flex-1">
-                <div class="flex flex-wrap items-center gap-2 mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 hover:text-red-600 transition-colors duration-200 cursor-pointer">${repo.name}</h3>
-                    <span class="text-xs text-gray-500">${repo.stars} <i class="fas fa-star text-yellow-500"></i></span>
-                </div>
-                <p class="text-sm text-gray-600 mb-4 line-clamp-2">${repo.description || '暂无描述'}</p>
-                <div class="flex items-center space-x-4 text-xs text-gray-500">
-                    ${repo.last_updated ? `<span class="flex items-center"><i class="far fa-clock mr-1"></i>${formatDate(repo.last_updated)}</span>` : ''}
-                    <a href="${repo.url}" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-800 transition-colors duration-200 flex items-center font-medium">
-                        <i class="fas fa-external-link-alt mr-1"></i>访问仓库
-                    </a>
-                </div>
-            </div>
-        </div>
-    `;
-
-    return repoCard;
-}
-
-// Load a specific CVE
-async function loadCVE(cveId) {
-    try {
-        // Show loading state
-        showLoading(document.body, '加载漏洞详情中...');
-
-        const response = await fetch(`${API_BASE_URL}/cves/${cveId}.json`);
-        const cve = await response.json();
-
-        // Create modal content
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
-
-        // Get AI analysis if available
-        let analysisContent = '';
-        if (cve.ai_analysis) {
-            try {
-                const analysis = JSON.parse(cve.ai_analysis);
-                analysisContent = `
-                    <div class="mt-6">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                            <i class="fas fa-robot text-blue-600 mr-2"></i>
-                            AI 分析
-                        </h4>
-                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                            <div class="grid grid-cols-2 gap-4 mb-3">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-700">风险等级:</p>
-                                    <p class="text-sm text-gray-900">${analysis.risk_level || '未知'}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-700">漏洞类型:</p>
-                                    <p class="text-sm text-gray-900">${analysis.vulnerability_type || '未知'}</p>
-                                </div>
-                            </div>
-                            ${analysis.summary ? `
-                                <div class="mb-3">
-                                    <p class="text-sm font-medium text-gray-700 mb-1">概述:</p>
-                                    <p class="text-sm text-gray-900">${analysis.summary}</p>
-                                </div>
-                            ` : ''}
-                            ${analysis.key_findings ? `
-                                <div class="mb-3">
-                                    <p class="text-sm font-medium text-gray-700 mb-2">关键发现:</p>
-                                    <ul class="list-disc list-inside text-sm text-gray-900 space-y-1">
-                                        ${analysis.key_findings.map(finding => `<li>${finding}</li>`).join('')}
-                                    </ul>
-                                </div>
-                            ` : ''}
-                            ${analysis.technical_details ? `
-                                <div>
-                                    <p class="text-sm font-medium text-gray-700 mb-2">技术细节:</p>
-                                    <div class="bg-gray-100 p-3 rounded-md text-sm text-gray-900">
-                                        ${analysis.technical_details.map(detail => `<p class="mb-1">${detail}</p>`).join('')}
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            } catch (e) {
-                console.error('Error parsing AI analysis:', e);
-            }
-        }
-
-        modal.innerHTML = `
-            <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-6">
+            content += `
+                <div class="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-4 mb-6 border border-primary-100 dark:border-primary-800">
+                    <h4 class="text-sm font-bold text-primary-600 dark:text-primary-400 uppercase mb-3 flex items-center">
+                        <i class="fa-solid fa-robot mr-2"></i> AI Analysis
+                    </h4>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <h3 class="text-2xl font-bold text-gray-900">${cve.cve_id}</h3>
-                            ${cve.publish_time ? `<p class="text-sm text-gray-500 mt-1 flex items-center"><i class="far fa-clock mr-1"></i>${formatDate(cve.publish_time)}</p>` : ''}
+                            <span class="text-xs text-gray-500">Risk Level</span>
+                            <p class="font-bold">${analysis.risk_level || '-'}</p>
                         </div>
-                        <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600 transition-colors duration-300">
-                            <i class="fas fa-times text-xl"></i>
-                        </button>
+                        <div>
+                            <span class="text-xs text-gray-500">Exploit Status</span>
+                            <p class="font-bold">${analysis.exploitation_status || '-'}</p>
+                        </div>
                     </div>
-                    
-                    <div class="border-b border-gray-200 pb-6">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                            <i class="fas fa-info-circle text-blue-600 mr-2"></i>
-                            漏洞描述
-                        </h4>
-                        <p class="text-sm text-gray-700 whitespace-pre-wrap">${cve.description}</p>
-                    </div>
-                    
-                    ${analysisContent}
-                    
-                    <div class="mt-6 flex justify-end space-x-3">
-                        <button onclick="this.closest('.fixed').remove()" class="btn-secondary">
-                            关闭
-                        </button>
-                        <a href="#" class="btn-primary flex items-center space-x-2">
-                            <i class="fas fa-share-alt"></i>
-                            <span>分享</span>
-                        </a>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="text-xs text-gray-500">Summary</span>
+                            <p class="text-sm">${analysis.summary || '-'}</p>
+                        </div>
+                        ${analysis.key_findings ? `
+                            <div>
+                                <span class="text-xs text-gray-500">Key Findings</span>
+                                <ul class="list-disc list-inside text-sm mt-1">
+                                    ${analysis.key_findings.map(f => `<li>${f}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
+            `;
+        } catch (e) { }
+    }
+
+    content += `
+        <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+                <span class="text-gray-500">Published</span>
+                <p>${formatDate(cve.publish_time)}</p>
             </div>
-        `;
-
-        // Remove loading state
-        removeLoading();
-
-        // Add modal to DOM
-        document.body.appendChild(modal);
-
-        // Add close event listener for modal background
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.remove();
-            }
-        });
-    } catch (error) {
-        console.error('Error loading CVE:', error);
-        removeLoading();
-        showError('无法加载漏洞详情，请稍后重试');
-    }
-}
-
-// Initialize charts
-function initCharts() {
-    // CVE Trend Chart
-    const cveTrendCtx = document.getElementById('cveTrendChart').getContext('2d');
-    cveTrendChart = new Chart(cveTrendCtx, {
-        type: 'line',
-        data: {
-            labels: ['7天前', '6天前', '5天前', '4天前', '3天前', '2天前', '昨天'],
-            datasets: [{
-                label: '新增漏洞数',
-                data: [12, 19, 3, 5, 2, 3, 7],
-                borderColor: '#ef4444',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                tension: 0.4,
-                fill: true,
-                pointBackgroundColor: '#ef4444',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 5,
-                pointHoverRadius: 7
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    titleFont: {
-                        size: 14,
-                        weight: 'bold'
-                    },
-                    bodyFont: {
-                        size: 13
-                    },
-                    cornerRadius: 8,
-                    displayColors: true
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
-            },
-            animation: {
-                duration: 1500,
-                easing: 'easeInOutQuart'
-            }
-        }
-    });
-
-    // Risk Distribution Chart
-    const riskDistributionCtx = document.getElementById('riskDistributionChart').getContext('2d');
-    riskDistributionChart = new Chart(riskDistributionCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['高风险', '中风险', '低风险', '未知'],
-            datasets: [{
-                data: [35, 45, 15, 5],
-                backgroundColor: [
-                    '#ef4444',
-                    '#f59e0b',
-                    '#10b981',
-                    '#6b7280'
-                ],
-                borderWidth: 0,
-                hoverOffset: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    titleFont: {
-                        size: 14,
-                        weight: 'bold'
-                    },
-                    bodyFont: {
-                        size: 13
-                    },
-                    cornerRadius: 8
-                }
-            },
-            animation: {
-                animateScale: true,
-                animateRotate: true,
-                duration: 1500,
-                easing: 'easeInOutQuart'
-            }
-        }
-    });
-}
-
-// Show loading spinner
-function showLoading(element, message = '加载中...') {
-    // Create loading element
-    const loadingDiv = document.createElement('div');
-    loadingDiv.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
-    loadingDiv.id = 'loading-overlay';
-
-    loadingDiv.innerHTML = `
-        <div class="bg-white rounded-lg shadow-xl p-8 text-center">
-            <div class="loading-spinner mx-auto mb-4"></div>
-            <p class="text-gray-700 font-medium">${message}</p>
+            <div>
+                <span class="text-gray-500">CVSS Score</span>
+                <p class="font-mono">${cve.cvss_score || 'N/A'}</p>
+            </div>
         </div>
     `;
 
-    document.body.appendChild(loadingDiv);
-    document.body.style.overflow = 'hidden';
+    document.getElementById('modal-content').innerHTML = content;
+    document.getElementById('modal').classList.remove('hidden');
 }
 
-// Remove loading spinner
-function removeLoading() {
-    const loadingDiv = document.getElementById('loading-overlay');
-    if (loadingDiv) {
-        loadingDiv.remove();
-        document.body.style.overflow = '';
+function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+}
+
+function setupEventListeners() {
+    document.getElementById('cve-search').addEventListener('input', () => {
+        renderCVEsView();
+    });
+}
+
+function handleHashChange() {
+    const hash = window.location.hash.slice(1);
+    if (hash && ['dashboard', 'reports', 'cves', 'repos'].includes(hash)) {
+        switchView(hash);
     }
 }
-
-// Show error message
-function showError(message) {
-    // Create error element
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 slide-up';
-
-    errorDiv.innerHTML = `
-        <div class="flex items-center space-x-3">
-            <i class="fas fa-exclamation-circle text-xl"></i>
-            <span class="font-medium">${message}</span>
-            <button onclick="this.parentElement.remove()" class="text-white hover:text-gray-200 transition-colors duration-200">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `;
-
-    // Add to DOM
-    document.body.appendChild(errorDiv);
-
-    // Remove after 5 seconds
-    setTimeout(() => {
-        if (errorDiv.parentNode) {
-            errorDiv.style.transform = 'translateY(-100%)';
-            setTimeout(() => {
-                if (errorDiv.parentNode) {
-                    errorDiv.remove();
-                }
-            }, 300);
-        }
-    }, 5000);
-}
-
-// Format date
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('zh-CN');
-}
-
-// Add event listener for DOM load
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}
-
-// Add scroll event for header shadow
-window.addEventListener('scroll', () => {
-    const header = document.querySelector('header');
-    if (window.scrollY > 10) {
-        header.classList.add('shadow-lg');
-        header.classList.remove('shadow-md');
-    } else {
-        header.classList.add('shadow-md');
-        header.classList.remove('shadow-lg');
-    }
-});

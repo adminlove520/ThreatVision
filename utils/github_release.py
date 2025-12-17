@@ -50,6 +50,35 @@ class GitHubReleaseManager:
     def rotate_token(self):
         """轮换GitHub令牌"""
         self.token_manager.rotate_token()
+
+    def delete_release_by_tag(self, tag_name):
+        """
+        根据标签名删除Release和Tag
+        """
+        if not self.repo:
+            return False
+            
+        try:
+            # 1. Get release by tag
+            url = f"{self.api_base_url}/repos/{self.repo}/releases/tags/{tag_name}"
+            response = requests.get(url, headers=self.get_headers())
+            
+            if response.status_code == 200:
+                release_id = response.json().get('id')
+                # 2. Delete release
+                del_url = f"{self.api_base_url}/repos/{self.repo}/releases/{release_id}"
+                requests.delete(del_url, headers=self.get_headers())
+                logger.info(f"Deleted existing release for tag: {tag_name}")
+                
+            # 3. Delete tag reference
+            tag_url = f"{self.api_base_url}/repos/{self.repo}/git/refs/tags/{tag_name}"
+            requests.delete(tag_url, headers=self.get_headers())
+            logger.info(f"Deleted existing tag: {tag_name}")
+            return True
+            
+        except Exception as e:
+            logger.warning(f"Error deleting existing release/tag {tag_name}: {e}")
+            return False
     
     def create_release(self, tag_name, release_name, body=''):
         """
@@ -66,6 +95,9 @@ class GitHubReleaseManager:
         if not self.repo:
             logger.error("GitHub repository not specified")
             return None
+            
+        # Delete existing release/tag first to avoid 422 error
+        self.delete_release_by_tag(tag_name)
         
         url = f"{self.api_base_url}/repos/{self.repo}/releases"
         
